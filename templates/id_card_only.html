@@ -1,0 +1,87 @@
+{% if not plain %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ID Card - {{ reg.full_name }}</title>
+  <style>
+    :root {
+      --primary: #B5330A;
+      --gold: #D4AF37;
+      --text: #333;
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .id-card {
+      width: 380px;
+      background: #fff;
+      border: 3px solid var(--primary);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .id-card-header {
+      background: var(--primary);
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      border-bottom: 3px solid var(--gold);
+    }
+    .id-card-header h2 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; font-family: 'Cinzel', serif; }
+    .id-card-num {
+      background: #fff8f5;
+      padding: 0.4rem;
+      border-bottom: 1px dashed var(--primary);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #eee; font-size: 0.95rem; color: var(--text); }
+    td:first-child { font-weight: 700; width: 40%; color: var(--primary); }
+    .print-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    @media print {
+      .print-btn { display: none; }
+      body { background: #fff; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+{% endif %}
+  <div class="id-card">
+    <div class="id-card-header">
+      <h2>Y.S.D.K., ANANTAPUR</h2>
+      <h2>3-DAY SADHANA SANGAM</h2>
+    </div>
+    <div class="id-card-num">
+      <table style="border:none;">
+        <tr>
+          <td style="border:none; text-align:center; width:50%; font-size:1.2rem; padding:0.4rem;">{{ reg.id }}</td>
+          <td style="border:none; text-align:center; width:50%; font-weight:normal; color:#666; padding:0.4rem;">({{ reg.created_at.strftime('%d-%m-%Y') if reg.created_at else '' }})</td>
+        </tr>
+      </table>
+    </div>
+    <table>
+      <tr><td>Name :</td><td>{{ reg.full_name }}</td></tr>
+      <tr><td>Lesson No :</td><td>{{ reg.lesson_no }}</td></tr>
+      <tr><td>Mobile No :</td><td>{{ reg.whatsapp }}</td></tr>
+      <tr><td>Place :</td><td>{{ reg.place }}</td></tr>
+    </table>
+    <div style="padding: 1rem; text-align: center; background: #fff;">
+      <div style="font-size: 0.8rem; color: #999;">Scan for verification</div>
+      <div style="margin-top: 0.5rem; color: var(--primary); font-weight: bold;">✦ ✦ ✦</div>
+    </div>
+  </div>
+{% if not plain %}
+  <button onclick="window.print()" class="print-btn">Print Now</button>
+</body>
+</html>
+{% endif %}

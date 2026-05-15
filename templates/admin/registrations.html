@@ -5,7 +5,9 @@
   <h1><i class="fa fa-users" style="color:var(--gold);margin-right:.5rem;"></i>Registrations</h1>
   <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
     <a href="{{ url_for('export_registrations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download Excel</a>
-    <a href="{{ url_for('registration') }}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Registration</a>
+    <a href="{{ url_for('export_registrations_pdf') }}" class="btn btn-primary btn-sm"><i class="fa fa-file-pdf"></i> Download PDF</a>
+    <button onclick="window.print()" class="btn btn-outline btn-sm"><i class="fa fa-print"></i> Print</button>
+    <a href="{{ url_for('registration') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Registration</a>
   </div>
 </div>
 
@@ -34,17 +36,49 @@
     <table>
       <thead>
         <tr>
-          <th>S.No</th><th>Name</th><th>Mobile No</th><th>Date</th>
+          <th>S.No</th><th>Reg ID</th><th>Lesson No</th><th>Name</th><th>Mobile No</th><th>Place</th><th>Amount</th><th>Date</th>
           <th>Payment Mode</th><th>Payment Status</th><th>Reg Status</th><th>Action</th>
         </tr>
       </thead>
       <tbody>
+        <tr style="background:#fff8e1; border-bottom:2px solid var(--gold);">
+          <td><i class="fa fa-plus-circle" style="color:var(--gold);"></i></td>
+          <td>Auto</td>
+          <td><input type="text" id="m_lesson" placeholder="Lesson No" class="filter-select" style="min-width:100px; border-color:var(--gold);"></td>
+          <td><input type="text" id="m_name" placeholder="Full Name" class="filter-select" style="min-width:180px; border-color:var(--gold);"></td>
+          <td>
+            <div style="display:flex; gap:0.2rem; min-width:200px;">
+              <select id="m_cc" class="filter-select" style="width:auto; border-color:var(--gold); padding:0.2rem;">
+                <option value="+91">+91</option>
+                <option value="+1">+1</option>
+                <option value="+44">+44</option>
+              </select>
+              <input type="tel" id="m_mobile" placeholder="10 Digit Mobile" class="filter-select" style="flex:1; border-color:var(--gold);" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+            </div>
+          </td>
+          <td><input type="text" id="m_place" placeholder="City/Village" class="filter-select" style="min-width:150px; border-color:var(--gold);"></td>
+          <td><input type="number" id="m_amount" placeholder="Amount" class="filter-select" style="min-width:100px; border-color:var(--gold);"></td>
+          <td>Auto</td>
+          <td>
+            <select id="m_pay_mode" class="filter-select" style="min-width:100px; border-color:var(--gold);">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+            </select>
+          </td>
+          <td style="color:#2E7D32; font-weight:bold;">Paid</td>
+          <td style="color:#2E7D32; font-weight:bold;">Approved</td>
+          <td><button onclick="saveManual()" class="btn btn-gold btn-sm" style="min-width:80px;"><i class="fa fa-save"></i> Save</button></td>
+        </tr>
       {% for r in pagination.items %}
       <tr>
         <td>{{ (pagination.page-1)*10 + loop.index }}</td>
-        <td><strong>{{ r.full_name }}</strong><br><small style="color:var(--muted);">{{ r.reg_id }}</small></td>
+        <td><small style="color:var(--muted);">{{ r.reg_id }}</small></td>
+        <td>{{ r.lesson_no }}</td>
+        <td><strong>{{ r.full_name }}</strong></td>
         <td>{{ r.whatsapp }}</td>
-        <td>{{ r.created_at.strftime('%d %b %Y') if r.created_at else '' }}</td>
+        <td>{{ r.place }}</td>
+        <td>₹{{ r.amount|int if r.amount else 0 }}</td>
+        <td>{{ r.created_at.strftime('%d %b %Y, %I:%M %p') if r.created_at else '' }}</td>
         <td>{{ r.payment_mode }}</td>
         <td>
           <select class="filter-select" style="font-size:.75rem;padding:.2rem .5rem;" onchange="updateReg({{ r.id }}, 'payment_status', this.value)">
@@ -61,7 +95,10 @@
         </td>
         <td>
           <div class="action-btns">
-            <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" target="_blank" class="btn btn-outline btn-sm" title="View ID Card"><i class="fa fa-eye"></i></a>
+            {% if r.payment_screenshot %}
+            <button onclick="showScreenshot('{{ url_for('static', filename='uploads/' + r.payment_screenshot) }}')" class="btn btn-outline btn-sm" title="View Screenshot"><i class="fa fa-eye"></i></button>
+            {% endif %}
+            <button onclick="showIDCard('{{ r.reg_id }}')" class="btn btn-outline btn-sm" title="View ID Card" style="border-color:var(--gold); color:var(--gold);"><i class="fa fa-id-card"></i></button>
             <button onclick="confirmDelete({{ r.id }}, 'reg')" class="btn btn-sm" style="background:#FFEBEE;color:#C62828;border:none;" title="Delete"><i class="fa fa-trash"></i></button>
           </div>
         </td>
@@ -92,9 +129,75 @@
   </div>
   {% endif %}
 </div>
+<!-- SCREENSHOT MODAL -->
+<div id="screenshotModal" class="modal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:1rem; border-radius:10px; max-width:90%; max-height:90%; position:relative;">
+    <button onclick="document.getElementById('screenshotModal').style.display='none'" style="position:absolute; top:-15px; right:-15px; width:30px; height:30px; border-radius:50%; border:none; background:var(--primary); color:#fff; cursor:pointer;">&times;</button>
+    <img id="screenshotImg" src="" style="max-width:100%; max-height:80vh; display:block;">
+  </div>
+</div>
+
+<!-- ID CARD MODAL -->
+<div id="idCardModal" class="modal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:0; border-radius:10px; max-width:90%; position:relative; overflow:hidden; width:400px;">
+    <button onclick="document.getElementById('idCardModal').style.display='none'" style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; border:none; background:rgba(255,255,255,0.2); color:#fff; cursor:pointer; font-size:20px; z-index:10;">&times;</button>
+    <div id="idCardContent"></div>
+    <div style="padding:1rem; text-align:center; background:#f9f9f9;">
+      <button onclick="printModalCard()" class="btn btn-primary btn-sm"><i class="fa fa-print"></i> Print</button>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 {% block extra_js %}
 <script>
+function showScreenshot(url) {
+  document.getElementById('screenshotImg').src = url;
+  document.getElementById('screenshotModal').style.display = 'flex';
+}
+function showIDCard(regId) {
+  fetch('/registration/card/' + regId + '?plain=1')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('idCardContent').innerHTML = html;
+      document.getElementById('idCardModal').style.display = 'flex';
+    });
+}
+function printModalCard() {
+  const content = document.getElementById('idCardContent').innerHTML;
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>ID Card</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet"><style>body{margin:0;display:flex;justify-content:center;padding:20px;}:root{--primary:#B5330A;--gold:#D4AF37;--text:#333;}.id-card{width:380px;background:#fff;border:3px solid var(--primary);position:relative;overflow:hidden;font-family:sans-serif;}.id-card-header{background:var(--primary);color:#fff;text-align:center;padding:1rem;border-bottom:3px solid var(--gold);}.id-card-header h2{margin:0;font-size:1.1rem;font-family:Cinzel,serif;}.id-card-num{background:#fff8f5;padding:0.4rem;border-bottom:1px dashed var(--primary);}table{width:100%;border-collapse:collapse;}td{padding:0.75rem 1rem;border-bottom:1px solid #eee;font-size:0.95rem;color:var(--text);}td:first-child{font-weight:700;width:40%;color:var(--primary);}</style></head><body>' + content + '</body></html>');
+  w.document.close();
+  w.setTimeout(() => { w.print(); w.close(); }, 500);
+}
+function saveManual() {
+  const lesson = document.getElementById('m_lesson').value;
+  const name = document.getElementById('m_name').value;
+  const cc = document.getElementById('m_cc').value;
+  const mobile = document.getElementById('m_mobile').value;
+  const place = document.getElementById('m_place').value;
+  const amount = document.getElementById('m_amount').value;
+  const payMode = document.getElementById('m_pay_mode').value;
+  
+  if(!name || !mobile || !amount) { alert('Please enter name, mobile and amount'); return; }
+  if(mobile.length !== 10) { alert('Please enter a valid 10-digit mobile number'); return; }
+
+  fetch('/api/registrations/manual', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      lesson_no: lesson, 
+      full_name: name, 
+      country_code: cc,
+      whatsapp: mobile, 
+      place: place, 
+      amount: amount, 
+      payment_mode: payMode
+    })
+  }).then(r => r.json()).then(d => {
+    if(d.success) location.reload();
+  });
+}
 function updateReg(id, field, val) {
   const data = {};
   data[field] = val;

@@ -40,8 +40,8 @@
       <tr><td style="padding:.4rem .75rem;font-weight:700;">Place :</td><td style="padding:.4rem .75rem;">{{ r.place }}</td></tr>
     </table>
     <div style="padding:.5rem;display:flex;gap:.5rem;justify-content:center;border-top:1px solid #eee;">
-      <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-print"></i> Print</a>
-      <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" target="_blank" class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Download</a>
+      <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" class="btn btn-primary btn-sm"><i class="fa fa-print"></i> Print</a>
+      <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Download</a>
     </div>
   </div>
   {% endfor %}

@@ -18,12 +18,12 @@ class Config:
 
     # Event config
     EVENT_NAME = '3-Day Spiritual Program – Anantapur'
-    EVENT_DATES = '24 – 26 June 2026'
-    EVENT_DATE_RANGE = 'June 24, 25, 26 – 2026'
-    EVENT_VENUE = 'Dhyana Kendra, Anantapur, Andhra Pradesh'
+    EVENT_DATES = '24 – 26 July 2026'
+    EVENT_DATE_RANGE = 'July 24, 25, 26 – 2026'
+    EVENT_VENUE = 'Krishna Kala Mandir, Anantapur, Andhra Pradesh'
     EVENT_CONTACT_EMAIL = 'ravitejakona2007@gmail.com'
-    EVENT_CONTACT_MOBILE = '9494457607'
-    EVENT_MAPS_URL = 'https://maps.app.goo.gl/LEVmVri3XwjgFQm59'
+    EVENT_CONTACT_MOBILE = '8019682209'
+    EVENT_MAPS_URL = 'https://maps.app.goo.gl/WQxUo86SVYtabmMP9'
 
     # Admin defaults
     ADMIN_EMAIL = 'ravitejakona2007@gmail.com'

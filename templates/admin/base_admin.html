@@ -26,9 +26,7 @@
       <p style="font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.25rem;">Anantapur Panel</p>
     </div>
     <nav class="sidebar-nav">
-      <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint=='admin_dashboard' %}active{% endif %}">
-        <i class="fa fa-th-large"></i><span>Dashboard</span>
-      </a>
+
       <a href="{{ url_for('admin_registrations') }}" class="{% if request.endpoint=='admin_registrations' %}active{% endif %}">
         <i class="fa fa-users"></i><span>Registrations</span>
       </a>

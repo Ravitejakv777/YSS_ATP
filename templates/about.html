@@ -7,54 +7,38 @@
 </div>
 <section class="section">
   <div class="container">
-    <div class="yogananda-card">
-      <div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Paramahansa_Yogananda_1920.jpg/440px-Paramahansa_Yogananda_1920.jpg" alt="Paramahansa Yogananda" class="yogananda-img">
-      </div>
-      <div>
-        <h2 style="font-family:'Cinzel',serif;color:var(--primary);margin-bottom:1rem;">Paramahansa Yogananda</h2>
-        <div style="width:50px;height:3px;background:var(--gold);margin-bottom:1rem;"></div>
-        <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paramahansa Yogananda (1893–1952) is widely regarded as the Father of Yoga in the West. He came to America in 1920 and spent decades teaching the ancient science of Kriya Yoga – a powerful meditation technique that accelerates spiritual development and brings the practitioner to the direct perception of God.</p>
-        <p style="color:var(--muted);line-height:1.8;">His landmark book, <em>Autobiography of a Yogi</em>, has inspired millions worldwide and continues to transform lives. Yogoda Satsanga Society of India (YSS), founded by him in 1917, carries forward his mission of spreading peace and spiritual wisdom.</p>
-      </div>
+
+
+    <div style="margin-top:4rem;text-align:center;">
+      <h2 style="font-family:'Cinzel',serif;color:var(--primary);margin-bottom:0.5rem;">Monastic Tour, Anantapur</h2>
+      <h3 style="color:var(--gold);margin-bottom:0.5rem;">Three-day programme</h3>
+      <p style="color:var(--muted);font-weight:bold;margin-bottom:0.25rem;">Friday, July 24, 2026 – Sunday, July 26, 2026</p>
+      <p style="color:var(--muted);font-style:italic;">(Kriya Yoga diksha on Sunday, July 26, 2026)</p>
     </div>
 
-    <h2 class="section-title">About This Program</h2>
-    <div class="divider-ornament">✦</div>
-    <div class="card-grid card-grid-2" style="margin-top:2rem;">
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h3>Program Purpose</h3>
-        <p style="color:var(--muted);line-height:1.7;">This 3-Day Spiritual Program at Anantapur is designed to provide an immersive retreat experience for devotees and seekers. Through meditation, discourse, bhajans, and selfless service, participants will deepen their spiritual practice and connect with a community of like-minded souls.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🌟</div>
-        <h3>About Kriya Yoga</h3>
-        <p style="color:var(--muted);line-height:1.7;">Kriya Yoga is an advanced Raja Yoga technique that reinforces and revitalizes subtle currents of life energy in the body. Regular practice leads to expanded awareness, inner peace, and ultimately union with the Divine. This program offers guidance on deepening one's Kriya practice.</p>
-      </div>
+    <div style="margin-top:2rem;text-align:center;">
+      <img src="{{ url_for('static', filename='images/yss-atp-july-2026-.jpg') }}" alt="Event Image" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.1);margin-bottom:2rem;">
     </div>
 
-    <h2 class="section-title" style="margin-top:4rem;">Benefits of Attending</h2>
+    <h2 class="section-title">About the Event</h2>
     <div class="divider-ornament">✦</div>
-    <div style="margin-top:2rem;">
-      {% set benefits = [
-        ('🧘','Deep Meditation Practice','Learn and practice advanced meditation techniques under experienced guidance, helping you develop a consistent daily practice.'),
-        ('🕊️','Inner Peace','Experience genuine stillness and peace that goes beyond ordinary relaxation – a taste of the divine calm described in the scriptures.'),
-        ('🤲','Community & Fellowship','Connect with hundreds of fellow devotees on the spiritual path, building lasting friendships and support.'),
-        ('📿','Spiritual Knowledge','Gain deeper understanding of Kriya Yoga, the teachings of Paramahansa Yogananda, and practical spiritual living.'),
-        ('💪','Renewed Inspiration','Return home energized and inspired, with renewed commitment to your spiritual practice and daily life.'),
-        ('🙏','Blessings & Grace','Receive the blessings of the lineage and experience the transformative power of group spiritual practice.'),
-      ] %}
-      {% for icon,title,desc in benefits %}
-      <div class="benefit-item">
-        <div class="benefit-icon">{{icon}}</div>
-        <div>
-          <h4 style="color:var(--primary);font-family:'Cinzel',serif;margin-bottom:.25rem;">{{title}}</h4>
-          <p style="color:var(--muted);">{{desc}}</p>
-        </div>
-      </div>
-      {% endfor %}
+    
+    <div style="background:var(--cream);padding:2rem;border-radius:8px;margin-bottom:2rem;border-left:4px solid var(--gold);">
+      <p style="font-family:'Cinzel',serif;font-size:1.2rem;color:var(--primary);font-style:italic;margin-bottom:1rem;line-height:1.6;">
+        "The sustainer of this universe is knocking at the gates of your heart, trying to enter through the portals of silence and make within you a garden of happiness."
+      </p>
+      <p style="color:var(--muted);text-align:right;">— Sri Sri Paramahansa Yogananda</p>
     </div>
+
+    <div style="color:var(--muted);line-height:1.8;font-size:1.05rem;">
+      <p style="margin-bottom:1.5rem;">Each year sannyasis of Yogoda Satsanga Society of India visit cities around the country to help fulfil the ever-growing demand for Paramahansa Yogananda’s soul-liberating teachings. These monastic tours offer a blessed opportunity for newcomers who wish to introduce themselves to the teachings of Paramahansa Yogananda and receive in-depth guidance in the YSS meditation techniques for YSS Lessons students.</p>
+      
+      <p style="margin-bottom:1.5rem;">As every spiritual event gives a new stimulus to one’s sadhana, your participation in these events will rekindle your spiritual enthusiasm, and will also help you to experience the joy and blessings that come from meditating with and being in the company of other earnest seekers.</p>
+      
+      <p style="margin-bottom:1.5rem;">We invite you to join these events and withdraw your attention from the ceaseless activities of everyday living and focus it on the Inner Silence, and thereby drink the nectar of God’s peace and bliss. During your participation, you may also avail yourself of the guidance of YSS sannyasis in the application of Gurudeva’s teachings in your daily life.</p>
+    </div>
+
+
 
     <div style="text-align:center;margin-top:3rem;">
       <a href="{{ url_for('registration') }}" class="btn btn-primary">Register Now</a>

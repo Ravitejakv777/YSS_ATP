@@ -7,7 +7,7 @@
   <div class="hero-bg" style="position:absolute;inset:0;z-index:0;">
     <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(44,26,14,.88) 0%,rgba(44,26,14,.55) 45%,rgba(0,0,0,.25) 100%);z-index:1;"></div>
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,153,26,.15) 0%,transparent 70%);z-index:2;"></div>
-      <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero Background" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;">
+      <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Hero Background" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;">
   </div>
   <div class="hero-content" style="position:relative;z-index:3;">
     <div style="color:var(--gold);font-size:.85rem;letter-spacing:3px;margin-bottom:.5rem;">✦ ✦ ✦</div>
@@ -24,69 +24,14 @@
   </div>
 </section>
 
-<!-- HIGHLIGHTS -->
-<section class="section" style="background:var(--cream);">
-  <div class="container">
-    <h2 class="section-title">Why Attend This Program?</h2>
-    <div class="divider-ornament">✦</div>
-    <p class="section-sub">A transformative 3-day experience of spiritual growth and inner peace.</p>
-    <div class="card-grid card-grid-3">
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">🧘</div>
-        <h3>Deep Meditation</h3>
-        <p>Experience guided meditation sessions using Kriya Yoga techniques as taught by Paramahansa Yogananda.</p>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">🎵</div>
-        <h3>Devotional Bhajans</h3>
-        <p>Join in uplifting kirtan and bhajans that open the heart and elevate consciousness.</p>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">📖</div>
-        <h3>Spiritual Discourses</h3>
-        <p>Inspiring talks on the path of Self-Realization, devotion, and inner transformation.</p>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">🤝</div>
-        <h3>Seva – Selfless Service</h3>
-        <p>Participate in volunteer activities and experience the joy of selfless service.</p>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">🍽️</div>
-        <h3>Sattvic Meals</h3>
-        <p>Enjoy pure, nutritious sattvic food prepared with love and devotion for all participants.</p>
-      </div>
-      <div class="card" style="text-align:center;">
-        <div class="card-icon">🏠</div>
-        <h3>Accommodation</h3>
-        <p>Simple and comfortable accommodation is available for outstation devotees upon request.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- QUOTE -->
-<section style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);padding:4rem 2rem;text-align:center;">
+<section style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);padding:2rem 1rem;text-align:center;">
   <div class="container">
-    <div style="font-size:3rem;color:var(--gold);margin-bottom:1rem;">❝</div>
-    <p style="font-family:'Cinzel',serif;font-size:1.4rem;color:#fff;max-width:700px;margin:0 auto 1rem;line-height:1.8;">
+    <div style="font-size:2rem;color:var(--gold);margin-bottom:0.5rem;">❝</div>
+    <p style="font-family:'Cinzel',serif;font-size:1.1rem;color:#fff;max-width:700px;margin:0 auto 0.5rem;line-height:1.5;">
       "The greater the will, the greater the flow of energy."
     </p>
-    <p style="color:rgba(255,255,255,.7);font-style:italic;">— Paramahansa Yogananda</p>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="section" style="background:var(--light);text-align:center;">
-  <div class="container">
-    <h2 class="section-title">Ready to Begin Your Spiritual Journey?</h2>
-    <div class="divider-ornament">✦</div>
-    <p style="color:var(--muted);margin:1rem auto 2rem;max-width:600px;">Register today for the 3-Day Spiritual Program and transform your life through the timeless teachings of Kriya Yoga.</p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="{{ url_for('registration') }}" class="btn btn-primary">Register Now</a>
-      <a href="{{ url_for('about') }}" class="btn btn-outline">Learn More</a>
-      <a href="{{ url_for('donation') }}" class="btn btn-gold">Donate</a>
-    </div>
+    <p style="color:rgba(255,255,255,.7);font-style:italic;font-size:0.9rem;">— Paramahansa Yogananda</p>
   </div>
 </section>
 

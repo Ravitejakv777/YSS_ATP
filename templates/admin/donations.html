@@ -5,7 +5,7 @@
   <h1><i class="fa fa-heart" style="color:var(--gold);margin-right:.5rem;"></i>Donations</h1>
   <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
     <a href="{{ url_for('export_donations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download Excel</a>
-    <a href="{{ url_for('donation') }}" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Donation</a>
+    <a href="{{ url_for('donation') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Donation</a>
   </div>
 </div>
 
@@ -35,7 +35,7 @@
         <td>{{ (pagination.page-1)*10 + loop.index }}</td>
         <td><strong>{{ d.name }}</strong><br><small style="color:var(--muted);">{{ d.donation_id }}</small></td>
         <td>{{ d.whatsapp }}</td>
-        <td>{{ d.created_at.strftime('%d %b %Y') if d.created_at else '' }}</td>
+        <td>{{ d.created_at.strftime('%d %b %Y, %I:%M %p') if d.created_at else '' }}</td>
         <td><strong style="color:var(--primary);">₹{{ d.amount|int }}</strong></td>
         <td>{{ d.payment_mode }}</td>
         <td>

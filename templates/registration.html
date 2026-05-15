@@ -1,23 +1,32 @@
 {% extends 'base.html' %}
 {% block title %}Registration – YSS Anantapur{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container">
-    <div class="form-card">
-      <h2 class="form-title">Registration Form</h2>
-      <div class="divider-ornament">✦</div>
-      <p class="form-subtitle">Please fill in the details carefully to register for the 3-Day Spiritual Program.</p>
-      <form method="POST" action="{{ url_for('registration') }}" id="regForm" novalidate>
+<div class="split-container" style="display:flex; align-items:flex-start; min-height:100vh;">
+  <!-- Left Side: Fixed Image (Narrower) -->
+  <div class="split-left" style="width:35%; height:calc(100vh - 135px); position:sticky; top:135px; overflow:hidden; background:#000;">
+    <img src="{{ url_for('static', filename='images/reg.jpeg') }}" style="width:100%; height:100%; object-fit:cover; opacity: 0.9;">
+  </div>
+  
+  <!-- Right Side: Scrollable Form (Wider) -->
+  <div class="split-right" style="width:65%; padding:4rem 5rem; background:var(--cream);">
+    <div class="form-card" style="box-shadow:none; padding:0; background:transparent; max-width:800px; margin:0;">
+      <h2 class="form-title" style="text-align:left; color:var(--primary);">Registration Form</h2>
+      <div class="divider-ornament" style="text-align:left;">✦</div>
+      <p class="form-subtitle" style="text-align:left; margin-bottom:3rem; color:var(--muted);">Please fill in the details carefully to register for the 3-Day Spiritual Program.</p>
+      
+      <form method="POST" action="{{ url_for('registration') }}" id="regForm" enctype="multipart/form-data">
+        <!-- Form Content remains the same ... -->
         <div class="form-grid form-grid-2">
           <div class="form-group">
             <label>Lesson No <span class="req">*</span></label>
-            <input type="text" name="lesson_no" class="form-control" placeholder="Enter lesson number e.g. 12345" value="{{ form.get('lesson_no','') }}" required>
+            <input type="text" name="lesson_no" class="form-control" placeholder="Enter lesson number" value="{{ form.get('lesson_no','') }}" required>
           </div>
           <div class="form-group">
             <label>Full Name <span class="req">*</span></label>
             <input type="text" name="full_name" class="form-control" placeholder="Enter your full name" value="{{ form.get('full_name','') }}" required>
           </div>
         </div>
+        
         <div class="form-grid form-grid-3" style="margin-top:1.25rem;">
           <div class="form-group">
             <label>Gender <span class="req">*</span></label>
@@ -33,47 +42,72 @@
             <input type="number" name="age" class="form-control" placeholder="Enter your age" value="{{ form.get('age','') }}" min="5" max="120" required>
           </div>
           <div class="form-group">
-            <label>Place <span class="req">*</span></label>
-            <input type="text" name="place" class="form-control" placeholder="Enter your place" value="{{ form.get('place','') }}" required>
+            <label>City/Village/Town <span class="req">*</span></label>
+            <input type="text" name="place" class="form-control" placeholder="Enter city/village/town" value="{{ form.get('place','') }}" required>
           </div>
         </div>
+        
         <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
           <div class="form-group">
-            <label>Kriyaban <span class="req">*</span></label>
+            <label>State <span class="req">*</span></label>
+            <input type="text" name="state" class="form-control" placeholder="Enter your state" value="{{ form.get('state','') }}" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ form.get('email','') }}" required>
+          </div>
+        </div>
+        
+        <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
+          <div class="form-group">
+            <label>Kriya <span class="req">*</span></label>
             <div class="radio-group">
-              <label><input type="radio" name="is_kriyaban" value="yes" {% if form.get('is_kriyaban')=='yes' %}checked{% endif %}> Yes</label>
-              <label><input type="radio" name="is_kriyaban" value="no" {% if form.get('is_kriyaban','no')=='no' %}checked{% endif %}> No</label>
+              <label><input type="radio" name="is_kriyaban" value="yes" {% if form.get('is_kriyaban')=='yes' %}checked{% endif %}> Kriyaban</label>
+              <label><input type="radio" name="is_kriyaban" value="no" {% if form.get('is_kriyaban')=='no' %}checked{% endif %}> Non-Kriyaban</label>
             </div>
           </div>
           <div class="form-group">
             <label>WhatsApp No <span class="req">*</span></label>
-            <input type="tel" name="whatsapp" class="form-control" placeholder="Enter WhatsApp number" value="{{ form.get('whatsapp','') }}" required>
+            <div style="display:flex;gap:0.5rem;">
+              <select name="country_code" class="form-control" style="width:auto;flex-shrink:0;">
+                <option value="+91" selected>+91 (IND)</option>
+                <option value="+1">+1 (USA/CAN)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+61">+61 (AUS)</option>
+                <option value="+971">+971 (UAE)</option>
+                <option value="+65">+65 (SG)</option>
+                <option value="+60">+60 (MY)</option>
+              </select>
+              <input type="tel" name="whatsapp" class="form-control" placeholder="10 digit number" value="{{ form.get('whatsapp','') }}" maxlength="10" pattern="[0-9]{10}" title="Please enter exactly 10 digits" required style="flex:1;">
+            </div>
           </div>
         </div>
+        
         <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
           <div class="form-group">
             <label>Accommodation Required <span class="req">*</span></label>
             <div class="radio-group">
               <label><input type="radio" name="accommodation" value="yes" {% if form.get('accommodation')=='yes' %}checked{% endif %}> Yes</label>
-              <label><input type="radio" name="accommodation" value="no" {% if form.get('accommodation','no')=='no' %}checked{% endif %}> No</label>
+              <label><input type="radio" name="accommodation" value="no" {% if form.get('accommodation')=='no' %}checked{% endif %}> No</label>
             </div>
           </div>
           <div class="form-group">
             <label>Volunteer <span class="req">*</span></label>
             <div class="radio-group">
               <label><input type="radio" name="volunteer" value="yes" {% if form.get('volunteer')=='yes' %}checked{% endif %}> Yes</label>
-              <label><input type="radio" name="volunteer" value="no" {% if form.get('volunteer','no')=='no' %}checked{% endif %}> No</label>
+              <label><input type="radio" name="volunteer" value="no" {% if form.get('volunteer')=='no' %}checked{% endif %}> No</label>
             </div>
           </div>
         </div>
+        
         <div class="form-grid form-grid-3" style="margin-top:1.25rem;">
           <div class="form-group">
             <label>Date of Arrival <span class="req">*</span></label>
-            <input type="date" name="arrival_date" class="form-control" value="{{ form.get('arrival_date','') }}" required>
+            <input type="date" name="arrival_date" class="form-control" value="{{ form.get('arrival_date','') }}" min="2026-07-23" max="2026-07-27" required>
           </div>
           <div class="form-group">
             <label>Date of Departure <span class="req">*</span></label>
-            <input type="date" name="departure_date" class="form-control" value="{{ form.get('departure_date','') }}" required>
+            <input type="date" name="departure_date" class="form-control" value="{{ form.get('departure_date','') }}" min="2026-07-23" max="2026-07-27" required>
           </div>
           <div class="form-group">
             <label>Payment Mode <span class="req">*</span></label>
@@ -81,17 +115,65 @@
               <option value="">-- Select Payment Mode --</option>
               <option value="UPI" {% if form.get('payment_mode')=='UPI' %}selected{% endif %}>UPI</option>
               <option value="Cash" {% if form.get('payment_mode')=='Cash' %}selected{% endif %}>Cash</option>
-              <option value="Bank Transfer" {% if form.get('payment_mode')=='Bank Transfer' %}selected{% endif %}>Bank Transfer</option>
-              <option value="Cheque" {% if form.get('payment_mode')=='Cheque' %}selected{% endif %}>Cheque</option>
             </select>
           </div>
         </div>
+
+        <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
+          <div class="form-group">
+            <label>Transaction ID <span class="req">*</span></label>
+            <input type="text" name="transaction_id" class="form-control" placeholder="Enter Transaction ID" value="{{ form.get('transaction_id','') }}" required>
+          </div>
+          <div class="form-group">
+            <label>Upload Payment Screenshot <span class="req">*</span></label>
+            <input type="file" name="payment_screenshot" class="form-control" accept="image/*" required>
+          </div>
+        </div>
+
+        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:2rem;text-align:center;border:1px solid #e0d0bb;">
+          <p style="margin-bottom:0.5rem;font-weight:bold;">Scan QR to Pay</p>
+          <img src="{{ url_for('static', filename='images/image.png') }}" alt="QR Code" style="width:200px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+          <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;">PhonePe Mobile Number: 9390541258</p>
+          
+          <div id="fee-section" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e0d0bb;">
+            <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;">Fee Breakdown</h3>
+            <div id="fee-breakdown" style="font-size:1.1rem;color:var(--text);line-height:1.6;"></div>
+          </div>
+        </div>
+
         <div class="form-note mt-3"><i class="fa fa-info-circle" style="color:var(--accent);"></i> All fields marked with <strong>*</strong> are mandatory.</div>
-        <div style="margin-top:2rem;text-align:center;">
+        <div style="margin-top:2rem;text-align:left;">
           <button type="submit" class="btn btn-primary" style="padding:.9rem 3rem;font-size:1rem;">Submit Registration</button>
         </div>
       </form>
     </div>
   </div>
-</section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const feeSection = document.getElementById('fee-section');
+  const feeBreakdown = document.getElementById('fee-breakdown');
+  const radios = document.querySelectorAll('input[name="accommodation"]');
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      document.getElementById('fee-section').style.display = 'block';
+      if(e.target.value === 'yes') {
+        feeBreakdown.innerHTML = `Registration Fee : ₹1800<br>Accommodation Fee : ₹1000<br><strong>Total Amount : ₹2800</strong>`;
+      } else {
+        feeBreakdown.innerHTML = `Registration Fee : ₹1800<br><strong>Total Amount : ₹1800</strong>`;
+      }
+    });
+  });
+
+  // Trigger if already selected (e.g. after validation error)
+  const checkedRadio = document.querySelector('input[name="accommodation"]:checked');
+  if(checkedRadio) {
+    checkedRadio.dispatchEvent(new Event('change'));
+  }
+});
+</script>
 {% endblock %}

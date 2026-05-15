@@ -38,6 +38,9 @@ class Registration(db.Model):
     gender = db.Column(db.String(10), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     place = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=True)
+    email = db.Column(db.String(120), nullable=True)
+    country_code = db.Column(db.String(10), default='+91')
     whatsapp = db.Column(db.String(15), nullable=False)
     is_kriyaban = db.Column(db.Boolean, default=False)
     accommodation = db.Column(db.Boolean, default=False)
@@ -45,6 +48,9 @@ class Registration(db.Model):
     arrival_date = db.Column(db.String(20), nullable=False)
     departure_date = db.Column(db.String(20), nullable=False)
     payment_mode = db.Column(db.String(30), nullable=False)
+    amount = db.Column(db.Float, nullable=True)
+    transaction_id = db.Column(db.String(100), nullable=True)
+    payment_screenshot = db.Column(db.String(255), nullable=True)
     payment_status = db.Column(db.String(20), default='Pending')  # Pending, Paid
     reg_status = db.Column(db.String(20), default='Pending')  # Pending, Approved, Rejected
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -58,6 +64,9 @@ class Registration(db.Model):
             'gender': self.gender,
             'age': self.age,
             'place': self.place,
+            'state': self.state,
+            'email': self.email,
+            'country_code': self.country_code,
             'whatsapp': self.whatsapp,
             'is_kriyaban': 'Yes' if self.is_kriyaban else 'No',
             'accommodation': 'Yes' if self.accommodation else 'No',
@@ -65,6 +74,9 @@ class Registration(db.Model):
             'arrival_date': self.arrival_date,
             'departure_date': self.departure_date,
             'payment_mode': self.payment_mode,
+            'amount': self.amount,
+            'transaction_id': self.transaction_id,
+            'payment_screenshot': self.payment_screenshot,
             'payment_status': self.payment_status,
             'reg_status': self.reg_status,
             'created_at': self.created_at.strftime('%d %b %Y') if self.created_at else ''
@@ -82,6 +94,8 @@ class Donation(db.Model):
     whatsapp = db.Column(db.String(15), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     payment_mode = db.Column(db.String(30), nullable=False)
+    transaction_id = db.Column(db.String(100), nullable=True)
+    payment_screenshot = db.Column(db.String(255), nullable=True)
     payment_status = db.Column(db.String(20), default='Pending')  # Pending, Completed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -96,6 +110,8 @@ class Donation(db.Model):
             'whatsapp': self.whatsapp,
             'amount': self.amount,
             'payment_mode': self.payment_mode,
+            'transaction_id': self.transaction_id,
+            'payment_screenshot': self.payment_screenshot,
             'payment_status': self.payment_status,
             'created_at': self.created_at.strftime('%d %b %Y') if self.created_at else ''
         }

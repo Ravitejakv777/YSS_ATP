@@ -8,6 +8,8 @@ import os, openpyxl
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db.init_app(app)
 mail = Mail(app)
@@ -36,43 +38,26 @@ def seed_data():
     # Seed schedule
     if not EventSchedule.query.first():
         schedule_data = [
-            # Day 1 – 24 June 2026
-            (1,'Day 1 – 24 June 2026','05:00 AM','06:00 AM','Morning Meditation','meditation',1),
-            (1,'Day 1 – 24 June 2026','06:00 AM','07:00 AM','Energisation Exercises','other',2),
-            (1,'Day 1 – 24 June 2026','07:00 AM','08:00 AM','Breakfast','food',3),
-            (1,'Day 1 – 24 June 2026','08:30 AM','10:00 AM','Spiritual Talk – Kriya Yoga Introduction','talk',4),
-            (1,'Day 1 – 24 June 2026','10:00 AM','11:00 AM','Group Meditation Session','meditation',5),
-            (1,'Day 1 – 24 June 2026','11:00 AM','01:00 PM','Devotional Bhajans & Kirtan','bhajan',6),
-            (1,'Day 1 – 24 June 2026','01:00 PM','02:00 PM','Lunch','food',7),
-            (1,'Day 1 – 24 June 2026','02:00 PM','03:00 PM','Rest / Personal Sadhana','other',8),
-            (1,'Day 1 – 24 June 2026','03:00 PM','05:00 PM','Volunteer Service (Seva)','volunteer',9),
-            (1,'Day 1 – 24 June 2026','05:00 PM','06:30 PM','Evening Meditation','meditation',10),
-            (1,'Day 1 – 24 June 2026','06:30 PM','07:30 PM','Satsanga & Discourse','talk',11),
-            (1,'Day 1 – 24 June 2026','07:30 PM','08:30 PM','Dinner','food',12),
-            (1,'Day 1 – 24 June 2026','08:30 PM','09:30 PM','Night Bhajans & Aarti','bhajan',13),
-            # Day 2 – 25 June 2026
-            (2,'Day 2 – 25 June 2026','04:30 AM','05:30 AM','Brahma Muhurta Meditation','meditation',1),
-            (2,'Day 2 – 25 June 2026','05:30 AM','06:30 AM','Energisation Exercises','other',2),
-            (2,'Day 2 – 25 June 2026','07:00 AM','08:00 AM','Breakfast','food',3),
-            (2,'Day 2 – 25 June 2026','08:30 AM','10:30 AM','Deep Meditation Workshop','meditation',4),
-            (2,'Day 2 – 25 June 2026','10:30 AM','12:00 PM','Spiritual Talk – Path of Devotion','talk',5),
-            (2,'Day 2 – 25 June 2026','12:00 PM','01:00 PM','Bhajans & Group Prayer','bhajan',6),
-            (2,'Day 2 – 25 June 2026','01:00 PM','02:00 PM','Lunch','food',7),
-            (2,'Day 2 – 25 June 2026','02:00 PM','04:00 PM','Volunteer Service & Ashram Upkeep','volunteer',8),
-            (2,'Day 2 – 25 June 2026','04:00 PM','05:00 PM','Question & Answer Session','talk',9),
-            (2,'Day 2 – 25 June 2026','05:00 PM','06:30 PM','Evening Meditation & Chanting','meditation',10),
-            (2,'Day 2 – 25 June 2026','06:30 PM','07:30 PM','Satsanga – Divine Teachings','talk',11),
-            (2,'Day 2 – 25 June 2026','07:30 PM','08:30 PM','Dinner','food',12),
-            (2,'Day 2 – 25 June 2026','08:30 PM','10:00 PM','Candlelight Bhajans & Meditation','bhajan',13),
-            # Day 3 – 26 June 2026
-            (3,'Day 3 – 26 June 2026','05:00 AM','07:00 AM','Long Meditation Session','meditation',1),
-            (3,'Day 3 – 26 June 2026','07:00 AM','08:00 AM','Breakfast','food',2),
-            (3,'Day 3 – 26 June 2026','08:30 AM','10:00 AM','Kriya Yoga Techniques Class','talk',3),
-            (3,'Day 3 – 26 June 2026','10:00 AM','11:30 AM','Group Healing Meditation','meditation',4),
-            (3,'Day 3 – 26 June 2026','11:30 AM','01:00 PM','Final Bhajans & Devotional Songs','bhajan',5),
-            (3,'Day 3 – 26 June 2026','01:00 PM','02:00 PM','Lunch & Prasad Distribution','food',6),
-            (3,'Day 3 – 26 June 2026','02:00 PM','03:30 PM','Closing Ceremony & Blessings','talk',7),
-            (3,'Day 3 – 26 June 2026','03:30 PM','04:30 PM','Volunteer Wrap-up & Farewell','volunteer',8),
+            # Day 1
+            (1, 'Day 1 – 24 July 2026', '09:30 AM', '10:30 AM', 'Opening satsanga', 'talk', 1),
+            (1, 'Day 1 – 24 July 2026', '10:30 AM', '12:00 PM', 'Review of Energization Exercises (YSS Lessons students only)', 'meditation', 2),
+            (1, 'Day 1 – 24 July 2026', '02:30 PM', '03:30 PM', 'Review of Hong-Sau technique (YSS Lessons students only)', 'meditation', 3),
+            (1, 'Day 1 – 24 July 2026', '04:30 PM', '06:15 PM', 'Energization Exercises and meditation', 'meditation', 4),
+            (1, 'Day 1 – 24 July 2026', '06:30 PM', '07:30 PM', 'Spiritual discourse', 'talk', 5),
+            (1, 'Day 1 – 24 July 2026', '07:30 PM', '08:30 PM', 'Video show on Guruji', 'talk', 6),
+            
+            # Day 2
+            (2, 'Day 2 – 25 July 2026', '06:00 AM', '09:00 AM', 'Energization Exercises and meditation', 'meditation', 1),
+            (2, 'Day 2 – 25 July 2026', '09:45 AM', '10:45 AM', 'Spiritual discourse', 'talk', 2),
+            (2, 'Day 2 – 25 July 2026', '11:00 AM', '12:00 PM', 'Review of Aum technique (YSS Lessons students only)', 'meditation', 3),
+            (2, 'Day 2 – 25 July 2026', '02:30 PM', '03:30 PM', 'Question-Answer session', 'talk', 4),
+            (2, 'Day 2 – 25 July 2026', '04:30 PM', '06:15 PM', 'Energization Exercises and meditation', 'meditation', 5),
+            (2, 'Day 2 – 25 July 2026', '06:30 PM', '07:30 PM', 'Spiritual discourse', 'talk', 6),
+            
+            # Day 3
+            (3, 'Day 3 – 26 July 2026', '08:00 AM', '12:00 PM', 'Kriya Yoga diksha (for eligible YSS devotees only)', 'meditation', 1),
+            (3, 'Day 3 – 26 July 2026', '02:00 PM', '03:30 PM', 'Closing satsanga and prasad', 'food', 2),
+            (3, 'Day 3 – 26 July 2026', '04:00 PM', '06:00 PM', 'Kriya Yoga review and check-up (YSS Kriyabans only)', 'meditation', 3),
         ]
         for s in schedule_data:
             item = EventSchedule(
@@ -86,21 +71,78 @@ def seed_data():
 def update_registrations_excel():
     path = os.path.join(app.config['EXPORTS_DIR'], 'registrations.xlsx')
     wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = 'Registrations'
-    headers = ['S.No','Reg ID','Lesson No','Full Name','Gender','Age','Place','WhatsApp',
-               'Kriyaban','Accommodation','Volunteer','Arrival','Departure',
-               'Payment Mode','Payment Status','Reg Status','Date']
-    ws.append(headers)
     regs = Registration.query.order_by(Registration.id).all()
-    for i, r in enumerate(regs, 1):
-        ws.append([i, r.reg_id, r.lesson_no, r.full_name, r.gender, r.age, r.place,
-                   r.whatsapp, 'Yes' if r.is_kriyaban else 'No',
-                   'Yes' if r.accommodation else 'No', 'Yes' if r.volunteer else 'No',
-                   r.arrival_date, r.departure_date, r.payment_mode,
-                   r.payment_status, r.reg_status,
-                   r.created_at.strftime('%d-%m-%Y') if r.created_at else ''])
+    
+    # Stats
+    total = len(regs)
+    locals_count = len([r for r in regs if r.place and 'anantapur' in r.place.lower()])
+    non_locals = total - locals_count
+    kriyabans = len([r for r in regs if r.is_kriyaban])
+    non_kriyabans = total - kriyabans
+    acco_yes = len([r for r in regs if r.accommodation])
+    acco_no = total - acco_yes
+
+    def create_sheet(name, data_list):
+        ws = wb.create_sheet(title=name)
+        # Summary table only on 'All Registrations'
+        if name == 'All Registrations':
+            ws.append(['SUMMARY STATISTICS'])
+            ws.append(['Category', 'Count'])
+            ws.append(['Total Registrations', total])
+            ws.append(['Locals (Anantapur)', locals_count])
+            ws.append(['Non-Locals', non_locals])
+            ws.append(['Kriyabans', kriyabans])
+            ws.append(['Non-Kriyabans', non_kriyabans])
+            ws.append(['Accommodation Needed', acco_yes])
+            ws.append(['Accommodation Not Needed', acco_no])
+            ws.append([]) # Spacer row
+        
+        headers = ['S.No','Reg ID','Lesson No','Full Name','Gender','Age','WhatsApp','Email','City/Town','State',
+                   'Kriya','Accommodation','Volunteer','Arrival','Departure',
+                   'Amount','Payment Mode','Transaction ID','Status','Date']
+        ws.append(headers)
+        for i, r in enumerate(data_list, 1):
+            # For admin entries, some fields should be hyphenated
+            is_admin = r.lesson_no == 'ADMIN' or r.gender == '-'
+            ws.append([i, r.reg_id or '-', r.lesson_no or '-', r.full_name or '-', 
+                       ('-' if is_admin else r.gender) or '-', 
+                       ('-' if is_admin or r.age==0 else r.age) or '-', 
+                       r.whatsapp or '-', 
+                       ('-' if is_admin else r.email) or '-', 
+                       r.place or '-', 
+                       ('-' if is_admin else r.state) or '-',
+                       ('-' if is_admin else ('Kriyaban' if r.is_kriyaban else 'Non-Kriyaban')),
+                       ('Yes' if r.accommodation else 'No'), 
+                       ('-' if is_admin else ('Yes' if r.volunteer else 'No')),
+                       ('-' if is_admin else (r.arrival_date or '-')), 
+                       ('-' if is_admin else (r.departure_date or '-')),
+                       r.amount or 0, r.payment_mode or '-', r.transaction_id or '-', 
+                       r.reg_status or '-',
+                       r.created_at.strftime('%d-%m-%Y %I:%M %p') if r.created_at else '-'])
+        
+        # Auto-adjust column widths
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column_letter
+            for cell in col:
+                try:
+                    if cell.value and len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except: pass
+            ws.column_dimensions[column].width = min(max_length + 2, 40)
+
+    # Remove default sheet
+    del wb['Sheet']
+    
+    create_sheet('All Registrations', regs)
+    create_sheet('Locals', [r for r in regs if r.place and 'anantapur' in r.place.lower()])
+    create_sheet('Non-Locals', [r for r in regs if not r.place or 'anantapur' not in r.place.lower()])
+    create_sheet('Kriyabans', [r for r in regs if r.is_kriyaban])
+    create_sheet('Non-Kriyabans', [r for r in regs if not r.is_kriyaban])
+    create_sheet('Accommodation', [r for r in regs if r.accommodation])
+
     wb.save(path)
+    wb.close()
 
 def update_donations_excel():
     path = os.path.join(app.config['EXPORTS_DIR'], 'donations.xlsx')
@@ -108,14 +150,28 @@ def update_donations_excel():
     ws = wb.active
     ws.title = 'Donations'
     headers = ['S.No','Donation ID','Lesson No','Name','Age','Place','WhatsApp',
-               'Amount (₹)','Payment Mode','Payment Status','Date']
+               'Amount (₹)','Payment Mode','Transaction ID','Payment Screenshot','Payment Status','Date']
     ws.append(headers)
     dons = Donation.query.order_by(Donation.id).all()
     for i, d in enumerate(dons, 1):
-        ws.append([i, d.donation_id, d.lesson_no, d.name, d.age, d.place,
-                   d.whatsapp, d.amount, d.payment_mode, d.payment_status,
-                   d.created_at.strftime('%d-%m-%Y') if d.created_at else ''])
+        ws.append([i, d.donation_id or '-', d.lesson_no or '-', d.name or '-', d.age or 0, d.place or '-',
+                   d.whatsapp or '-', d.amount or 0, d.payment_mode or '-', d.transaction_id or '-',
+                   d.payment_screenshot or '-', d.payment_status or '-',
+                   d.created_at.strftime('%d-%m-%Y') if d.created_at else '-'])
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except: pass
+        ws.column_dimensions[column].width = max_length + 2
+
     wb.save(path)
+    wb.close()
 
 def send_registration_email(reg):
     try:
@@ -145,9 +201,7 @@ def schedule():
         days.setdefault(s.day_number, {'label': s.day_label, 'items': []})['items'].append(s)
     return render_template('schedule.html', days=days, config=app.config)
 
-@app.route('/faq')
-def faq():
-    return render_template('faq.html', config=app.config)
+
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -166,6 +220,9 @@ def registration():
         gender = request.form.get('gender', '').strip()
         age = request.form.get('age', '').strip()
         place = request.form.get('place', '').strip()
+        state = request.form.get('state', '').strip()
+        email = request.form.get('email', '').strip()
+        country_code = request.form.get('country_code', '+91').strip()
         whatsapp = request.form.get('whatsapp', '').strip()
         is_kriyaban = request.form.get('is_kriyaban') == 'yes'
         accommodation = request.form.get('accommodation') == 'yes'
@@ -173,16 +230,33 @@ def registration():
         arrival_date = request.form.get('arrival_date', '').strip()
         departure_date = request.form.get('departure_date', '').strip()
         payment_mode = request.form.get('payment_mode', '').strip()
+        transaction_id = request.form.get('transaction_id', '').strip()
+        
+        screenshot_filename = None
+        file = request.files.get('payment_screenshot')
+        if file and file.filename != '':
+            import werkzeug.utils, uuid
+            filename = werkzeug.utils.secure_filename(file.filename)
+            file_ext = os.path.splitext(filename)[1]
+            new_filename = f"screenshot_{uuid.uuid4().hex[:8]}{file_ext}"
+            uploads_dir = os.path.join(app.root_path, 'static', 'uploads')
+            os.makedirs(uploads_dir, exist_ok=True)
+            file.save(os.path.join(uploads_dir, new_filename))
+            screenshot_filename = new_filename
 
         if not lesson_no: errors.append('Lesson Number is required.')
         if not full_name: errors.append('Full Name is required.')
         if not gender: errors.append('Gender is required.')
         if not age or not age.isdigit(): errors.append('Valid Age is required.')
-        if not place: errors.append('Place is required.')
-        if not whatsapp or len(whatsapp) < 10: errors.append('Valid WhatsApp number is required.')
+        if not place: errors.append('City/Village/Town is required.')
+        if not state: errors.append('State is required.')
+        if not email or '@' not in email: errors.append('Valid Email Address is required.')
+        if not whatsapp or not whatsapp.isdigit() or len(whatsapp) != 10: errors.append('WhatsApp Number must be exactly 10 digits.')
         if not arrival_date: errors.append('Date of Arrival is required.')
         if not departure_date: errors.append('Date of Departure is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
+        if not transaction_id: errors.append('Transaction ID is required.')
+
 
         if errors:
             for e in errors:
@@ -191,10 +265,11 @@ def registration():
 
         reg = Registration(
             lesson_no=lesson_no, full_name=full_name, gender=gender,
-            age=int(age), place=place, whatsapp=whatsapp,
+            age=int(age), place=place, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
             is_kriyaban=is_kriyaban, accommodation=accommodation,
             volunteer=volunteer, arrival_date=arrival_date,
-            departure_date=departure_date, payment_mode=payment_mode
+            departure_date=departure_date, payment_mode=payment_mode,
+            transaction_id=transaction_id, payment_screenshot=screenshot_filename
         )
         db.session.add(reg)
         db.session.commit()
@@ -209,11 +284,19 @@ def reg_success(reg_id):
     reg = Registration.query.filter_by(reg_id=reg_id).first_or_404()
     return render_template('reg_success.html', reg=reg, config=app.config)
 
+@app.route('/registration/card/<reg_id>')
+def reg_card_only(reg_id):
+    reg = Registration.query.filter_by(reg_id=reg_id).first_or_404()
+    plain = request.args.get('plain') == '1'
+    return render_template('id_card_only.html', reg=reg, config=app.config, plain=plain)
+
 # ─── DONATION ─────────────────────────────────────────────────────────────────
 @app.route('/donation', methods=['GET', 'POST'])
 def donation():
     if request.method == 'POST':
         errors = []
+        import time
+        from werkzeug.utils import secure_filename
         lesson_no = request.form.get('lesson_no', '').strip()
         name = request.form.get('name', '').strip()
         age = request.form.get('age', '').strip()
@@ -221,18 +304,31 @@ def donation():
         whatsapp = request.form.get('whatsapp', '').strip()
         amount = request.form.get('amount', '').strip()
         payment_mode = request.form.get('payment_mode', '').strip()
+        transaction_id = request.form.get('transaction_id', '').strip()
 
         if not lesson_no: errors.append('Lesson Number is required.')
         if not name: errors.append('Name is required.')
         if not age or not age.isdigit(): errors.append('Valid Age is required.')
         if not place: errors.append('Place is required.')
-        if not whatsapp or len(whatsapp) < 10: errors.append('Valid WhatsApp number is required.')
+        if not whatsapp or not whatsapp.isdigit() or len(whatsapp) != 10: errors.append('WhatsApp Number must be exactly 10 digits.')
         if not amount: errors.append('Donation Amount is required.')
         try:
             float(amount)
         except:
             errors.append('Valid Amount is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
+        if not transaction_id: errors.append('Transaction ID is required.')
+
+        screenshot_filename = None
+        if 'payment_screenshot' in request.files:
+            file = request.files['payment_screenshot']
+            if file and file.filename:
+                screenshot_filename = secure_filename(f"donation_{int(time.time())}_{file.filename}")
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename))
+        
+        if not screenshot_filename and payment_mode == 'UPI':
+            errors.append('Payment Screenshot is required for UPI.')
 
         if errors:
             for e in errors:
@@ -241,7 +337,8 @@ def donation():
 
         don = Donation(
             lesson_no=lesson_no, name=name, age=int(age), place=place,
-            whatsapp=whatsapp, amount=float(amount), payment_mode=payment_mode
+            whatsapp=whatsapp, amount=float(amount), payment_mode=payment_mode,
+            transaction_id=transaction_id, payment_screenshot=screenshot_filename
         )
         db.session.add(don)
         db.session.commit()
@@ -256,17 +353,19 @@ def donation_success(don_id):
     return render_template('donation_success.html', don=don, config=app.config)
 
 # ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
+@app.route('/admin')
+def admin_redirect():
+    return redirect(url_for('admin_login'))
+
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    if current_user.is_authenticated:
-        return redirect(url_for('admin_dashboard'))
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
         admin = Admin.query.filter_by(email=email).first()
         if admin and admin.check_password(password):
             login_user(admin)
-            return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('admin_registrations'))
         flash('Invalid email or password.', 'error')
     return render_template('admin/login.html', config=app.config)
 
@@ -277,17 +376,7 @@ def admin_logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('admin_login'))
 
-# ─── ADMIN DASHBOARD ──────────────────────────────────────────────────────────
-@app.route('/admin/dashboard')
-@login_required
-def admin_dashboard():
-    total_regs = Registration.query.count()
-    total_dons = Donation.query.count()
-    total_amount = db.session.query(db.func.sum(Donation.amount)).scalar() or 0
-    recent_regs = Registration.query.order_by(Registration.created_at.desc()).limit(5).all()
-    return render_template('admin/dashboard.html',
-        total_regs=total_regs, total_dons=total_dons,
-        total_amount=total_amount, recent_regs=recent_regs, config=app.config)
+
 
 # ─── ADMIN REGISTRATIONS ──────────────────────────────────────────────────────
 @app.route('/admin/registrations')
@@ -315,7 +404,108 @@ def admin_registrations():
 def export_registrations():
     update_registrations_excel()
     path = os.path.join(app.config['EXPORTS_DIR'], 'registrations.xlsx')
-    return send_file(path, as_attachment=True, download_name='registrations.xlsx')
+    return send_file(path, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name='registrations.xlsx')
+
+@app.route('/admin/registrations/export-pdf')
+@login_required
+def export_registrations_pdf():
+    from fpdf import FPDF
+    regs = Registration.query.order_by(Registration.id).all()
+    pdf = FPDF(orientation='L', unit='mm', format='A4')
+    
+    # Stats
+    total = len(regs)
+    locals_count = len([r for r in regs if r.place and 'anantapur' in r.place.lower()])
+    non_locals = total - locals_count
+    kriyabans = len([r for r in regs if r.is_kriyaban])
+    non_kriyabans = total - kriyabans
+    acco_yes = len([r for r in regs if r.accommodation])
+    acco_no = total - acco_yes
+
+    def add_section(title, data_list):
+        pdf.add_page()
+        pdf.set_font('helvetica', 'B', 16)
+        pdf.cell(0, 10, 'YSS Anantapur - ' + title, 0, 1, 'C')
+        pdf.ln(5)
+        
+        # Summary Table at Top of First Page
+        if title == 'Overall Summary & All Records':
+            pdf.set_font('helvetica', 'B', 10)
+            pdf.cell(60, 8, 'Category', 1, 0, 'C')
+            pdf.cell(30, 8, 'Count', 1, 1, 'C')
+            pdf.set_font('helvetica', '', 10)
+            stats = [
+                ('Total Registrations', total),
+                ('Locals (Anantapur)', locals_count),
+                ('Non-Locals', non_locals),
+                ('Kriyabans', kriyabans),
+                ('Non-Kriyabans', non_kriyabans),
+                ('Accommodation Yes', acco_yes),
+                ('Accommodation No', acco_no)
+            ]
+            for cat, val in stats:
+                pdf.cell(60, 8, cat, 1, 0, 'L')
+                pdf.cell(30, 8, str(val), 1, 1, 'C')
+            pdf.ln(10)
+
+        pdf.set_font('helvetica', 'B', 8)
+        cols = [('S.No', 10), ('Reg ID', 25), ('Name', 45), ('Mobile', 30), ('Place', 35), ('Amount', 20), ('Mode', 20), ('Kriya', 25), ('Acco', 15), ('Status', 25)]
+        for txt, w in cols:
+            pdf.cell(w, 8, txt, 1, 0, 'C')
+        pdf.ln()
+        
+        pdf.set_font('helvetica', '', 8)
+        for i, r in enumerate(data_list, 1):
+            pdf.cell(10, 8, str(i), 1, 0, 'C')
+            pdf.cell(25, 8, r.reg_id or '-', 1, 0, 'C')
+            pdf.cell(45, 8, (r.full_name[:25] if r.full_name else '-'), 1, 0, 'L')
+            pdf.cell(30, 8, r.whatsapp or '-', 1, 0, 'C')
+            pdf.cell(35, 8, (r.place[:20] if r.place else '-'), 1, 0, 'L')
+            pdf.cell(20, 8, str(int(r.amount)) if r.amount else '0', 1, 0, 'C')
+            pdf.cell(20, 8, r.payment_mode or '-', 1, 0, 'C')
+            pdf.cell(25, 8, 'Kriyaban' if r.is_kriyaban else 'Non-Kri', 1, 0, 'C')
+            pdf.cell(15, 8, 'Yes' if r.accommodation else 'No', 1, 0, 'C')
+            pdf.cell(25, 8, r.reg_status or '-', 1, 0, 'C')
+            pdf.ln()
+
+    add_section('Overall Summary & All Records', regs)
+    add_section('Locals (Anantapur)', [r for r in regs if r.place and 'anantapur' in r.place.lower()])
+    add_section('Non-Locals', [r for r in regs if not r.place or 'anantapur' not in r.place.lower()])
+    add_section('Kriyabans', [r for r in regs if r.is_kriyaban])
+    add_section('Non-Kriyabans', [r for r in regs if not r.is_kriyaban])
+    add_section('Accommodation Needed', [r for r in regs if r.accommodation])
+        
+    import io
+    pdf_out = io.BytesIO(pdf.output())
+    return send_file(pdf_out, mimetype='application/pdf', as_attachment=True, download_name='registrations_report.pdf')
+
+@app.route('/api/registrations/manual', methods=['POST'])
+@login_required
+def manual_registration():
+    data = request.json
+    amount_val = float(data.get('amount', 0))
+    accommodation_val = True if amount_val >= 2800 else False
+    reg = Registration(
+        lesson_no=data.get('lesson_no', 'ADMIN'),
+        full_name=data.get('full_name'),
+        gender='-',
+        age=0,
+        place=data.get('place', 'Admin Entry'),
+        country_code=data.get('country_code', '+91'),
+        whatsapp=data.get('whatsapp'),
+        arrival_date='2026-07-24',
+        departure_date='2026-07-26',
+        payment_mode=data.get('payment_mode', 'Cash'),
+        amount=amount_val,
+        accommodation=accommodation_val,
+        payment_status='Paid',
+        reg_status='Approved'
+    )
+    db.session.add(reg)
+    db.session.commit()
+    update_registrations_excel()
+    return jsonify({'success': True})
+
 
 @app.route('/api/registrations/<int:rid>', methods=['PUT', 'DELETE'])
 @login_required
@@ -356,7 +546,7 @@ def admin_donations():
 def export_donations():
     update_donations_excel()
     path = os.path.join(app.config['EXPORTS_DIR'], 'donations.xlsx')
-    return send_file(path, as_attachment=True, download_name='donations.xlsx')
+    return send_file(path, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name='donations.xlsx')
 
 @app.route('/api/donations/<int:did>', methods=['PUT', 'DELETE'])
 @login_required
