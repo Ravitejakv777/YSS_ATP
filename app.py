@@ -21,10 +21,17 @@ login_manager.login_message = 'Please login to access admin panel.'
 # Initialize Database on Startup (Required for Render)
 with app.app_context():
     try:
+        # Ensure required directories exist
+        os.makedirs(app.config.get('EXPORTS_DIR', os.path.join(app.root_path, 'exports')), exist_ok=True)
+        
+        print("Checking database connection...")
         db.create_all()
-        # seed_data() will be called below
+        print("Database tables verified/created successfully.")
     except Exception as e:
-        print(f"Error creating database: {e}")
+        print("!!! DATABASE INITIALIZATION FAILED !!!")
+        print(f"Error details: {e}")
+        # On Render, if we can't connect to DB, the app should probably fail fast
+        # but let's just log it for now so we can see it in the dashboard.
 
 @login_manager.user_loader
 def load_user(user_id):
