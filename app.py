@@ -18,6 +18,14 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'admin_login'
 login_manager.login_message = 'Please login to access admin panel.'
 
+# Initialize Database on Startup (Required for Render)
+with app.app_context():
+    try:
+        db.create_all()
+        # seed_data() will be called below
+    except Exception as e:
+        print(f"Error creating database: {e}")
+
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
@@ -843,8 +851,8 @@ def server_error(e):
     return render_template('errors/500.html', config=app.config), 500
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
+with app.app_context():
+    seed_data()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        seed_data()
     app.run(debug=True, port=5000)
