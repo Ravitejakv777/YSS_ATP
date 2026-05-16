@@ -4,35 +4,34 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg">
-      <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Hero Background">
+  <div class="hero-bg" style="position:absolute;inset:0;z-index:0;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(44,26,14,.88) 0%,rgba(44,26,14,.55) 45%,rgba(0,0,0,.25) 100%);z-index:1;"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,153,26,.15) 0%,transparent 70%);z-index:2;"></div>
+      <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Hero Background" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;">
   </div>
-  <div class="hero-content">
-    <div class="hero-lotus mb-1">🪷 ✦ ✦ ✦</div>
-    <h1>3-Day Spiritual Program
-    <span>Anantapur</span></h1>
-    <div class="hero-divider"></div>
-    <p class="hero-tagline">Experience the teachings of Paramahansa Yogananda</p>
-    <p class="mb-3">Join us for a 3-day journey of meditation, devotion and spiritual upliftment.</p>
-    <div class="d-flex gap-1 mb-4 flex-wrap">
-        <a href="{{ url_for('registration') }}" class="btn btn-primary btn-lg">Register Now</a>
-        <a href="{{ url_for('about') }}" class="btn btn-outline" style="color:#fff; border-color:#fff;">Learn More</a>
-    </div>
+  <div class="hero-content" style="position:relative;z-index:3;">
+    <div style="color:var(--gold);font-size:.85rem;letter-spacing:3px;margin-bottom:.5rem;">✦ ✦ ✦</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:2.8rem;color:#fff;line-height:1.2;margin-bottom:.25rem;">3-Day Spiritual Program
+    <br><span style="color:var(--gold);">Anantapur</span></h1>
+    <div style="width:60px;height:3px;background:var(--gold);margin:1rem 0;"></div>
+    <p style="color:rgba(255,255,255,.9);font-size:1.1rem;font-style:italic;margin-bottom:.5rem;">Experience the teachings of Paramahansa Yogananda</p>
+    <p style="color:rgba(255,255,255,.8);font-size:.95rem;margin-bottom:1.5rem;">Join us for a 3-day journey of meditation, devotion and spiritual upliftment.</p>
+    <a href="{{ url_for('registration') }}" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2.5rem;">Register Now</a>
     <div class="hero-meta">
-      <span><i class="fa fa-calendar text-gold"></i> Dates : {{ config.EVENT_DATES }}</span>
-      <span><i class="fa fa-map-marker-alt text-gold"></i> Venue : {{ config.EVENT_VENUE }}</span>
+      <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-calendar" style="color:var(--gold);"></i> Dates : {{ config.EVENT_DATES }}</span>
+      <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-map-marker-alt" style="color:var(--gold);"></i> Venue : {{ config.EVENT_VENUE }}</span>
     </div>
   </div>
 </section>
 
 <!-- QUOTE -->
-<section class="quote-section">
-  <div class="container text-center">
-    <div class="quote-mark">❝</div>
-    <p class="quote-text">
+<section style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);padding:2rem 1rem;text-align:center;">
+  <div class="container">
+    <div style="font-size:2rem;color:var(--gold);margin-bottom:0.5rem;">❝</div>
+    <p style="font-family:'Cinzel',serif;font-size:1.1rem;color:#fff;max-width:700px;margin:0 auto 0.5rem;line-height:1.5;">
       "The greater the will, the greater the flow of energy."
     </p>
-    <p class="quote-author">— Paramahansa Yogananda</p>
+    <p style="color:rgba(255,255,255,.7);font-style:italic;font-size:0.9rem;">— Paramahansa Yogananda</p>
   </div>
 </section>
 

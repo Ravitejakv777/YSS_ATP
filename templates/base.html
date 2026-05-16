@@ -30,13 +30,14 @@
   <nav class="navbar" id="navbar">
     <div class="navbar-top container">
       <div class="navbar-brand">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YSS Logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YSS Logo"
+          style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold);">
         <div class="brand-text">
           <h1>Yogoda Satsanga Society of India</h1>
           <p>FOUNDED 1917 BY PARAMAHANSA YOGANANDA</p>
         </div>
       </div>
-      <div class="d-flex align-center gap-1">
+      <div style="display:flex;align-items:center;gap:1rem;">
         <a href="{{ url_for('admin_login') }}" class="btn-admin"><i class="fa fa-user"></i> Admin Portal</a>
         <button class="menu-toggle" id="menuToggle"><i class="fa fa-bars"></i></button>
       </div>
@@ -59,7 +60,8 @@
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YSS Logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YSS Logo"
+          style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 0.5rem; border: 2px solid var(--gold);">
         <p>Yogoda Satsanga Society of India is dedicated to the teachings of Paramahansa Yogananda and the spreading of
           Kriya Yoga techniques worldwide.</p>
       </div>
@@ -84,7 +86,7 @@
     </div>
     <div class="footer-bottom">
       <span>© 2026 Yogoda Satsanga Society of India. All rights reserved.</span>
-      <div class="footer-links d-flex gap-1">
+      <div class="footer-links" style="display:flex;gap:1rem;">
         <a href="#">Privacy Policy</a>
         <span>|</span>
         <a href="#">Terms of Use</a>
