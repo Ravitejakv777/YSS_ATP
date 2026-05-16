@@ -28,12 +28,12 @@ env.bak/
 venv.bak/
 
 # Database
-instance/yss.db
-*.sqlite3
-*.db
+# instance/yss.db (Removed from ignore to allow folder)
+# *.sqlite3
+# *.db
 
 # Exports
-exports/*.xlsx
+# exports/*.xlsx (Removed from ignore to allow folder)
 
 # OS generated files
 .DS_Store
@@ -43,10 +43,11 @@ exports/*.xlsx
 .Trashes
 ehthumbs.db
 Thumbs.db
+
 # Uploads
 static/uploads/*
 !static/uploads/.gitkeep
 
 # Scratch
-scratch/
-error.txt
+# scratch/ (Removed from ignore)
+# error.txt (Removed from ignore)
