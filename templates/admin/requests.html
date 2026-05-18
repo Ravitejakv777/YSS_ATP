@@ -99,6 +99,9 @@
           {% endif %}
         </td>
         <td>
+          {% if r.reg_status == 'Approved' or r.reg_status == 'Declined' %}
+          <span style="color:#2E7D32;font-weight:700;font-size:.8rem;"><i class="fa fa-check-circle"></i> Done</span>
+          {% else %}
           <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
             <button id="approve-btn-{{ r.id }}"
               onclick="handleAction({{ r.id }}, 'approve')"
@@ -115,6 +118,7 @@
               <i class="fa fa-times"></i> Decline
             </button>
           </div>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
