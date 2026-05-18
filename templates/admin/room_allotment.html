@@ -1,0 +1,339 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Room Allotment – YSS Admin{% endblock %}
+{% block content %}
+<div class="admin-header" style="display:flex; justify-content:space-between; align-items:center;">
+  <h1><i class="fa fa-bed" style="color:var(--gold);margin-right:.5rem;"></i>Room Allotment</h1>
+  <form action="{{ url_for('admin_room_notify') }}" method="POST" onsubmit="return showCustomConfirm('Send room allotment email notifications to all pending/changed attendees?', this)" style="margin:0;">
+    <button type="submit" class="btn btn-primary btn-sm" style="background:var(--primary);"><i class="fa fa-paper-plane"></i> Notify All (Email)</button>
+  </form>
+</div>
+
+<div class="room-allotment-container" style="display:grid; grid-template-columns: 1fr 2fr; gap: 2rem; height: calc(100vh - 120px); overflow: hidden;">
+  
+  <!-- LEFT PANE: Attendees -->
+  <div class="attendees-pane" style="display:flex; flex-direction:column; gap: 1rem; overflow-y:auto; padding-right:1rem;">
+    
+    <!-- Top Left: Unallocated -->
+    <div class="card" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 1.5rem;">
+      <h3 style="margin-bottom:1rem; color:var(--primary); font-size:1.1rem; border-bottom:2px solid var(--gold); padding-bottom:.5rem;">Unallocated Attendees</h3>
+      <div style="overflow-y:auto; flex:1; padding-right:.5rem;">
+        {% if unallocated %}
+          {% for u in unallocated %}
+          <div style="background:#f9f9f9; border:1px solid #ddd; border-radius:6px; padding:1rem; margin-bottom:.75rem;">
+            <div style="font-weight:700; color:var(--text); margin-bottom:.25rem;">{{ u.full_name }} <span style="font-size:0.8rem; color:var(--muted); font-weight:normal;">({{ u.gender }}, {{ u.age }})</span></div>
+            <div style="font-size:0.85rem; color:var(--muted); margin-bottom:.5rem;">{{ u.place }} • {{ u.whatsapp }}</div>
+            
+            <form action="{{ url_for('admin_room_allot') }}" method="POST" style="display:flex; gap:.5rem;">
+              <input type="hidden" name="registration_id" value="{{ u.id }}">
+              <select name="room_id" class="filter-select" style="flex:1; padding:.4rem; font-size:.85rem;" required>
+                <option value="">Select Room...</option>
+                {% for r in rooms %}
+                  {% if room_occupancy[r.id]|length < r.capacity %}
+                    <option value="{{ r.id }}">{{ r.room_number }} ({{ room_occupancy[r.id]|length }}/{{ r.capacity }} filled)</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm" style="padding:.4rem .75rem;">Allot</button>
+            </form>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" style="padding:2rem;"><div class="empty-icon">✅</div><p>All requested accommodations are allotted.</p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Bottom Left: Allocated -->
+    <div class="card" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 1.5rem;">
+      <h3 style="margin-bottom:1rem; color:var(--primary); font-size:1.1rem; border-bottom:2px solid var(--gold); padding-bottom:.5rem;">Allocated Attendees</h3>
+      <div style="overflow-y:auto; flex:1; padding-right:.5rem;">
+        {% if allocated %}
+          {% for a in allocated %}
+            {% set room_info = namespace(name='') %}
+            {% for r in rooms %}
+              {% if a in room_occupancy[r.id] %}
+                {% set room_info.name = r.room_number %}
+              {% endif %}
+            {% endfor %}
+          <div style="background:#f0f8f0; border:1px solid #c8e6c9; border-radius:6px; padding:.75rem; margin-bottom:.5rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600; font-size:.9rem; color:#2E7D32; display:flex; align-items:center; flex-wrap:wrap; gap:.35rem;">
+                {{ a.full_name }}
+                <!-- Email Status Badge -->
+                {% if not a.allotment.notified_room_number %}
+                  <span class="badge" style="background:#ECEFF1; color:#37474F; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px;" title="Email status">✉️ Pending</span>
+                {% elif a.allotment.notified_room_number != room_info.name %}
+                  <span class="badge" style="background:#FFCDD2; color:#B71C1C; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px;" title="Email status">✉️ Changed</span>
+                {% else %}
+                  <span class="badge" style="background:#C8E6C9; color:#1B5E20; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px;" title="Email status">✉️ Sent</span>
+                {% endif %}
+                
+                <!-- WhatsApp Status Badge -->
+                {% if not a.allotment.notified_room_whatsapp %}
+                  <span class="badge" style="background:#ECEFF1; color:#37474F; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px;" title="WhatsApp status">💬 Pending</span>
+                {% elif a.allotment.notified_room_whatsapp != room_info.name %}
+                  <span class="badge" style="background:#FFE0B2; color:#E65100; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px;" title="WhatsApp status">💬 Changed</span>
+                {% else %}
+                  <span class="badge" style="background:#E8F5E9; color:#2E7D32; font-size:0.7rem; padding:.05rem .25rem; border-radius:4px; border: 1px solid #81c784;" title="WhatsApp status">💬 Sent</span>
+                {% endif %}
+              </div>
+              <div style="font-size:0.8rem; color:var(--muted); margin-top:.25rem;">Room: <strong>{{ room_info.name }}</strong></div>
+            </div>
+            <div style="display:flex; gap:.35rem; align-items:center;">
+              {% set checkin = a.arrival_date if a.arrival_date else '24-07-2026' %}
+              {% set checkout = a.departure_date if a.departure_date else '26-07-2026' %}
+              {% set room_capacity_text = 'Sharing' %}
+              {% for r in rooms %}
+                {% if r.room_number == room_info.name %}
+                  {% set room_capacity_text = r.capacity ~ '-Bed Room' %}
+                {% endif %}
+              {% endfor %}
+              {% set wa_msg = "Dear " ~ a.full_name ~ ",\n\nWith divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nAccommodation Details:\n\nName: " ~ a.full_name ~ "\nRoom Number: " ~ room_info.name ~ "\nNumber of Members: " ~ room_capacity_text ~ "\nCheck-In Date: " ~ checkin ~ "\nCheck-Out Date: " ~ checkout ~ "\n\nWe kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\nMay this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\nWe look forward to welcoming you with love and prayers.\n\nJai Guru" %}
+              <a href="https://wa.me/91{{ a.whatsapp }}?text={{ wa_msg|urlencode }}" 
+                 target="_blank" 
+                 onclick="markIndividualWhatsApp({{ a.id }})" 
+                 class="btn btn-sm" 
+                 style="padding:.3rem .5rem; font-size:.75rem; background:#25D366; color:#fff; border:none; border-radius:4px; display:inline-flex; align-items:center; gap:.25rem; text-decoration:none;" 
+                 title="Send WhatsApp">
+                <i class="fab fa-whatsapp"></i> Notify
+              </a>
+              <form action="{{ url_for('admin_room_unallot') }}" method="POST" onsubmit="return showCustomConfirm('Remove allotment for {{ a.full_name }}?', this)" style="margin:0;">
+                <input type="hidden" name="registration_id" value="{{ a.id }}">
+                <button type="submit" class="btn btn-outline btn-sm" style="padding:.3rem .5rem; font-size:.75rem; border-color:#C62828; color:#C62828;"><i class="fa fa-times"></i></button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" style="padding:2rem; font-size:.85rem;"><p>No one is allotted yet.</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANE: Rooms Grid -->
+  <div class="rooms-pane card" style="overflow-y:auto; padding: 1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid var(--gold); padding-bottom:.5rem;">
+      <h3 style="color:var(--primary); font-size:1.3rem; margin:0;">Room Overview</h3>
+    </div>
+    
+    <!-- Add Room Form -->
+    <form action="{{ url_for('admin_room_add') }}" method="POST" style="display:flex; gap:.5rem; margin-bottom:1.5rem; background:#f9f9f9; padding:1rem; border-radius:6px; border:1px solid #ddd;">
+      <input type="text" name="room_number" placeholder="New Room Name" required style="flex:2; padding:.5rem; border:1px solid #ccc; border-radius:4px;">
+      <input type="number" name="capacity" placeholder="Capacity" required min="1" style="flex:1; padding:.5rem; border:1px solid #ccc; border-radius:4px;">
+      <button type="submit" class="btn btn-primary btn-sm" style="padding:.5rem 1rem;"><i class="fa fa-plus"></i> Add</button>
+    </form>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+      {% for r in rooms %}
+      <div style="border:1.5px solid {% if room_occupancy[r.id]|length == r.capacity %}#C62828{% else %}#1565C0{% endif %}; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="background:{% if room_occupancy[r.id]|length == r.capacity %}#FFEBEE{% else %}#E3F2FD{% endif %}; padding:.75rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee;">
+          <form action="{{ url_for('admin_room_rename') }}" method="POST" style="display:flex; align-items:center; justify-content:space-between; flex:1;">
+            <input type="hidden" name="room_id" value="{{ r.id }}">
+            <input type="text" name="new_name" value="{{ r.room_number }}" style="border:none; background:transparent; font-weight:700; width:65%; color:var(--text); font-size:.9rem;" onfocus="this.style.background='#fff'; this.style.border='1px solid #ccc';" onblur="this.form.submit()" title="Edit Room Name">
+            
+            <div style="font-size:.8rem; font-weight:700; color:{% if room_occupancy[r.id]|length == r.capacity %}#C62828{% else %}#1565C0{% endif %}; background:#fff; padding:.1rem .3rem; border-radius:12px; display:flex; align-items:center;">
+              {{ room_occupancy[r.id]|length }}/
+              <input type="number" name="new_capacity" value="{{ r.capacity }}" min="{{ room_occupancy[r.id]|length }}" style="width:30px; border:none; background:transparent; font-weight:700; font-size:.8rem; color:inherit; text-align:center; outline:none;" onfocus="this.style.background='#eee';" onblur="this.form.submit()" title="Edit Room Capacity">
+            </div>
+          </form>
+        </div>
+        <div style="padding:.75rem; min-height:80px;">
+          {% if room_occupancy[r.id] %}
+            <ul style="list-style:none; padding:0; margin:0; font-size:.85rem;">
+            {% for occ in room_occupancy[r.id] %}
+              <li style="padding:.3rem 0; border-bottom:1px solid #f5f5f5; display:flex; justify-content:space-between; align-items:center;">
+                <span title="{{ occ.gender }}, Age {{ occ.age }}">{{ occ.full_name }}</span>
+                <form action="{{ url_for('admin_room_unallot') }}" method="POST" onsubmit="return showCustomConfirm('Remove allotment for {{ occ.full_name }}?', this)" style="display:inline; margin:0;">
+                  <input type="hidden" name="registration_id" value="{{ occ.id }}">
+                  <button type="submit" style="background:none; border:none; color:#C62828; cursor:pointer;" title="Remove"><i class="fa fa-times"></i></button>
+                </form>
+              </li>
+            {% endfor %}
+            </ul>
+          {% else %}
+            <div style="text-align:center; color:var(--muted); font-size:.8rem; margin-top:1rem;">Empty Room</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- WHATSAPP BULK SENDER QUEUE MODAL -->
+{% set pending_count = namespace(value=0) %}
+{% for a in allocated %}
+  {% set room_info = namespace(name='') %}
+  {% for r in rooms %}
+    {% if a in room_occupancy[r.id] %}
+      {% set room_info.name = r.room_number %}
+    {% endif %}
+  {% endfor %}
+  {% if not a.allotment.notified_room_whatsapp or a.allotment.notified_room_whatsapp != room_info.name %}
+    {% set pending_count.value = pending_count.value + 1 %}
+  {% endif %}
+{% endfor %}
+
+<div id="whatsappQueueModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease;">
+  <div style="background:#fff; border-radius:12px; padding:2rem; width:90%; max-width:550px; box-shadow:0 15px 40px rgba(0,0,0,0.25); border: 2px solid var(--gold); display:flex; flex-direction:column; max-height:80vh;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--gold); padding-bottom:.5rem; margin-bottom:1rem;">
+      <h3 style="font-family:'Cinzel',serif; color:var(--primary); font-size:1.3rem; margin:0; display:flex; align-items:center; gap:.5rem;"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp Dispatcher</h3>
+      <button type="button" onclick="closeWhatsAppQueue()" style="background:none; border:none; font-size:1.5rem; color:#666; cursor:pointer;">&times;</button>
+    </div>
+    
+    <div style="background:#fff3cd; color:#856404; border:1px solid #ffeeba; padding:.75rem; border-radius:6px; font-size:0.8rem; margin-bottom:1rem; line-height:1.4;">
+      <strong>⚠️ Browser Setting Required:</strong> Clicking "Send All" will sequentially open a chat tab for each person. Please make sure to click the <strong>"Pop-up blocked"</strong> icon in your browser's address bar and select <strong>"Always allow pop-ups from this site"</strong> so all tabs can open!
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <p style="color:var(--text); font-size:0.9rem; margin:0;">Clicking "Send" will open the chat and mark them as **Notified**.</p>
+      {% if pending_count.value > 0 %}
+        <button id="sendAllWhatsAppBtn" type="button" onclick="sendAllWhatsApp()" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; font-weight:bold; display:inline-flex; align-items:center; gap:.25rem;">
+          <i class="fa fa-paper-plane"></i> Send All ({{ pending_count.value }})
+        </button>
+      {% endif %}
+    </div>
+    
+    <div id="whatsappQueueList" style="overflow-y:auto; flex:1; padding-right:.5rem; display:flex; flex-direction:column; gap:.75rem;">
+      {% for a in allocated %}
+        {% set room_info = namespace(name='') %}
+        {% for r in rooms %}
+          {% if a in room_occupancy[r.id] %}
+            {% set room_info.name = r.room_number %}
+          {% endif %}
+        {% endfor %}
+        
+        {% if not a.allotment.notified_room_whatsapp or a.allotment.notified_room_whatsapp != room_info.name %}
+          <div id="queue-item-{{ a.id }}" style="background:#f9f9f9; border:1px solid #ddd; border-radius:8px; padding:.75rem 1rem; display:flex; justify-content:space-between; align-items:center; transition: all 0.3s ease;">
+            <div>
+              <div style="font-weight:700; color:var(--text); font-size:.95rem;">{{ a.full_name }}</div>
+              <div style="font-size:0.8rem; color:var(--muted); margin-top:.15rem;">
+                Room: <strong>{{ room_info.name }}</strong> • {{ a.whatsapp }}
+              </div>
+            </div>
+            {% set checkin = a.arrival_date if a.arrival_date else '24-07-2026' %}
+            {% set checkout = a.departure_date if a.departure_date else '26-07-2026' %}
+            {% set room_capacity_text = 'Sharing' %}
+            {% for r in rooms %}
+              {% if r.room_number == room_info.name %}
+                {% set room_capacity_text = r.capacity ~ '-Bed Room' %}
+              {% endif %}
+            {% endfor %}
+            {% set wa_msg = "Dear " ~ a.full_name ~ ",\n\nWith divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nAccommodation Details:\n\nName: " ~ a.full_name ~ "\nRoom Number: " ~ room_info.name ~ "\nNumber of Members: " ~ room_capacity_text ~ "\nCheck-In Date: " ~ checkin ~ "\nCheck-Out Date: " ~ checkout ~ "\n\nWe kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\nMay this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\nWe look forward to welcoming you with love and prayers.\n\nJai Guru" %}
+            <a href="https://wa.me/91{{ a.whatsapp }}?text={{ wa_msg|urlencode }}" 
+               target="_blank" 
+               onclick="markAsNotified({{ a.id }})"
+               class="btn btn-sm" 
+               style="background:#25D366; color:#fff; border:none; display:inline-flex; align-items:center; gap:.25rem; font-size:.8rem; padding:.4rem .8rem; border-radius:6px; text-decoration:none;">
+              <i class="fab fa-whatsapp"></i> Send
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+      
+      {% if pending_count.value == 0 %}
+        <div id="no-pending-whatsapp" style="text-align:center; padding:2rem; color:var(--muted);">
+          <div style="font-size:2.5rem; margin-bottom:.5rem;">🎉</div>
+          <p style="font-size:.9rem; margin:0;">All attendees are fully notified!</p>
+        </div>
+      {% endif %}
+    </div>
+    
+    <div style="margin-top:1.5rem; display:flex; justify-content:flex-end;">
+      <button type="button" onclick="closeWhatsAppQueue()" class="btn btn-outline btn-sm" style="padding:.5rem 1.5rem;">Close & Refresh</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openWhatsAppQueue() {
+  const modal = document.getElementById('whatsappQueueModal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+    modal.children[0].style.transform = 'scale(1)';
+  }, 20);
+}
+
+function closeWhatsAppQueue() {
+  const modal = document.getElementById('whatsappQueueModal');
+  modal.style.opacity = '0';
+  modal.children[0].style.transform = 'scale(0.85)';
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 200);
+  window.location.reload();
+}
+
+function markAsNotified(regId) {
+  return fetch(`/admin/room-allotment/mark-notified/${regId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const item = document.getElementById(`queue-item-${regId}`);
+      if (item) {
+        item.style.background = '#e8f5e9';
+        item.style.borderColor = '#a5d6a7';
+        const button = item.querySelector('a');
+        if (button) {
+          button.outerHTML = '<span style="color:#2E7D32; font-weight:700; font-size:.85rem; display:inline-flex; align-items:center; gap:.25rem;"><i class="fa fa-check-circle"></i> Sent</span>';
+        }
+      }
+    }
+  })
+  .catch(err => console.error("Error marking notified:", err));
+}
+
+function markIndividualWhatsApp(regId) {
+  fetch(`/admin/room-allotment/mark-notified/${regId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Reload page after brief delay so user sees updated "💬 Sent" badge immediately
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  })
+  .catch(err => console.error("Error marking notified:", err));
+}
+
+function sendAllWhatsApp() {
+  const items = document.querySelectorAll('#whatsappQueueList [id^="queue-item-"]');
+  if (items.length === 0) return;
+  
+  showCustomConfirm(`This will open ${items.length} separate WhatsApp chat tabs. Please make sure your browser pop-up blocker is disabled for this site. Proceed?`, async () => {
+    const btn = document.getElementById('sendAllWhatsAppBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+    
+    for (let item of items) {
+      const button = item.querySelector('a');
+      if (button) {
+        // Open WhatsApp chat
+        window.open(button.getAttribute('href'), '_blank');
+        // Mark as notified in background
+        const regId = item.id.replace('queue-item-', '');
+        await markAsNotified(regId);
+        // Small safety delay so browser doesn't block or choke on tabs
+        await new Promise(r => setTimeout(r, 600));
+      }
+    }
+    
+    btn.innerHTML = '<i class="fa fa-check-circle"></i> All Dispatched';
+  });
+}
+</script>
+{% endblock %}

@@ -174,11 +174,13 @@ tbody td{padding:.8rem 1rem;font-size:.88rem;color:var(--text);}
 .footer-links a:hover{color:var(--primary);}
 
 /* TOAST */
-.toast-container{position:fixed;top:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;}
-.toast{padding:1rem 1.5rem;border-radius:10px;color:#fff;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .3s ease;min-width:250px;}
-.toast-success{background:#2E7D32;}
-.toast-error{background:#C62828;}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-container{position:fixed;top:1.5rem;right:1.5rem;z-index:999999;display:flex;flex-direction:column;gap:.5rem;}
+.toast{padding:1rem 1.5rem;border-radius:10px;color:#fff;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:slideIn .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);min-width:300px;max-width:450px;background:var(--primary);border-left:5px solid var(--gold);word-wrap:break-word;}
+.toast-success{background:#2E7D32;border-left-color:#a5d6a7;}
+.toast-error, .toast-danger{background:#C62828;border-left-color:#ef9a9a;}
+.toast-warning{background:#E65100;border-left-color:#ffe0b2;}
+.toast-info{background:#1565C0;border-left-color:#90caf9;}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
 
 /* ABOUT */
 .about-hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;padding:5rem 2rem;text-align:center;}

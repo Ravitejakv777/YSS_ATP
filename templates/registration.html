@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Registration – YSS Anantapur{% endblock %}
 {% block content %}
-<div class="split-container" style="display:flex; align-items:flex-start; min-height:100vh;">
+<div class="split-container" style="display:flex; align-items:flex-start; min-height:100vh; max-width:1440px; margin:0 auto; box-shadow: 0 0 30px rgba(0,0,0,0.05); background: var(--cream);">
   <!-- Left Side: Fixed Image (Narrower) -->
-  <div class="split-left" style="width:35%; height:calc(100vh - 135px); position:sticky; top:135px; overflow:hidden; background:#000;">
-    <img src="{{ url_for('static', filename='images/reg.jpeg') }}" style="width:100%; height:100%; object-fit:cover; opacity: 0.9;">
+  <div class="split-left" style="width:35%; height:calc(100vh - 135px); position:sticky; top:135px; overflow:hidden; background:#000; position:relative; display:flex; justify-content:center; align-items:center;">
+    <div style="position:absolute; inset:-20px; background-image: url('{{ url_for('static', filename='images/reg.jpeg') }}'); background-size: cover; background-position: center; filter: blur(20px); opacity: 0.5; z-index: 0;"></div>
+    <img src="{{ url_for('static', filename='images/reg.jpeg') }}" style="max-width:85%; max-height:85%; position:relative; z-index: 1; border: 4px solid #e0d0bb; border-radius: 6px; box-shadow: 0 15px 40px rgba(0,0,0,0.8);">
   </div>
   
   <!-- Right Side: Scrollable Form (Wider) -->
   <div class="split-right" style="width:65%; padding:4rem 5rem; background:var(--cream);">
-    <div class="form-card" style="box-shadow:none; padding:0; background:transparent; max-width:800px; margin:0;">
+    <div class="form-card" style="box-shadow:none; padding:0; background:transparent; max-width:800px; margin:0 auto;">
       <h2 class="form-title" style="text-align:left; color:var(--primary);">Registration Form</h2>
       <div class="divider-ornament" style="text-align:left;">✦</div>
       <p class="form-subtitle" style="text-align:left; margin-bottom:3rem; color:var(--muted);">Please fill in the details carefully to register for the 3-Day Spiritual Program.</p>
@@ -111,34 +112,29 @@
           </div>
           <div class="form-group">
             <label>Payment Mode <span class="req">*</span></label>
-            <select name="payment_mode" class="form-control" required>
-              <option value="">-- Select Payment Mode --</option>
-              <option value="UPI" {% if form.get('payment_mode')=='UPI' %}selected{% endif %}>UPI</option>
-              <option value="Cash" {% if form.get('payment_mode')=='Cash' %}selected{% endif %}>Cash</option>
-            </select>
+            <input type="text" name="payment_mode" id="payment_mode" class="form-control" value="UPI" readonly style="background:#e9ecef; cursor:not-allowed; font-weight:700; color:var(--primary);">
           </div>
         </div>
 
-        <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
+        <div class="form-grid form-grid-2" style="margin-top:1.25rem;" id="upi_fields">
           <div class="form-group">
             <label>Transaction ID <span class="req">*</span></label>
-            <input type="text" name="transaction_id" class="form-control" placeholder="Enter Transaction ID" value="{{ form.get('transaction_id','') }}" required>
+            <input type="text" name="transaction_id" id="transaction_id" class="form-control" placeholder="Enter Transaction ID" value="{{ form.get('transaction_id','') }}">
           </div>
           <div class="form-group">
             <label>Upload Payment Screenshot <span class="req">*</span></label>
-            <input type="file" name="payment_screenshot" class="form-control" accept="image/*" required>
+            <input type="file" name="payment_screenshot" id="payment_screenshot" class="form-control" accept="image/*">
           </div>
         </div>
 
-        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:2rem;text-align:center;border:1px solid #e0d0bb;">
-          <p style="margin-bottom:0.5rem;font-weight:bold;">Scan QR to Pay</p>
-          <img src="{{ url_for('static', filename='images/image.png') }}" alt="QR Code" style="width:200px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-          <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;">PhonePe Mobile Number: 9390541258</p>
-          
-          <div id="fee-section" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e0d0bb;">
-            <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;">Fee Breakdown</h3>
-            <div id="fee-breakdown" style="font-size:1.1rem;color:var(--text);line-height:1.6;"></div>
-          </div>
+        <div id="fee-section" style="display:none; margin-top:1.5rem; padding:1.5rem; background:#fdf6ec; border-radius:8px; border:1px solid #e0d0bb; text-align:center;">
+          <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;">Fee Breakdown</h3>
+          <div id="fee-breakdown" style="font-size:1.1rem;color:var(--text);line-height:1.6;"></div>
+        </div>
+
+        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;">
+          <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
+          <p style="font-size:1.2rem;color:var(--primary);font-weight:bold;margin:0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
         </div>
 
         <div class="form-note mt-3"><i class="fa fa-info-circle" style="color:var(--accent);"></i> All fields marked with <strong>*</strong> are mandatory.</div>
@@ -160,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
-      document.getElementById('fee-section').style.display = 'block';
+      feeSection.style.display = 'block';
       if(e.target.value === 'yes') {
         feeBreakdown.innerHTML = `Registration Fee : ₹1800<br>Accommodation Fee : ₹1000<br><strong>Total Amount : ₹2800</strong>`;
       } else {
@@ -174,6 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if(checkedRadio) {
     checkedRadio.dispatchEvent(new Event('change'));
   }
+
+
 });
 </script>
 {% endblock %}

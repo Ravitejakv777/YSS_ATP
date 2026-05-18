@@ -87,7 +87,8 @@
         <td style="text-align:center;">
           {% if d.payment_status == 'Received' %}
           <div style="display:flex; flex-direction:column; gap:0.25rem;">
-            <a href="https://wa.me/91{{ d.whatsapp }}?text=Jai%20Guru!%20Dear%20{{ d.name|urlencode }},%20thank%20you%20for%20your%20generous%20donation%20of%20₹{{ d.amount }}%20towards%20the%20YSS%203-Day%20Spiritual%20Program%20in%20Anantapur.%20Your%20support%20is%20deeply%20appreciated." 
+            {% set msg_text = "Dear " ~ d.name ~ ",\n\nWith heartfelt gratitude and divine blessings, we sincerely thank you for your generous donation of ₹" ~ d.amount|int ~ " towards the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nYour kind contribution and support for this sacred event are deeply appreciated. Acts of generosity offered with devotion help spread spirituality, meditation, peace, and service to many seekers.\n\nDonation Details:\n\nName: " ~ d.name ~ "\nDonation Amount: ₹" ~ d.amount|int ~ "\nTransaction ID: " ~ (d.transaction_id or '-') ~ "\nDate: " ~ (d.created_at.strftime('%d %b %Y') if d.created_at else '') ~ "\n\nMay the Divine Guru bless you and your family with peace, happiness, good health, prosperity, and spiritual upliftment.\n\nThank you once again for being part of this noble and spiritual journey.\n\nJai Guru" %}
+            <a href="https://wa.me/91{{ d.whatsapp }}?text={{ msg_text|urlencode }}" 
                target="_blank" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; padding: 0.35rem; border-radius: 6px;" 
                onclick="markDonNotified({{ d.id }})" title="Send WhatsApp & Mark as Done">
                <i class="fa-brands fa-whatsapp"></i> <span style="font-size:0.7rem;">WhatsApp</span>
@@ -190,10 +191,17 @@ function handleDonAction(id, action) {
         const notifyCell = row.cells[12];
         const actionCell = row.cells[13];
         
+        const name = row.cells[3].querySelector('strong').textContent.trim();
+        const amount = row.cells[6].textContent.trim().replace('₹', '');
+        const date = row.cells[7].textContent.trim();
+        const txnId = row.cells[9].textContent.trim();
+        const message = `Dear ${name},\n\nWith heartfelt gratitude and divine blessings, we sincerely thank you for your generous donation of ₹${amount} towards the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nYour kind contribution and support for this sacred event are deeply appreciated. Acts of generosity offered with devotion help spread spirituality, meditation, peace, and service to many seekers.\n\nDonation Details:\n\nName: ${name}\nDonation Amount: ₹${amount}\nTransaction ID: ${txnId}\nDate: ${date}\n\nMay the Divine Guru bless you and your family with peace, happiness, good health, prosperity, and spiritual upliftment.\n\nThank you once again for being part of this noble and spiritual journey.\n\nJai Guru`;
+        const encodedMsg = encodeURIComponent(message);
+
         statusCell.innerHTML = '<span style="color:#2E7D32;font-weight:700;"><i class="fa fa-check-circle"></i> Received</span>';
         notifyCell.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:0.25rem;">
-            <a href="https://wa.me/91${row.cells[4].textContent.trim()}?text=Jai%20Guru!%20..." target="_blank" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; padding: 0.35rem; border-radius: 6px;" onclick="markDonNotified(${id})">
+            <a href="https://wa.me/91${row.cells[4].textContent.trim()}?text=${encodedMsg}" target="_blank" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; padding: 0.35rem; border-radius: 6px;" onclick="markDonNotified(${id})">
                <i class="fa-brands fa-whatsapp"></i> <span style="font-size:0.7rem;">WhatsApp</span>
             </a>
             <button onclick="markDonNotified(${id})" class="btn btn-outline btn-sm" style="font-size:0.6rem; padding:0.1rem;">Mark Notified</button>

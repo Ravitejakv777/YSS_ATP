@@ -145,3 +145,28 @@ class EventSchedule(db.Model):
             'category': self.category,
             'sort_order': self.sort_order
         }
+
+class Room(db.Model):
+    __tablename__ = 'rooms'
+    id = db.Column(db.Integer, primary_key=True)
+    room_number = db.Column(db.String(50), nullable=False, unique=True)
+    capacity = db.Column(db.Integer, nullable=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'room_number': self.room_number,
+            'capacity': self.capacity
+        }
+
+class RoomAllotment(db.Model):
+    __tablename__ = 'room_allotments'
+    id = db.Column(db.Integer, primary_key=True)
+    registration_id = db.Column(db.Integer, db.ForeignKey('registrations.id'), unique=True, nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
+    notified_room_number = db.Column(db.String(100), nullable=True)
+    notified_room_whatsapp = db.Column(db.String(100), nullable=True)
+    assigned_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    registration = db.relationship('Registration', backref=db.backref('allotment', uselist=False))
+    room = db.relationship('Room', backref=db.backref('allotments', lazy='dynamic'))

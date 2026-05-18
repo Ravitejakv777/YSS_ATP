@@ -1,0 +1,26 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Manage Admin – YSS Admin{% endblock %}
+{% block content %}
+<div class="admin-header">
+  <h1><i class="fa fa-user-shield" style="color:var(--gold);margin-right:.5rem;"></i>Manage Admin</h1>
+</div>
+
+<div class="form-card" style="max-width:600px; margin:2rem auto;">
+  <h3 style="margin-bottom:1.5rem; color:var(--primary); border-bottom:2px solid var(--gold); padding-bottom:.5rem;">Update Credentials</h3>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Main Admin Email</label>
+        <input type="email" name="new_email" value="{{ current_user.email }}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label>New Password <span style="font-weight:normal;color:var(--muted);">(Leave blank to keep current)</span></label>
+        <input type="password" name="new_password" placeholder="Enter new password" class="form-control">
+      </div>
+    </div>
+    <div style="margin-top:1.5rem; text-align:right;">
+      <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

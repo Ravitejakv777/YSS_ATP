@@ -45,15 +45,15 @@
       <a href="{{ url_for('admin_schedule') }}" class="{% if request.endpoint=='admin_schedule' %}active{% endif %}">
         <i class="fa fa-calendar-alt"></i><span>Schedule</span>
       </a>
+      <a href="{{ url_for('admin_room_allotment') }}" class="{% if request.endpoint=='admin_room_allotment' %}active{% endif %}">
+        <i class="fa fa-bed"></i><span>Room Allotment</span>
+      </a>
       {% if current_user.is_main_admin %}
       <a href="{{ url_for('admin_manage') }}" class="{% if request.endpoint=='admin_manage' %}active{% endif %}">
         <i class="fa fa-user-shield"></i><span>Admins</span>
       </a>
       {% endif %}
-      <a href="{{ url_for('index') }}" style="margin-top:auto;">
-        <i class="fa fa-globe"></i><span>View Site</span>
-      </a>
-      <a href="{{ url_for('admin_logout') }}" onclick="return confirm('Logout from admin panel?')" style="color:#ff9999;">
+      <a href="{{ url_for('admin_logout') }}" onclick="return showCustomConfirm('Logout from admin panel?', this)" style="margin-top:auto; color:#ff9999;">
         <i class="fa fa-sign-out-alt"></i><span>Logout</span>
       </a>
     </nav>
@@ -78,5 +78,73 @@
     </div>
   </div>
 </div>
+
+<!-- GLOBAL CUSTOM CONFIRMATION MODAL -->
+<div id="customConfirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease;">
+  <div style="background:#fff; border-radius:12px; padding:2rem; width:90%; max-width:400px; box-shadow:0 15px 40px rgba(0,0,0,0.25); text-align:center; transform:scale(0.85); transition:transform 0.2s ease; border: 2px solid var(--gold);">
+    <div style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;">🪷</div>
+    <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-bottom:1rem; font-size:1.2rem; font-weight:700;">Confirm Action</h3>
+    <p id="confirmMessage" style="color:var(--text); font-size:0.95rem; line-height:1.5; margin-bottom:1.5rem; padding: 0 .5rem;">Are you sure?</p>
+    <div style="display:flex; gap:1rem; justify-content:center;">
+      <button id="confirmCancelBtn" type="button" class="btn btn-outline btn-sm" style="padding:.5rem 1.5rem; border-color:#ccc; color:#666;">Cancel</button>
+      <button id="confirmOkBtn" type="button" class="btn btn-primary btn-sm" style="padding:.5rem 1.5rem; background:var(--primary); color:#fff; border:none;">Yes, Proceed</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let pendingFormToSubmit = null;
+let pendingLinkToNavigate = null;
+let pendingCallback = null;
+
+function showCustomConfirm(message, targetElement, callback = null) {
+  pendingFormToSubmit = null;
+  pendingLinkToNavigate = null;
+  pendingCallback = null;
+  
+  if (typeof targetElement === 'function') {
+    pendingCallback = targetElement;
+  } else if (callback && typeof callback === 'function') {
+    pendingCallback = callback;
+  } else if (targetElement && targetElement.tagName === 'FORM') {
+    pendingFormToSubmit = targetElement;
+  } else if (targetElement && targetElement.tagName === 'A') {
+    pendingLinkToNavigate = targetElement.href;
+  }
+  
+  document.getElementById('confirmMessage').innerText = message;
+  const modal = document.getElementById('customConfirmModal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+    modal.children[0].style.transform = 'scale(1)';
+  }, 20);
+  return false; // Prevent immediate execution
+}
+
+document.getElementById('confirmCancelBtn').addEventListener('click', closeCustomConfirm);
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  if (pendingCallback) {
+    pendingCallback();
+  } else if (pendingFormToSubmit) {
+    pendingFormToSubmit.submit();
+  } else if (pendingLinkToNavigate) {
+    window.location.href = pendingLinkToNavigate;
+  }
+  closeCustomConfirm();
+});
+
+function closeCustomConfirm() {
+  const modal = document.getElementById('customConfirmModal');
+  modal.style.opacity = '0';
+  modal.children[0].style.transform = 'scale(0.85)';
+  setTimeout(() => {
+    modal.style.display = 'none';
+    pendingFormToSubmit = null;
+    pendingLinkToNavigate = null;
+    pendingCallback = null;
+  }, 200);
+}
+</script>
 </body>
 </html>

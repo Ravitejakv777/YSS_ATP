@@ -2,6 +2,16 @@ import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# Native .env loader (avoids third-party dependencies)
+env_path = os.path.join(BASE_DIR, '.env')
+if os.path.exists(env_path):
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if '=' in line and not line.startswith('#'):
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'yss-anantapur-spiritual-2026-secret-key-ravi')
     
@@ -10,8 +20,8 @@ class Config:
     if database_url and database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     
-    # Using your PostgreSQL URL as the default fallback
-    SQLALCHEMY_DATABASE_URI = database_url or 'postgresql://postgres:meghana@localhost:5432/YSS'
+    # Fallback to local SQLite if DATABASE_URL is not set
+    SQLALCHEMY_DATABASE_URI = database_url or f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'database.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     EXPORTS_DIR = os.path.join(BASE_DIR, 'exports')
 
@@ -29,7 +39,7 @@ class Config:
     EVENT_DATE_RANGE = 'July 24, 25, 26 – 2026'
     EVENT_VENUE = 'Krishna Kala Mandir, Anantapur, Andhra Pradesh'
     EVENT_CONTACT_EMAIL = 'ravitejakv777@gmail.com'
-    EVENT_CONTACT_MOBILE = '8019682209'
+    EVENT_CONTACT_MOBILE = '9441665181'
     EVENT_MAPS_URL = 'https://maps.app.goo.gl/WQxUo86SVYtabmMP9'
 
     # Admin defaults

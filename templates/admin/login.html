@@ -28,10 +28,10 @@
 
   <form method="POST" action="{{ url_for('admin_login') }}">
     <div class="form-group" style="margin-bottom:1.25rem;">
-      <label style="font-weight:700;color:var(--text);display:block;margin-bottom:.4rem;">Email Address</label>
+      <label style="font-weight:700;color:var(--text);display:block;margin-bottom:.4rem;">Admin Name</label>
       <div style="position:relative;">
-        <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);"><i class="fa fa-envelope"></i></span>
-        <input type="email" name="email" class="form-control" placeholder="Enter admin email" style="padding-left:2.5rem;" required>
+        <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);"><i class="fa fa-user"></i></span>
+        <input type="text" name="login_identifier" class="form-control" placeholder="Enter admin name" style="padding-left:2.5rem;" required>
       </div>
     </div>
     <div class="form-group" style="margin-bottom:1.5rem;">

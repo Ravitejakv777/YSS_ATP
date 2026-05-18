@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, make_response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_mail import Mail, Message
-from models import db, Admin, Registration, Donation, EventSchedule
+from models import db, Admin, Registration, Donation, EventSchedule, Room, RoomAllotment
 from config import Config
 from datetime import datetime, timedelta
 import os, openpyxl, uuid
@@ -23,9 +23,37 @@ with app.app_context():
     try:
         # Ensure required directories exist
         os.makedirs(app.config.get('EXPORTS_DIR', os.path.join(app.root_path, 'exports')), exist_ok=True)
+        os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
         
         print("Checking database connection...")
         db.create_all()
+        # Safe migration for PostgreSQL / SQLite
+        # Column 1: notified_room_number
+        try:
+            db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN IF NOT EXISTS notified_room_number VARCHAR(100)"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            try:
+                db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN notified_room_number VARCHAR(100)"))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                
+        # Column 2: notified_room_whatsapp
+        try:
+            db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN IF NOT EXISTS notified_room_whatsapp VARCHAR(100)"))
+            db.session.commit()
+            print("RoomAllotment table migrations verified successfully.")
+        except Exception as migration_error:
+            db.session.rollback()
+            try:
+                db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN notified_room_whatsapp VARCHAR(100)"))
+                db.session.commit()
+                print("RoomAllotment whatsapp column added successfully.")
+            except Exception as sqlite_err:
+                db.session.rollback()
+                print(f"Skipping migration (column might already exist): {sqlite_err}")
         print("Database tables verified/created successfully.")
     except Exception as e:
         print("!!! DATABASE INITIALIZATION FAILED !!!")
@@ -45,12 +73,18 @@ def seed_data():
             lesson_no='00000',
             name='YSS Admin',
             email=app.config['ADMIN_EMAIL'],
-            mobile='9494457607',
+            mobile='9441665181',
             is_main_admin=True
         )
         admin.set_password(app.config['ADMIN_PASSWORD'])
         db.session.add(admin)
         db.session.commit()
+    else:
+        # Force update existing main admin mobile in database on launch
+        main_admin = Admin.query.filter_by(is_main_admin=True).first()
+        if main_admin and main_admin.mobile != '9441665181':
+            main_admin.mobile = '9441665181'
+            db.session.commit()
 
     # Seed schedule
     if not EventSchedule.query.first():
@@ -83,6 +117,16 @@ def seed_data():
             )
             db.session.add(item)
     db.session.commit()
+
+    # Seed Rooms
+    if not Room.query.first():
+        # 10 rooms with 4 beds
+        for i in range(1, 11):
+            db.session.add(Room(room_number=f"Room {i}", capacity=4))
+        # 25 rooms with 3 beds
+        for i in range(11, 36):
+            db.session.add(Room(room_number=f"Room {i}", capacity=3))
+        db.session.commit()
 
 # ─── EXCEL HELPERS ────────────────────────────────────────────────────────────
 def update_registrations_excel():
@@ -192,23 +236,113 @@ def update_donations_excel():
 
 def send_registration_email(reg):
     try:
-        msg = Message(
-            subject='Registration Confirmed – YSS 3-Day Spiritual Program, Anantapur',
-            recipients=[app.config['MAIL_USERNAME']],
-            html=render_template('email_reg.html', reg=reg, config=app.config)
+        # Build the exact message body requested by the user
+        body_text = (
+            f"Dear {reg.full_name},\n\n"
+            f"With divine blessings and heartfelt joy, we are happy to confirm your successful registration for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n"
+            f"Your Registration Details:\n\n"
+            f"Name: {reg.full_name}\n"
+            f"Phone Number: {reg.whatsapp}\n"
+            f"Email: {reg.email}\n"
+            f"City: {reg.place}\n"
+            f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n"
+            f"Registration ID: {reg.reg_id}\n\n"
+            f"Program Details:\n"
+            f"Event: {app.config['EVENT_NAME']}\n"
+            f"Venue: {app.config['EVENT_VENUE']}\n"
+            f"Dates: {app.config['EVENT_DATES']}\n\n"
+            f"Venue Location:\n"
+            f"https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\n"
+            f"May this sacred gathering fill your heart with peace, devotion, positivity, and spiritual upliftment. We sincerely thank you for choosing to be part of this divine journey.\n\n"
+            f"Please carry your registration confirmation during your visit. Further updates and instructions will be shared soon.\n\n"
+            f"We look forward to welcoming you with love and prayers.\n\n"
+            f"Jai Guru"
         )
+        
+        msg = Message(
+            subject='Successful Registration Confirmation – YSS Anantapur',
+            recipients=[reg.email],
+            body=body_text
+        )
+        
+        # Generate the individual PDF ID card and attach it
+        from fpdf import FPDF
+        pdf = FPDF(orientation='P', unit='mm', format=(85, 120))
+        pdf.add_page()
+        pdf.set_margin(0)
+        
+        # Draw borders / Header background
+        pdf.set_fill_color(181, 51, 10) # Terracotta #B5330A
+        pdf.rect(0, 0, 85, 25, 'F')
+        
+        # Gold stripe
+        pdf.set_fill_color(212, 175, 55) # Gold #D4AF37
+        pdf.rect(0, 25, 85, 2, 'F')
+        
+        # Header Text
+        pdf.set_text_color(255, 255, 255)
+        pdf.set_font('helvetica', 'B', 11)
+        pdf.cell(85, 12, 'Y.S.D.K., ANANTAPUR', 0, 1, 'C')
+        pdf.set_font('helvetica', 'B', 9)
+        pdf.cell(85, 0, '3-DAY SADHANA SANGAM', 0, 1, 'C')
+        
+        # Registration ID Block
+        pdf.ln(18)
+        pdf.set_text_color(181, 51, 10)
+        pdf.set_font('helvetica', 'B', 13)
+        pdf.cell(85, 6, f"ID: {reg.reg_id}", 0, 1, 'C')
+        
+        pdf.set_draw_color(181, 51, 10)
+        pdf.line(10, 41, 75, 41)
+        
+        # Details
+        pdf.ln(8)
+        pdf.set_text_color(51, 51, 51)
+        
+        def add_row(label, val):
+            pdf.set_font('helvetica', 'B', 9)
+            pdf.cell(30, 8, f"  {label}", 0, 0, 'L')
+            pdf.set_font('helvetica', '', 9)
+            pdf.cell(55, 8, str(val), 0, 1, 'L')
+            
+        add_row('Name:', reg.full_name)
+        add_row('Lesson No:', reg.lesson_no)
+        add_row('Mobile No:', reg.whatsapp)
+        add_row('City/Town:', reg.place)
+        add_row('Acco Needed:', 'Yes' if reg.accommodation else 'No')
+        
+        # Footer
+        pdf.ln(8)
+        pdf.set_font('helvetica', 'I', 7)
+        pdf.set_text_color(153, 153, 153)
+        pdf.cell(85, 4, 'Scan QR at check-in counter upon arrival', 0, 1, 'C')
+        pdf.set_font('helvetica', 'B', 9)
+        pdf.set_text_color(181, 51, 10)
+        pdf.cell(85, 5, 'Jai Guru', 0, 1, 'C')
+        
+        # Attach individual PDF ID card
+        msg.attach(f"YSS_ID_Card_{reg.reg_id}.pdf", "application/pdf", pdf.output())
+        
         mail.send(msg)
+        print(f"REGISTRATION EMAIL WITH ID CARD SENT TO {reg.email}")
     except Exception as e:
         app.logger.warning(f'Email send failed: {e}')
 
-def send_admin_sms(reg):
+def send_admin_email_alert(reg):
     """
-    Sends an SMS notification to the Admin mobile number.
-    Placeholder for Twilio or other SMS Gateway integration.
+    Sends an email notification to the Admin.
     """
-    admin_mobile = app.config.get('EVENT_CONTACT_MOBILE', '9490320939')
-    message = f"YSS Registration Alert: {reg.full_name} ({reg.reg_id}) has submitted a registration. Please check the admin panel for approval."
-    print(f"SMS SENT TO ADMIN ({admin_mobile}): {message}")
+    admin_email = app.config.get('ADMIN_EMAIL', app.config.get('MAIL_USERNAME'))
+    try:
+        msg = Message(
+            subject=f'New Registration Alert - {reg.full_name}',
+            recipients=[admin_email],
+            body=f"Jai Guru!\n\nA new registration has been submitted by {reg.full_name} (Reg ID: {reg.reg_id}).\n\nPlease check the admin panel for approval.\n\nRegards,\nYSS Spiritual Program System"
+        )
+        mail.send(msg)
+        print(f"EMAIL SENT TO ADMIN ({admin_email}) for Reg ID: {reg.reg_id}")
+    except Exception as e:
+        print(f"Failed to send admin email: {e}")
 
 def send_member_whatsapp(reg):
     """
@@ -289,8 +423,19 @@ def registration():
         if not arrival_date: errors.append('Date of Arrival is required.')
         if not departure_date: errors.append('Date of Departure is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
+        
         if not transaction_id: errors.append('Transaction ID is required.')
+        if not screenshot_filename: errors.append('Payment Screenshot is required.')
 
+        if not errors:
+            existing_reg = Registration.query.filter(Registration.full_name.ilike(full_name), Registration.whatsapp == whatsapp).first()
+            if existing_reg:
+                errors.append('A registration with this Name and Mobile number already exists.')
+                
+            if payment_mode == 'UPI' and transaction_id:
+                existing_txn = Registration.query.filter(Registration.transaction_id.ilike(transaction_id)).first()
+                if existing_txn:
+                    errors.append('This Transaction ID has already been submitted.')
 
         if errors:
             for e in errors:
@@ -315,7 +460,7 @@ def registration():
         db.session.commit()
         update_registrations_excel()
         send_registration_email(reg)
-        send_admin_sms(reg) # Send SMS to Admin
+        send_admin_email_alert(reg) # Send Email to Admin
         return redirect(url_for('reg_success', reg_id=reg.reg_id))
 
     return render_template('registration.html', config=app.config, form={})
@@ -480,13 +625,15 @@ def admin_redirect():
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        email = request.form.get('email', '').strip()
+        login_identifier = request.form.get('login_identifier', '').strip()
         password = request.form.get('password', '').strip()
-        admin = Admin.query.filter_by(email=email).first()
+        
+        admin = Admin.query.filter(db.or_(Admin.name == login_identifier, Admin.email == login_identifier)).first()
+        
         if admin and admin.check_password(password):
             login_user(admin)
             return redirect(url_for('admin_registrations'))
-        flash('Invalid email or password.', 'error')
+        flash('Invalid Admin Name or password.', 'error')
     return render_template('admin/login.html', config=app.config)
 
 @app.route('/admin/logout')
@@ -802,9 +949,183 @@ def admin_id_cards():
                              Registration.whatsapp.ilike(f'%{search}%')))
     if reg_status:
         q = q.filter_by(reg_status=reg_status)
-    pagination = q.order_by(Registration.id).paginate(page=page, per_page=6)
+    pagination = q.order_by(Registration.id).paginate(page=page, per_page=8)
     return render_template('admin/id_cards.html', pagination=pagination,
                            search=search, reg_status=reg_status, config=app.config)
+
+# ─── ADMIN ROOM ALLOTMENT ────────────────────────────────────────────────────
+@app.route('/admin/room-allotment')
+@login_required
+def admin_room_allotment():
+    rooms = Room.query.order_by(Room.id).all()
+    
+    # Get all people who want accommodation and are approved/pending
+    accommodating_users = Registration.query.filter_by(accommodation=True).all()
+    
+    # Find users with allotments
+    allotted_users_map = {a.registration_id: a.room_id for a in RoomAllotment.query.all()} if RoomAllotment.query.first() else {}
+    
+    # Actually, simpler query for allotments:
+    allotments = RoomAllotment.query.all()
+    allotted_reg_ids = [a.registration_id for a in allotments]
+    
+    unallocated = Registration.query.filter(
+        Registration.accommodation == True,
+        Registration.reg_status == 'Approved',
+        ~Registration.id.in_(allotted_reg_ids) if allotted_reg_ids else True
+    ).all()
+    
+    allocated = Registration.query.filter(
+        Registration.reg_status == 'Approved',
+        Registration.id.in_(allotted_reg_ids) if allotted_reg_ids else False
+    ).all()
+    
+    room_occupancy = {r.id: [] for r in rooms}
+    for a in allotments:
+        reg = Registration.query.get(a.registration_id)
+        if reg and a.room_id in room_occupancy:
+            room_occupancy[a.room_id].append(reg)
+
+    return render_template('admin/room_allotment.html', rooms=rooms, 
+                           unallocated=unallocated, allocated=allocated, 
+                           room_occupancy=room_occupancy, config=app.config)
+
+@app.route('/admin/room-allotment/add', methods=['POST'])
+@login_required
+def admin_room_add():
+    room_number = request.form.get('room_number')
+    capacity = request.form.get('capacity')
+    if room_number and capacity and capacity.isdigit():
+        if Room.query.filter_by(room_number=room_number).first():
+            flash('Room name already exists.', 'error')
+        else:
+            db.session.add(Room(room_number=room_number, capacity=int(capacity)))
+            db.session.commit()
+            flash('Room added successfully.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
+@app.route('/admin/room-allotment/rename', methods=['POST'])
+@login_required
+def admin_room_rename():
+    room_id = request.form.get('room_id')
+    new_name = request.form.get('new_name')
+    new_capacity = request.form.get('new_capacity')
+    room = Room.query.get(room_id)
+    if room:
+        if new_name:
+            room.room_number = new_name
+        if new_capacity and new_capacity.isdigit():
+            room.capacity = int(new_capacity)
+        db.session.commit()
+        flash('Room updated successfully.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
+@app.route('/admin/room-allotment/allot', methods=['POST'])
+@login_required
+def admin_room_allot():
+    registration_id = request.form.get('registration_id')
+    room_id = request.form.get('room_id')
+    
+    room = Room.query.get(room_id)
+    reg = Registration.query.get(registration_id)
+    
+    if not room or not reg:
+        flash('Invalid room or registration.', 'error')
+        return redirect(url_for('admin_room_allotment'))
+        
+    current_occupants = RoomAllotment.query.filter_by(room_id=room_id).count()
+    if current_occupants >= room.capacity:
+        flash(f'Room {room.room_number} is already full.', 'error')
+        return redirect(url_for('admin_room_allotment'))
+        
+    # Check if already allotted
+    existing = RoomAllotment.query.filter_by(registration_id=reg.id).first()
+    if existing:
+        existing.room_id = room.id
+    else:
+        new_allotment = RoomAllotment(registration_id=reg.id, room_id=room.id)
+        db.session.add(new_allotment)
+        
+    db.session.commit()
+    flash(f'{reg.full_name} allotted to {room.room_number}.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
+@app.route('/admin/room-allotment/unallot', methods=['POST'])
+@login_required
+def admin_room_unallot():
+    registration_id = request.form.get('registration_id')
+    allotment = RoomAllotment.query.filter_by(registration_id=registration_id).first()
+    if allotment:
+        db.session.delete(allotment)
+        db.session.commit()
+        flash('Allotment removed.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
+@app.route('/admin/room-allotment/notify', methods=['POST'])
+@login_required
+def admin_room_notify():
+    allotments = RoomAllotment.query.all()
+    pending = []
+    for a in allotments:
+        # If never notified OR room changed since last notification
+        if not a.notified_room_number or a.notified_room_number != a.room.room_number:
+            pending.append(a)
+            
+    if not pending:
+        flash('All attendees are already notified of their current room assignments.', 'info')
+        return redirect(url_for('admin_room_allotment'))
+        
+    success_count = 0
+    fail_count = 0
+    
+    for a in pending:
+        reg = a.registration
+        room = a.room
+        try:
+            body_text = (
+                f"Dear {reg.full_name},\n\n"
+                f"With divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n"
+                f"Accommodation Details:\n\n"
+                f"Name: {reg.full_name}\n"
+                f"Room Number: {room.room_number}\n"
+                f"Number of Members: {room.capacity}-Bed Room\n"
+                f"Check-In Date: {reg.arrival_date if reg.arrival_date else '24-07-2026'}\n"
+                f"Check-Out Date: {reg.departure_date if reg.departure_date else '26-07-2026'}\n\n"
+                f"We kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\n"
+                f"May this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\n"
+                f"We look forward to welcoming you with love and prayers.\n\n"
+                f"Jai Guru"
+            )
+            msg = Message(
+                subject=f"Accommodation Allotment Confirmation – YSS Anantapur",
+                recipients=[reg.email],
+                body=body_text
+            )
+            mail.send(msg)
+            a.notified_room_number = room.room_number
+            success_count += 1
+        except Exception as e:
+            print(f"Failed to notify {reg.email}: {e}")
+            fail_count += 1
+            
+    db.session.commit()
+    
+    if fail_count > 0:
+        flash(f"Successfully notified {success_count} attendees via Email. {fail_count} failed due to mail server issues.", 'warning')
+    else:
+        flash(f"Successfully notified {success_count} attendees via Email!", 'success')
+        
+    return redirect(url_for('admin_room_allotment'))
+
+@app.route('/admin/room-allotment/mark-notified/<int:reg_id>', methods=['POST'])
+@login_required
+def admin_room_mark_notified(reg_id):
+    allotment = RoomAllotment.query.filter_by(registration_id=reg_id).first()
+    if allotment:
+        allotment.notified_room_whatsapp = allotment.room.room_number
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'message': 'Allotment not found'}), 404
 
 # ─── ADMIN SCHEDULE MGMT ─────────────────────────────────────────────────────
 @app.route('/admin/schedule', methods=['GET', 'POST'])
@@ -856,6 +1177,39 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('errors/500.html', config=app.config), 500
+
+# ─── ADMIN CREDENTIALS ────────────────────────────────────────────────────────
+@app.route('/admin/credentials', methods=['GET', 'POST'])
+@login_required
+def admin_credentials():
+    if not current_user.is_main_admin:
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('admin_registrations'))
+        
+    if request.method == 'POST':
+        new_email = request.form.get('new_email')
+        new_password = request.form.get('new_password')
+        
+        updated = False
+        if new_email and new_email != current_user.email:
+            # Check if email exists
+            if Admin.query.filter_by(email=new_email).first():
+                flash('Email already in use.', 'error')
+            else:
+                current_user.email = new_email
+                updated = True
+        
+        if new_password:
+            current_user.set_password(new_password)
+            updated = True
+            
+        if updated:
+            db.session.commit()
+            flash('Admin credentials updated successfully.', 'success')
+            
+        return redirect(url_for('admin_credentials'))
+        
+    return render_template('admin/manage.html', config=app.config)
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 with app.app_context():

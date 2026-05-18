@@ -1,8 +1,38 @@
 {% extends 'admin/base_admin.html' %}
 {% block title %}ID Cards – YSS Admin{% endblock %}
 {% block content %}
+<style>
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .admin-header, .table-card, .pagination, .sidebar, .btn, .card-actions {
+    display: none !important;
+  }
+  .id-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15mm 10mm !important;
+    width: 100% !important;
+  }
+  .id-card-wrapper {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border: 2px solid #333 !important;
+    border-radius: 4px;
+    height: 100%;
+  }
+}
+</style>
+
 <div class="admin-header">
   <h1><i class="fa fa-id-card" style="color:var(--gold);margin-right:.5rem;"></i>ID Cards</h1>
+  <button onclick="window.print()" class="btn btn-primary"><i class="fa fa-print"></i> Print ID Cards</button>
 </div>
 
 <div class="table-card" style="margin-bottom:1.5rem;">
@@ -24,7 +54,7 @@
 {% if pagination.items %}
 <div class="id-cards-grid">
   {% for r in pagination.items %}
-  <div style="border:2px solid #333;background:#fff;border-radius:4px;overflow:hidden;">
+  <div class="id-card-wrapper" style="border:2px solid #333;background:#fff;border-radius:4px;overflow:hidden;">
     <div style="background:var(--primary);color:#fff;text-align:center;padding:.75rem;">
       <div style="font-weight:700;font-size:.9rem;letter-spacing:1px;">Y.S.D.K., ANANTAPUR</div>
       <div style="font-weight:700;font-size:.9rem;">3-DAY SADHANA SANGAM</div>
@@ -39,7 +69,7 @@
       <tr style="border-bottom:1px solid #ddd;"><td style="padding:.4rem .75rem;font-weight:700;">Mobile No :</td><td style="padding:.4rem .75rem;">{{ r.whatsapp }}</td></tr>
       <tr><td style="padding:.4rem .75rem;font-weight:700;">Place :</td><td style="padding:.4rem .75rem;">{{ r.place }}</td></tr>
     </table>
-    <div style="padding:.5rem;display:flex;gap:.5rem;justify-content:center;border-top:1px solid #eee;">
+    <div class="card-actions" style="padding:.5rem;display:flex;gap:.5rem;justify-content:center;border-top:1px solid #eee;">
       <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" class="btn btn-primary btn-sm"><i class="fa fa-print"></i> Print</a>
       <a href="{{ url_for('reg_success', reg_id=r.reg_id) }}" class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Download</a>
     </div>
@@ -48,7 +78,7 @@
 </div>
 
 <div style="margin-top:1.5rem;color:var(--muted);font-size:.85rem;text-align:center;">
-  Showing {{ (pagination.page-1)*6+1 }} to {{ [(pagination.page-1)*6+6, pagination.total]|min }} of {{ pagination.total }} entries
+  Showing {{ (pagination.page-1)*8+1 }} to {{ [(pagination.page-1)*8+8, pagination.total]|min }} of {{ pagination.total }} entries
 </div>
 
 {% if pagination.pages > 1 %}
