@@ -48,7 +48,11 @@
           </div>
         </div>
         
-        <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
+        <div class="form-grid form-grid-3" style="margin-top:1.25rem;">
+          <div class="form-group">
+            <label>District <span style="color:#888;font-weight:normal;font-size:0.85em;">(Optional)</span></label>
+            <input type="text" name="district" class="form-control" placeholder="Enter your district" value="{{ form.get('district','') }}">
+          </div>
           <div class="form-group">
             <label>State <span class="req">*</span></label>
             <input type="text" name="state" class="form-control" placeholder="Enter your state" value="{{ form.get('state','') }}" required>

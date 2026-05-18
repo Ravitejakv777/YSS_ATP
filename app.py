@@ -54,6 +54,21 @@ with app.app_context():
             except Exception as sqlite_err:
                 db.session.rollback()
                 print(f"Skipping migration (column might already exist): {sqlite_err}")
+        # Column 3: district
+        try:
+            db.session.execute(db.text("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS district VARCHAR(100)"))
+            db.session.commit()
+            print("Registration table migrations verified successfully.")
+        except Exception as migration_error:
+            db.session.rollback()
+            try:
+                db.session.execute(db.text("ALTER TABLE registrations ADD COLUMN district VARCHAR(100)"))
+                db.session.commit()
+                print("Registration district column added successfully.")
+            except Exception as sqlite_err:
+                db.session.rollback()
+                print(f"Skipping migration (column might already exist): {sqlite_err}")
+                
         print("Database tables verified/created successfully.")
     except Exception as e:
         print("!!! DATABASE INITIALIZATION FAILED !!!")
@@ -159,7 +174,7 @@ def update_registrations_excel():
             ws.append(['Accommodation Not Needed', acco_no])
             ws.append([]) # Spacer row
         
-        headers = ['S.No','Reg ID','Lesson No','Full Name','Gender','Age','WhatsApp','Email','City/Town','State',
+        headers = ['S.No','Reg ID','Lesson No','Full Name','Gender','Age','WhatsApp','Email','City/Town','District','State',
                    'Kriya','Accommodation','Volunteer','Arrival','Departure',
                    'Amount','Payment Mode','Transaction ID','Status','Date']
         ws.append(headers)
@@ -172,6 +187,7 @@ def update_registrations_excel():
                        r.whatsapp or '-', 
                        ('-' if is_admin else r.email) or '-', 
                        r.place or '-', 
+                       r.district or '-',
                        ('-' if is_admin else r.state) or '-',
                        ('-' if is_admin else ('Kriyaban' if r.is_kriyaban else 'Non-Kriyaban')),
                        ('Yes' if r.accommodation else 'No'), 
@@ -389,6 +405,7 @@ def registration():
         gender = request.form.get('gender', '').strip()
         age = request.form.get('age', '').strip()
         place = request.form.get('place', '').strip()
+        district = request.form.get('district', '').strip()
         state = request.form.get('state', '').strip()
         email = request.form.get('email', '').strip()
         country_code = request.form.get('country_code', '+91')
@@ -455,7 +472,7 @@ def registration():
 
         reg = Registration(
             lesson_no=lesson_no, full_name=full_name, gender=gender,
-            age=int(age), place=place, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
+            age=int(age), place=place, district=district, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
             is_kriyaban=is_kriyaban, accommodation=accommodation,
             volunteer=volunteer, arrival_date=arrival_date,
             departure_date=departure_date, payment_mode=payment_mode,
@@ -662,6 +679,7 @@ def admin_add_registration():
         gender = request.form.get('gender', '').strip()
         age = request.form.get('age', '').strip()
         place = request.form.get('place', '').strip()
+        district = request.form.get('district', '').strip()
         state = request.form.get('state', '').strip()
         email = request.form.get('email', '').strip()
         country_code = request.form.get('country_code', '+91')
@@ -723,7 +741,7 @@ def admin_add_registration():
 
         reg = Registration(
             lesson_no=lesson_no, full_name=full_name, gender=gender,
-            age=int(age), place=place, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
+            age=int(age), place=place, district=district, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
             is_kriyaban=is_kriyaban, accommodation=accommodation,
             volunteer=volunteer, arrival_date=arrival_date,
             departure_date=departure_date, payment_mode=payment_mode,

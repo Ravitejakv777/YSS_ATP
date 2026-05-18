@@ -41,6 +41,7 @@ class Registration(db.Model):
     gender = db.Column(db.String(10), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     place = db.Column(db.String(100), nullable=False)
+    district = db.Column(db.String(100), nullable=True)
     state = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(120), nullable=True)
     country_code = db.Column(db.String(10), default='+91')
@@ -68,6 +69,7 @@ class Registration(db.Model):
             'gender': self.gender,
             'age': self.age,
             'place': self.place,
+            'district': self.district,
             'state': self.state,
             'email': self.email,
             'country_code': self.country_code,

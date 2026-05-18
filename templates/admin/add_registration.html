@@ -39,7 +39,11 @@
       </div>
     </div>
     
-    <div class="form-grid form-grid-2" style="margin-top:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+    <div class="form-grid form-grid-3" style="margin-top:1rem; display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem;">
+      <div class="form-group">
+        <label style="display:block;margin-bottom:.5rem;font-weight:600;">District <span style="color:#888;font-weight:normal;">(Optional)</span></label>
+        <input type="text" name="district" class="filter-select" style="width:100%;padding:.75rem;border:1px solid #ccc;border-radius:4px;" placeholder="Enter district" value="{{ form.get('district','') }}">
+      </div>
       <div class="form-group">
         <label style="display:block;margin-bottom:.5rem;font-weight:600;">State <span style="color:red;">*</span></label>
         <input type="text" name="state" class="filter-select" style="width:100%;padding:.75rem;border:1px solid #ccc;border-radius:4px;" placeholder="Enter state" value="{{ form.get('state','') }}" required>
