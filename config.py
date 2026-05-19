@@ -30,12 +30,16 @@ class Config:
     EXPORTS_DIR = os.path.join(BASE_DIR, 'exports')
 
     # Flask-Mail config
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = 'anantapur@ysscenters.org'
-    MAIL_PASSWORD = 'zmyevudryraylggx'
-    MAIL_DEFAULT_SENDER = ('YSS Anantapur', 'anantapur@ysscenters.org')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'anantapur@ysscenters.org')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'zmyevudryraylggx')
+    MAIL_DEFAULT_SENDER = (
+        os.environ.get('MAIL_SENDER_NAME', 'YSS Anantapur'),
+        os.environ.get('MAIL_USERNAME', 'anantapur@ysscenters.org')
+    )
 
     # Event config
     EVENT_NAME = '3-Day Spiritual Program – Anantapur'
