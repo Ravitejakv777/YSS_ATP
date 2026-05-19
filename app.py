@@ -364,9 +364,13 @@ def send_admin_email_alert(reg):
 def send_member_whatsapp(reg):
     """
     Sends a WhatsApp message to the member after Admin approval.
-    Placeholder for Twilio WhatsApp API or other providers.
     """
-    message = f"Jai Guru! Dear {reg.full_name}, your registration for the YSS 3-Day Spiritual Program in Anantapur (Reg ID: {reg.reg_id}) has been APPROVED. We look forward to seeing you!"
+    message = (
+        f"Jai Guru! Dear {reg.full_name}, a heartfelt spiritual welcome to you. "
+        f"Your registration for the YSS 3-Day Spiritual Program in Anantapur has been APPROVED. "
+        f"May this sacred gathering bring you inner peace, divine joy, and spiritual upliftment. "
+        f"We look forward to welcoming you with love and blessings!"
+    )
     print(f"WHATSAPP SENT TO {reg.whatsapp}: {message}")
 
 # ─── PUBLIC ROUTES ────────────────────────────────────────────────────────────
