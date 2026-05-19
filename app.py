@@ -262,8 +262,7 @@ def send_registration_email(reg):
             f"Phone Number: {reg.whatsapp}\n"
             f"Email: {reg.email}\n"
             f"City: {reg.place}\n"
-            f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n"
-            f"Registration ID: {reg.reg_id}\n\n"
+            f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n\n"
             f"Program Details:\n"
             f"Event: {app.config['EVENT_NAME']}\n"
             f"Venue: {app.config['EVENT_VENUE']}\n"
@@ -351,7 +350,6 @@ def send_submission_email(reg):
             f"Dear {reg.full_name},\n\n"
             f"Jai Guru! We have received your registration submission for the YSS 3-Day Spiritual Program in Anantapur.\n\n"
             f"Your Submission Details:\n"
-            f"• Registration ID: {reg.reg_id}\n"
             f"• Name: {reg.full_name}\n"
             f"• Phone Number: {reg.whatsapp}\n"
             f"• Email: {reg.email}\n"
@@ -382,7 +380,7 @@ def send_admin_email_alert(reg):
             subject=f'New Registration Alert - {reg.full_name}',
             sender=app.config.get('MAIL_DEFAULT_SENDER'),
             recipients=[admin_email],
-            body=f"Jai Guru!\n\nA new registration has been submitted by {reg.full_name} (Reg ID: {reg.reg_id}).\n\nPlease check the admin panel for approval.\n\nRegards,\nYSS Spiritual Program System"
+            body=f"Jai Guru!\n\nA new registration has been submitted by {reg.full_name}.\n\nPlease check the admin panel for approval.\n\nRegards,\nYSS Spiritual Program System"
         )
         mail.send(msg)
         print(f"EMAIL SENT TO ADMIN ({admin_email}) for Reg ID: {reg.reg_id}")
@@ -401,8 +399,7 @@ def send_member_whatsapp(reg):
         f"Phone Number: {reg.whatsapp}\n"
         f"Email: {reg.email}\n"
         f"City: {reg.place}\n"
-        f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n"
-        f"Registration ID: {reg.reg_id}\n\n"
+        f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n\n"
         f"Program Details:\n\n"
         f"Event: 3-Day Spiritual Program Anantapur\n"
         f"Venue: Krishna Kala Mandir, near Clock Tower, Kamalanagar, Anantapur, Andhra Pradesh 515001\n"
