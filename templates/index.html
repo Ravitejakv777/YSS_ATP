@@ -17,9 +17,10 @@
     <p style="color:rgba(255,255,255,.9);font-size:1.1rem;font-style:italic;margin-bottom:.5rem;">Experience the teachings of Paramahansa Yogananda</p>
     <p style="color:rgba(255,255,255,.8);font-size:.95rem;margin-bottom:1.5rem;">Join us for a 3-day journey of meditation, devotion and spiritual upliftment.</p>
     <a href="{{ url_for('registration') }}" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2.5rem;">Register Now</a>
-    <div class="hero-meta">
+    <div class="hero-meta" style="flex-wrap: wrap; gap: 1rem 2rem;">
       <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-calendar" style="color:var(--gold);"></i> Dates : {{ config.EVENT_DATES }}</span>
       <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-map-marker-alt" style="color:var(--gold);"></i> Venue : {{ config.EVENT_VENUE }}</span>
+      <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-phone" style="color:var(--gold);"></i> Contacts : 9441665181 (A Narsimhulu) &nbsp;|&nbsp; 8019682209 (K Suresh)</span>
     </div>
   </div>
 </section>
