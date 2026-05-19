@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{% block title %}Admin – YSS{% endblock %}</title>
-<link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}?v=1.0.1">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}?v=1.0.2">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -25,6 +25,9 @@
       <div class="sidebar-text">
         <h2>YSS Admin Portal</h2>
       </div>
+      <button type="button" id="sidebarToggle" class="sidebar-toggle-btn" title="Toggle Sidebar">
+        <i class="fa fa-chevron-left" id="toggleIcon"></i>
+      </button>
     </div>
     <nav class="sidebar-nav">
 
@@ -146,6 +149,43 @@ function closeCustomConfirm() {
     pendingCallback = null;
   }, 200);
 }
+
+// Sidebar toggle logic
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebar = document.querySelector('.admin-sidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const toggleIcon = document.getElementById('toggleIcon');
+  
+  if (sidebar && toggleBtn && toggleIcon) {
+    let isCollapsed = localStorage.getItem('sidebar-collapsed');
+    if (isCollapsed === null) {
+      isCollapsed = window.innerWidth <= 768;
+    } else {
+      isCollapsed = isCollapsed === 'true';
+    }
+    
+    if (isCollapsed) {
+      sidebar.classList.add('collapsed');
+      toggleIcon.className = 'fa fa-chevron-right';
+    } else {
+      sidebar.classList.remove('collapsed');
+      toggleIcon.className = 'fa fa-chevron-left';
+    }
+    
+    toggleBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sidebar.classList.toggle('collapsed');
+      const nowCollapsed = sidebar.classList.contains('collapsed');
+      localStorage.setItem('sidebar-collapsed', nowCollapsed);
+      
+      if (nowCollapsed) {
+        toggleIcon.className = 'fa fa-chevron-right';
+      } else {
+        toggleIcon.className = 'fa fa-chevron-left';
+      }
+    });
+  }
+});
 </script>
 </body>
 </html>
