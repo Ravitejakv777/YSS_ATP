@@ -345,6 +345,33 @@ def send_registration_email(reg):
     except Exception as e:
         app.logger.warning(f'Email send failed: {e}')
 
+def send_submission_email(reg):
+    try:
+        body_text = (
+            f"Dear {reg.full_name},\n\n"
+            f"Jai Guru! We have received your registration submission for the YSS 3-Day Spiritual Program in Anantapur.\n\n"
+            f"Your Submission Details:\n"
+            f"• Registration ID: {reg.reg_id}\n"
+            f"• Name: {reg.full_name}\n"
+            f"• Phone Number: {reg.whatsapp}\n"
+            f"• Email: {reg.email}\n"
+            f"• City/Town: {reg.place}\n"
+            f"• Accommodation Needed: {'Yes' if reg.accommodation else 'No'}\n\n"
+            f"Our admin team is currently verifying your payment details. Once verified and approved, you will receive your official printable entry ID Card and program confirmation email.\n\n"
+            f"Thank you for your patience.\n\n"
+            f"Jai Guru"
+        )
+        msg = Message(
+            subject='Registration Submission Received – YSS Anantapur',
+            sender=app.config.get('MAIL_DEFAULT_SENDER'),
+            recipients=[reg.email],
+            body=body_text
+        )
+        mail.send(msg)
+        print(f"REGISTRATION SUBMISSION RECEIVED EMAIL SENT TO {reg.email}")
+    except Exception as e:
+        app.logger.warning(f'Submission email send failed: {e}')
+
 def send_admin_email_alert(reg):
     """
     Sends an email notification to the Admin.
@@ -353,13 +380,14 @@ def send_admin_email_alert(reg):
     try:
         msg = Message(
             subject=f'New Registration Alert - {reg.full_name}',
+            sender=app.config.get('MAIL_DEFAULT_SENDER'),
             recipients=[admin_email],
             body=f"Jai Guru!\n\nA new registration has been submitted by {reg.full_name} (Reg ID: {reg.reg_id}).\n\nPlease check the admin panel for approval.\n\nRegards,\nYSS Spiritual Program System"
         )
         mail.send(msg)
         print(f"EMAIL SENT TO ADMIN ({admin_email}) for Reg ID: {reg.reg_id}")
     except Exception as e:
-        print(f"Failed to send admin email: {e}")
+        app.logger.warning(f"Failed to send admin email: {e}")
 
 def send_member_whatsapp(reg):
     """
@@ -486,7 +514,7 @@ def registration():
         db.session.add(reg)
         db.session.commit()
         update_registrations_excel()
-        send_registration_email(reg)
+        send_submission_email(reg)
         send_admin_email_alert(reg) # Send Email to Admin
         return redirect(url_for('reg_success', reg_id=reg.reg_id))
 
@@ -931,9 +959,11 @@ def approve_registration(rid):
     reg = Registration.query.get_or_404(rid)
     reg.payment_status = 'Paid'
     reg.reg_status = 'Approved'
+    reg.notified = True
     db.session.commit()
     update_registrations_excel()
     send_member_whatsapp(reg) # Send WhatsApp to Member
+    send_registration_email(reg) # Send Email with printable ID Card
     return jsonify({'success': True, 'message': 'Registration approved successfully'})
 
 @app.route('/api/registrations/<int:rid>/decline', methods=['POST'])
