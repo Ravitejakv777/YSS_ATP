@@ -35,7 +35,7 @@
         <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
           <div class="form-group">
             <label>Amount (₹) <span class="req">*</span></label>
-            <input type="number" name="amount" class="form-control" placeholder="Enter amount" value="{{ form.get('amount','') }}" min="1" required>
+            <input type="number" name="amount" id="donation_amount" class="form-control" placeholder="Enter amount" value="{{ form.get('amount','') }}" min="1" required>
           </div>
           <div class="form-group">
             <label>Payment Mode <span class="req">*</span></label>
@@ -61,7 +61,8 @@
           <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;">Payment Details</h3>
           <div style="margin-top:1.5rem;">
             <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
-            <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+            <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;margin-bottom:1rem;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+            <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
           </div>
         </div>
         <div style="margin-top:2rem;text-align:center;">
@@ -71,4 +72,22 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const amountInput = document.getElementById('donation_amount');
+  const upiBtn = document.getElementById('upi-pay-btn');
+  
+  if (amountInput && upiBtn) {
+    const updateLink = () => {
+      const amt = amountInput.value || 0;
+      upiBtn.href = `upi://pay?pa=yourupi@oksbi&pn=YSS%20Anantapur&am=${amt}&cu=INR`;
+    };
+    amountInput.addEventListener('input', updateLink);
+    updateLink();
+  }
+});
+</script>
 {% endblock %}

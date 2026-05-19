@@ -138,7 +138,8 @@
 
         <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;">
           <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
-          <p style="font-size:1.2rem;color:var(--primary);font-weight:bold;margin:0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+          <p style="font-size:1.2rem;color:var(--primary);font-weight:bold;margin:0 0 1rem 0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+          <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
         </div>
 
         <div class="form-note mt-3"><i class="fa fa-info-circle" style="color:var(--accent);"></i> All fields marked with <strong>*</strong> are mandatory.</div>
@@ -161,10 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
       feeSection.style.display = 'block';
+      let total = 1800;
       if(e.target.value === 'yes') {
+        total = 2800;
         feeBreakdown.innerHTML = `Registration Fee : ₹1800<br>Accommodation Fee : ₹1000<br><strong>Total Amount : ₹2800</strong>`;
       } else {
+        total = 1800;
         feeBreakdown.innerHTML = `Registration Fee : ₹1800<br><strong>Total Amount : ₹1800</strong>`;
+      }
+      
+      const upiBtn = document.getElementById('upi-pay-btn');
+      if (upiBtn) {
+        upiBtn.href = `upi://pay?pa=yourupi@oksbi&pn=YSS%20Anantapur&am=${total}&cu=INR`;
       }
     });
   });
