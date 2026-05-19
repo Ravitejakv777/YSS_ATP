@@ -33,19 +33,19 @@ class Config:
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = 'ravitejakv777@gmail.com'
-    MAIL_PASSWORD = 'lzszxpahybsgxivf'
-    MAIL_DEFAULT_SENDER = ('YSS Anantapur', 'ravitejakv777@gmail.com')
+    MAIL_USERNAME = 'anantapur@ysscenters.org'
+    MAIL_PASSWORD = 'zmyevudryraylggx'
+    MAIL_DEFAULT_SENDER = ('YSS Anantapur', 'anantapur@ysscenters.org')
 
     # Event config
     EVENT_NAME = '3-Day Spiritual Program – Anantapur'
     EVENT_DATES = '24 – 26 July 2026'
     EVENT_DATE_RANGE = 'July 24, 25, 26 – 2026'
     EVENT_VENUE = 'Krishna Kala Mandir, Anantapur, Andhra Pradesh'
-    EVENT_CONTACT_EMAIL = 'ravitejakv777@gmail.com'
+    EVENT_CONTACT_EMAIL = 'anantapur@ysscenters.org'
     EVENT_CONTACT_MOBILE = '9441665181'
     EVENT_MAPS_URL = 'https://maps.app.goo.gl/WQxUo86SVYtabmMP9'
 
     # Admin defaults
-    ADMIN_EMAIL = 'ravitejakv777@gmail.com'
+    ADMIN_EMAIL = 'anantapur@ysscenters.org'
     ADMIN_PASSWORD = 'yssatp2026'
