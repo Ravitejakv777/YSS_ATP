@@ -63,6 +63,10 @@
             <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
             <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;margin-bottom:1rem;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
             <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
+            <div id="desktop-qr-container" style="display:none; margin-top:1.5rem;">
+              <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.5rem;">Scan this QR with any UPI app on your phone:</p>
+              <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
+            </div>
           </div>
         </div>
         <div style="margin-top:2rem;text-align:center;">
@@ -83,7 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (amountInput && upiBtn) {
     const updateLink = () => {
       const amt = amountInput.value || 0;
-      upiBtn.href = `upi://pay?pa=9441665181@ybl&pn=YSS%20Anantapur&am=${amt}&cu=INR`;
+      const upiLink = `upi://pay?pa=9441665181@ybl&pn=YSS%20Anantapur&am=${amt}&cu=INR`;
+      upiBtn.href = upiLink;
+      
+      upiBtn.onclick = function(e) {
+        if (window.innerWidth > 768) {
+          e.preventDefault();
+          const qrContainer = document.getElementById('desktop-qr-container');
+          const qrImg = document.getElementById('desktop-qr-img');
+          qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+          qrContainer.style.display = 'block';
+        }
+      };
     };
     amountInput.addEventListener('input', updateLink);
     updateLink();
