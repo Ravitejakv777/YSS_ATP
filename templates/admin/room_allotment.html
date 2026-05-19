@@ -3,9 +3,14 @@
 {% block content %}
 <div class="admin-header" style="display:flex; justify-content:space-between; align-items:center;">
   <h1><i class="fa fa-bed" style="color:var(--gold);margin-right:.5rem;"></i>Room Allotment</h1>
-  <form action="{{ url_for('admin_room_notify') }}" method="POST" onsubmit="return showCustomConfirm('Send room allotment email notifications to all pending/changed attendees?', this)" style="margin:0;">
-    <button type="submit" class="btn btn-primary btn-sm" style="background:var(--primary);"><i class="fa fa-paper-plane"></i> Notify All (Email)</button>
-  </form>
+  <div style="display:flex; gap:.5rem; align-items:center;">
+    <form action="{{ url_for('admin_room_reset_notifications') }}" method="POST" onsubmit="return showCustomConfirm('Reset email notification flags for all allotments? This allows you to email everyone again.', this)" style="margin:0;">
+      <button type="submit" class="btn btn-outline btn-sm" style="border-color:var(--primary); color:var(--primary); display:flex; align-items:center; gap:.25rem;"><i class="fa fa-sync-alt"></i> Reset Email Flags</button>
+    </form>
+    <form action="{{ url_for('admin_room_notify') }}" method="POST" onsubmit="return showCustomConfirm('Send room allotment email notifications to all pending/changed attendees?', this)" style="margin:0;">
+      <button type="submit" class="btn btn-primary btn-sm" style="background:var(--primary);"><i class="fa fa-paper-plane"></i> Notify All (Email)</button>
+    </form>
+  </div>
 </div>
 
 <div class="room-allotment-container" style="display:grid; grid-template-columns: 1fr 2fr; gap: 2rem; height: calc(100vh - 120px); overflow: hidden;">

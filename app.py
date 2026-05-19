@@ -1325,6 +1325,16 @@ def admin_room_notify():
         
     return redirect(url_for('admin_room_allotment'))
 
+@app.route('/admin/room-allotment/reset-notifications', methods=['POST'])
+@login_required
+def admin_room_reset_notifications():
+    allotments = RoomAllotment.query.all()
+    for a in allotments:
+        a.notified_room_number = None
+    db.session.commit()
+    flash('Email notification flags reset successfully.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
 @app.route('/admin/room-allotment/mark-notified/<int:reg_id>', methods=['POST'])
 @login_required
 def admin_room_mark_notified(reg_id):
