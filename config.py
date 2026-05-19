@@ -35,7 +35,7 @@ class Config:
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
     MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'anantapur@ysscenters.org')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'zmyevudryraylggx')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'wuvntwvdxrylpbsn')
     MAIL_DEFAULT_SENDER = (
         os.environ.get('MAIL_SENDER_NAME', 'YSS Anantapur'),
         os.environ.get('MAIL_USERNAME', 'anantapur@ysscenters.org')
