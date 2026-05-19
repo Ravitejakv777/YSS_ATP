@@ -119,52 +119,78 @@ a{text-decoration:none;color:inherit;}
 .admin-layout{display:flex;min-height:100vh;}
 .admin-sidebar{width:260px;background:var(--primary-dark);color:#fff;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);z-index:1000;}
 .admin-sidebar.collapsed{width:75px;}
-.admin-sidebar.collapsed:hover{width:260px;box-shadow: 4px 0 15px rgba(0,0,0,0.1);}
-.sidebar-logo{padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;min-width:260px;position:relative;}
+.sidebar-logo{padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;width:260px;position:relative;transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
+.admin-sidebar.collapsed .sidebar-logo{width:75px;}
 .sidebar-logo img{width:45px;height:45px;border-radius:50%;border:2px solid var(--gold);flex-shrink:0;margin:0 auto;}
 .sidebar-text{opacity:1;visibility:visible;height:auto;margin-top:0.5rem;text-align:center;transition:all 0.2s ease;overflow:hidden;}
 .admin-sidebar.collapsed .sidebar-text{opacity:0;visibility:hidden;height:0;margin:0;}
-.admin-sidebar.collapsed:hover .sidebar-text{opacity:1;visibility:visible;height:auto;margin-top:0.5rem;}
 .sidebar-logo h2{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);}
-.sidebar-nav{padding:1rem 0;min-width:260px;}
+.sidebar-nav{padding:1rem 0;width:260px;transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
+.admin-sidebar.collapsed .sidebar-nav{width:75px;}
 .sidebar-nav a{display:flex;align-items:center;padding:.8rem 0;color:rgba(255,255,255,.8);transition:all .3s;font-size:.9rem;white-space:nowrap;}
 .sidebar-nav a i{width:75px;text-align:center;font-size:1.1rem;flex-shrink:0;}
 .sidebar-nav a span{opacity:1;visibility:visible;width:auto;transition:all 0.2s ease;overflow:hidden;}
 .admin-sidebar.collapsed .sidebar-nav a span{opacity:0;visibility:hidden;width:0;}
-.admin-sidebar.collapsed:hover .sidebar-nav a span{opacity:1;visibility:visible;width:auto;}
 .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.1);color:#fff;border-left:3px solid var(--gold);}
 
-/* SIDEBAR TOGGLE BUTTON */
+/* SIDEBAR TOGGLE BUTTON (Hidden on Monitors/Desktops by default) */
 .sidebar-toggle-btn {
-  background: var(--gold);
-  color: #fff;
-  border: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  position: absolute;
-  right: 15px;
-  top: 25px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  z-index: 1001;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none !important;
 }
-.sidebar-toggle-btn:hover {
-  background: #fff;
-  color: var(--primary-dark);
-  transform: scale(1.15);
+
+/* DESKTOP HOVER SPECIFIC RULES */
+@media(min-width: 769px) {
+  .admin-sidebar.collapsed:hover {
+    width: 260px;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  }
+  .admin-sidebar.collapsed:hover .sidebar-logo {
+    width: 260px;
+  }
+  .admin-sidebar.collapsed:hover .sidebar-nav {
+    width: 260px;
+  }
+  .admin-sidebar.collapsed:hover .sidebar-text {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    margin-top: 0.5rem;
+  }
+  .admin-sidebar.collapsed:hover .sidebar-nav a span {
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+  }
 }
-.admin-sidebar.collapsed .sidebar-toggle-btn {
-  right: 25px;
-  top: 80px;
-}
-.admin-sidebar.collapsed:hover .sidebar-toggle-btn {
-  right: 15px;
-  top: 25px;
+
+/* MOBILE TOGGLE RULES */
+@media(max-width: 768px) {
+  .sidebar-toggle-btn {
+    display: flex !important;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    position: absolute;
+    right: 15px;
+    top: 25px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sidebar-toggle-btn:hover {
+    background: #fff;
+    color: var(--primary-dark);
+  }
+  .admin-sidebar.collapsed .sidebar-toggle-btn {
+    right: 25px;
+    top: 80px;
+  }
 }
 .admin-content{flex:1;padding:2rem;background:#f5f0ea;overflow-x:hidden;}
 .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
