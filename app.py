@@ -877,7 +877,7 @@ def admin_registrations():
                              Registration.reg_id.ilike(f'%{search}%')))
     if reg_status:
         q = q.filter_by(reg_status=reg_status)
-    pagination = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10)
+    pagination = q.order_by(Registration.id.asc()).paginate(page=page, per_page=10)
     return render_template('admin/registrations.html', pagination=pagination,
                            search=search, reg_status=reg_status, config=app.config)
 
@@ -899,7 +899,7 @@ def admin_requests():
                              Registration.whatsapp.ilike(f'%{search}%'),
                              Registration.reg_id.ilike(f'%{search}%')))
     pending_count = q.count()
-    pagination = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10)
+    pagination = q.order_by(Registration.id.asc()).paginate(page=page, per_page=10)
     return render_template('admin/requests.html', pagination=pagination,
                            search=search, pending_count=pending_count, config=app.config)
 
@@ -1073,7 +1073,7 @@ def admin_donations():
         q = q.filter(db.or_(Donation.name.ilike(f'%{search}%'),
                              Donation.whatsapp.ilike(f'%{search}%'),
                              Donation.donation_id.ilike(f'%{search}%')))
-    pagination = q.order_by(Donation.id.desc()).paginate(page=page, per_page=10)
+    pagination = q.order_by(Donation.id.asc()).paginate(page=page, per_page=10)
     return render_template('admin/donations.html', pagination=pagination,
                            search=search, config=app.config)
 
@@ -1094,7 +1094,7 @@ def admin_donation_requests():
                              Donation.whatsapp.ilike(f'%{search}%'),
                              Donation.donation_id.ilike(f'%{search}%')))
     pending_count = q.count()
-    pagination = q.order_by(Donation.id.desc()).paginate(page=page, per_page=10)
+    pagination = q.order_by(Donation.id.asc()).paginate(page=page, per_page=10)
     return render_template('admin/donation_requests.html', pagination=pagination,
                            search=search, pending_count=pending_count, config=app.config)
 
