@@ -394,10 +394,24 @@ def send_member_whatsapp(reg):
     Sends a WhatsApp message to the member after Admin approval.
     """
     message = (
-        f"Jai Guru! Dear {reg.full_name}, a heartfelt spiritual welcome to you. "
-        f"Your registration for the YSS 3-Day Spiritual Program in Anantapur has been APPROVED. "
-        f"May this sacred gathering bring you inner peace, divine joy, and spiritual upliftment. "
-        f"We look forward to welcoming you with love and blessings!"
+        f"Dear {reg.full_name},\n\n"
+        f"With divine blessings and heartfelt joy, we are happy to confirm your successful registration for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n"
+        f"Your Registration Details:\n\n"
+        f"Name: {reg.full_name}\n"
+        f"Phone Number: {reg.whatsapp}\n"
+        f"Email: {reg.email}\n"
+        f"City: {reg.place}\n"
+        f"Accommodation: {'Yes' if reg.accommodation else 'No'}\n"
+        f"Registration ID: {reg.reg_id}\n\n"
+        f"Program Details:\n\n"
+        f"Event: 3-Day Spiritual Program Anantapur\n"
+        f"Venue: Krishna Kala Mandir, near Clock Tower, Kamalanagar, Anantapur, Andhra Pradesh 515001\n"
+        f"Dates: June 24-26, 2026\n"
+        f"Venue Location: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\n"
+        f"May this sacred gathering fill your heart with peace, devotion, positivity, and spiritual upliftment. We sincerely thank you for choosing to be part of this divine journey.\n\n"
+        f"Please carry your registration confirmation during your visit. Further updates and instructions will be shared soon.\n\n"
+        f"We look forward to welcoming you with love and prayers.\n\n"
+        f"Jai Guru"
     )
     print(f"WHATSAPP SENT TO {reg.whatsapp}: {message}")
 

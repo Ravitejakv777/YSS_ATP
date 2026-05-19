@@ -87,7 +87,25 @@
         <td style="text-align:center;">
           {% if r.reg_status == 'Approved' %}
           <div style="display:flex; flex-direction:column; gap:0.25rem;">
-            <a href="https://wa.me/{{ (r.country_code + r.whatsapp)|replace('+','') }}?text=Jai%20Guru!%20Dear%20{{ r.full_name|urlencode }},%20your%20registration%20for%20the%20YSS%203-Day%20Spiritual%20Program%20in%20Anantapur%20(Reg%20ID:%20{{ r.reg_id }})%20has%20been%20APPROVED.%20We%20look%20forward%20to%20seeing%20you!" 
+            {% set wa_msg = "Dear " ~ r.full_name ~ ",\n\n" ~
+                            "With divine blessings and heartfelt joy, we are happy to confirm your successful registration for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n" ~
+                            "Your Registration Details:\n\n" ~
+                            "Name: " ~ r.full_name ~ "\n" ~
+                            "Phone Number: " ~ r.whatsapp ~ "\n" ~
+                            "Email: " ~ r.email ~ "\n" ~
+                            "City: " ~ r.place ~ "\n" ~
+                            "Accommodation: " ~ ('Yes' if r.accommodation else 'No') ~ "\n" ~
+                            "Registration ID: " ~ r.reg_id ~ "\n\n" ~
+                            "Program Details:\n\n" ~
+                            "Event: 3-Day Spiritual Program Anantapur\n" ~
+                            "Venue: Krishna Kala Mandir, near Clock Tower, Kamalanagar, Anantapur, Andhra Pradesh 515001\n" ~
+                            "Dates: June 24-26, 2026\n" ~
+                            "Venue Location: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\n" ~
+                            "May this sacred gathering fill your heart with peace, devotion, positivity, and spiritual upliftment. We sincerely thank you for choosing to be part of this divine journey.\n\n" ~
+                            "Please carry your registration confirmation during your visit. Further updates and instructions will be shared soon.\n\n" ~
+                            "We look forward to welcoming you with love and prayers.\n\n" ~
+                            "Jai Guru" %}
+            <a href="https://wa.me/{{ (r.country_code + r.whatsapp)|replace('+','') }}?text={{ wa_msg|urlencode }}" 
                target="_blank" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; padding: 0.35rem; border-radius: 6px;" 
                onclick="markNotified({{ r.id }})" title="Send WhatsApp & Mark as Done">
                <i class="fa-brands fa-whatsapp"></i> <span style="font-size:0.7rem;">WhatsApp</span>
