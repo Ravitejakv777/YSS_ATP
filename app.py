@@ -1609,6 +1609,19 @@ def admin_whatsapp_status():
         print(f"Error fetching WhatsApp gateway status: {e}")
     return jsonify(status_data)
 
+@app.route('/admin/whatsapp-messages')
+@login_required
+def admin_whatsapp_messages():
+    import requests
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL', 'http://localhost:3000')
+    try:
+        r = requests.get(f"{gateway_url}/recent-messages", timeout=1)
+        if r.status_code == 200:
+            return jsonify(r.json())
+    except Exception as e:
+        print(f"Error fetching recent messages: {e}")
+    return jsonify({'messages': []})
+
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 with app.app_context():
     seed_data()

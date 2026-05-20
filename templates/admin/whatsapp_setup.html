@@ -57,6 +57,28 @@
         Devotees will receive instant, beautifully-formatted receipt details via your connected WhatsApp account as soon as registrations are approved.
       </p>
     </div>
+
+    <!-- Recent Messages Button -->
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button onclick="openMessagesDialog()" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem; border-color:#25D366; color:#25D366;">
+        <i class="fab fa-whatsapp"></i> View Recent Messages (Last 10)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Messages Dialog Modal -->
+<div id="messagesModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; box-shadow:0 16px 60px rgba(0,0,0,0.2); width:95%; max-width:560px; padding:2rem; position:relative; max-height:85vh; overflow-y:auto;">
+    <button onclick="document.getElementById('messagesModal').style.display='none'" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted);">&times;</button>
+    <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+      <i class="fab fa-whatsapp" style="color:#25D366;"></i> Recent WhatsApp Messages
+    </h3>
+    <div id="messagesList" style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div style="text-align:center; padding:2rem; color:var(--muted);">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </div>
+    </div>
   </div>
 </div>
 
@@ -149,6 +171,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Poll every 5 seconds
   pollInterval = setInterval(fetchWhatsAppStatus, 5000);
+});
+
+function openMessagesDialog() {
+  const modal = document.getElementById('messagesModal');
+  modal.style.display = 'flex';
+  const list = document.getElementById('messagesList');
+  list.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--muted);"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+
+  fetch('/admin/whatsapp-messages')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.messages || data.messages.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--muted);"><i class="fa fa-inbox" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>No messages sent yet in this session.</div>';
+        return;
+      }
+      list.innerHTML = data.messages.map((msg, i) => {
+        const time = new Date(msg.timestamp).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'});
+        const phone = msg.to.length === 10 ? '+91 ' + msg.to : '+' + msg.to;
+        return `
+          <div style="background:#f8faf8; border:1px solid #e8ede8; border-radius:10px; padding:0.85rem 1rem; display:flex; align-items:flex-start; gap:0.75rem;">
+            <div style="width:32px; height:32px; min-width:32px; background:#25D366; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; margin-top:2px;">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                <span style="font-weight:700; font-size:0.85rem; color:var(--primary);">${phone}</span>
+                <span style="font-size:0.72rem; color:var(--muted);">${time}</span>
+              </div>
+              <div style="font-size:0.8rem; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${msg.preview}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(err => {
+      list.innerHTML = '<div style="text-align:center; padding:2rem; color:#b91c1c;"><i class="fa fa-exclamation-triangle"></i> Failed to load messages.</div>';
+    });
+}
+
+// Close modal on background click
+document.getElementById('messagesModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
 });
 </script>
 {% endblock %}

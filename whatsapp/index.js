@@ -15,6 +15,7 @@ app.use(express.json());
 let sock = null;
 let qrCodeData = null;
 let connectionStatus = 'Disconnected';
+let recentMessages = []; // Stores last 10 sent messages
 
 async function connectToWhatsApp() {
     const authFolder = path.join(__dirname, 'auth_info_baileys');
@@ -103,11 +104,25 @@ app.post('/send', async (req, res) => {
         const jid = `${formattedPhone}@s.whatsapp.net`;
         
         await sock.sendMessage(jid, { text: message });
+        
+        // Log this message in recentMessages (keep last 10)
+        recentMessages.unshift({
+            to: to.toString(),
+            preview: message.substring(0, 80) + (message.length > 80 ? '...' : ''),
+            timestamp: new Date().toISOString()
+        });
+        if (recentMessages.length > 10) recentMessages.pop();
+        
         res.json({ success: true });
     } catch (err) {
         console.error('Failed to send message:', err);
         res.status(500).json({ error: err.message });
     }
+});
+
+// API to get last 10 sent messages
+app.get('/recent-messages', (req, res) => {
+    res.json({ messages: recentMessages });
 });
 
 const PORT = process.env.PORT || 3000;
