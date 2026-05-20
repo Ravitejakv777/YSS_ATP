@@ -1345,6 +1345,25 @@ def registrations_notify_all():
         'message': f"Sent WhatsApp confirmations to {success_count} devotees. {fail_count} failed."
     })
 
+@app.route('/api/registrations/reset-notifications', methods=['POST'])
+@login_required
+def registrations_reset_notifications():
+    try:
+        approved = Registration.query.filter_by(reg_status='Approved').all()
+        for reg in approved:
+            reg.notified = False
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': f"Successfully refreshed notification status for all {len(approved)} approved devotees."
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f"Failed to reset notification status: {str(e)}"
+        })
+
 @app.route('/admin/registrations/export')
 @login_required
 def export_registrations():

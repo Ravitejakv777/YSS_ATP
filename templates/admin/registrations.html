@@ -7,6 +7,7 @@
     <a href="{{ url_for('export_registrations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download Excel</a>
     <a href="{{ url_for('export_registrations_pdf') }}" class="btn btn-primary btn-sm"><i class="fa fa-file-pdf"></i> Download PDF</a>
     <button onclick="window.print()" class="btn btn-outline btn-sm"><i class="fa fa-print"></i> Print</button>
+    <button onclick="resetNotificationStatus()" class="btn btn-outline btn-sm" style="border-color:#25D366; color:#25D366; display:flex; align-items:center; gap:0.35rem;" title="Reset notification status to send to everyone again"><i class="fa fa-sync-alt"></i> Refresh WhatsApp Status</button>
     <button onclick="notifyAllWhatsApp()" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; display:flex; align-items:center; gap:0.35rem;"><i class="fab fa-whatsapp"></i> Notify All (WhatsApp)</button>
     <a href="{{ url_for('admin_add_registration') }}" class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Add Participant</a>
   </div>
@@ -130,7 +131,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr style="background:#fff8e1; border-bottom:2px solid var(--gold);">
+        <tr class="manual-entry-row" style="border-bottom:2px solid var(--gold);">
           <td><i class="fa fa-plus-circle" style="color:var(--gold);"></i></td>
           <td>Auto</td>
           <td><input type="text" id="m_lesson" placeholder="Lesson No" class="filter-select" style="min-width:100px; border-color:var(--gold);"></td>
@@ -347,6 +348,36 @@ function notifyAllWhatsApp() {
   .catch(err => {
     console.error("Error sending bulk notifications:", err);
     showToast("An error occurred while sending notifications.", "error");
+  });
+}
+
+function resetNotificationStatus() {
+  if (!confirm("Are you sure you want to refresh the notification status for all approved devotees? This will allow you to send WhatsApp notifications to everyone again.")) {
+    return;
+  }
+  
+  showToast("Refreshing notification status... Please wait.", "info");
+  
+  fetch('/api/registrations/reset-notifications', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, "success");
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+      showToast(data.message, "error");
+    }
+  })
+  .catch(err => {
+    console.error("Error resetting notification status:", err);
+    showToast("An error occurred while refreshing notification status.", "error");
   });
 }
 
