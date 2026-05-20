@@ -134,7 +134,7 @@
         <label style="font-weight:bold; color:var(--text); margin-bottom:0.5rem; display:block;">Select Template Stage:</label>
         <select id="templateKeySelector" class="form-control" style="width:100%;">
           {% for t in templates %}
-            <option value="{{ t.key }}">{{ t.key.replace('_', ' ').toUpperCase() }}</option>
+            <option value="{{ t.key }}">{{ t.key.replace('_', ' ').upper() }}</option>
           {% endfor %}
         </select>
       </div>
