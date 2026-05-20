@@ -94,6 +94,12 @@
               title="Decline this registration">
               <i class="fa fa-times"></i> Decline
             </button>
+            <a href="{{ url_for('admin_edit_registration', reg_id=r.id) }}"
+              class="btn btn-sm"
+              style="background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;border:none;padding:.35rem .8rem;border-radius:8px;font-weight:600;font-size:.8rem;display:flex;align-items:center;gap:.35rem;text-decoration:none;"
+              title="Edit registration details">
+              <i class="fa fa-edit"></i> Edit
+            </a>
           </div>
           {% endif %}
         </td>
