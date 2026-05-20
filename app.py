@@ -944,12 +944,7 @@ def admin_registrations():
     registrations = q.order_by(Registration.id.asc()).all()
     
     total_registered = Registration.query.count()
-    approval_pending = Registration.query.filter(
-        db.or_(
-            Registration.payment_status == 'Pending',
-            db.and_(Registration.reg_status == 'Approved', Registration.notified == False)
-        )
-    ).count()
+    approval_pending = Registration.query.filter_by(payment_status='Pending').count()
     approved_devotees = Registration.query.filter_by(reg_status='Approved').count()
     collected_amount = db.session.query(db.func.sum(Registration.amount)).filter(Registration.payment_status == 'Paid').scalar() or 0
     total_reg_fee = Registration.query.filter(Registration.payment_status == 'Paid').count() * 1800
