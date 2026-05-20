@@ -928,13 +928,8 @@ def admin_registrations():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
     reg_status = request.args.get('reg_status', '')
-    # Show both Paid (Approved and Notified) and Rejected (Declined) registrations
-    q = Registration.query.filter(
-        db.or_(
-            db.and_(Registration.payment_status == 'Paid', Registration.notified == True),
-            Registration.reg_status == 'Rejected'
-        )
-    )
+    # Show both Approved and Rejected registrations regardless of notification status
+    q = Registration.query.filter(Registration.reg_status.in_(['Approved', 'Rejected']))
     if search:
         q = q.filter(db.or_(Registration.full_name.ilike(f'%{search}%'),
                              Registration.whatsapp.ilike(f'%{search}%'),
