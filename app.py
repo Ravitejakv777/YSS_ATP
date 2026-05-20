@@ -76,6 +76,13 @@ with app.app_context():
         # On Render, if we can't connect to DB, the app should probably fail fast
         # but let's just log it for now so we can see it in the dashboard.
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
