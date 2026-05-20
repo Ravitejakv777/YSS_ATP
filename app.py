@@ -379,8 +379,6 @@ def update_registrations_excel():
     
     # Stats
     total = len(regs)
-    locals_count = len([r for r in regs if r.place and 'anantapur' in r.place.lower()])
-    non_locals = total - locals_count
     kriyabans = len([r for r in regs if r.is_kriyaban])
     non_kriyabans = total - kriyabans
     acco_yes = len([r for r in regs if r.accommodation])
@@ -393,8 +391,6 @@ def update_registrations_excel():
             ws.append(['SUMMARY STATISTICS'])
             ws.append(['Category', 'Count'])
             ws.append(['Total Registrations', total])
-            ws.append(['Locals (Anantapur)', locals_count])
-            ws.append(['Non-Locals', non_locals])
             ws.append(['Kriyabans', kriyabans])
             ws.append(['Non-Kriyabans', non_kriyabans])
             ws.append(['Accommodation Needed', acco_yes])
@@ -440,8 +436,6 @@ def update_registrations_excel():
     del wb['Sheet']
     
     create_sheet('All Registrations', regs)
-    create_sheet('Locals', [r for r in regs if r.place and 'anantapur' in r.place.lower()])
-    create_sheet('Non-Locals', [r for r in regs if not r.place or 'anantapur' not in r.place.lower()])
     create_sheet('Kriyabans', [r for r in regs if r.is_kriyaban])
     create_sheet('Non-Kriyabans', [r for r in regs if not r.is_kriyaban])
     create_sheet('Accommodation', [r for r in regs if r.accommodation])
@@ -1380,8 +1374,6 @@ def export_registrations_pdf():
     
     # Stats
     total = len(regs)
-    locals_count = len([r for r in regs if r.place and 'anantapur' in r.place.lower()])
-    non_locals = total - locals_count
     kriyabans = len([r for r in regs if r.is_kriyaban])
     non_kriyabans = total - kriyabans
     acco_yes = len([r for r in regs if r.accommodation])
@@ -1401,8 +1393,6 @@ def export_registrations_pdf():
             pdf.set_font('helvetica', '', 10)
             stats = [
                 ('Total Registrations', total),
-                ('Locals (Anantapur)', locals_count),
-                ('Non-Locals', non_locals),
                 ('Kriyabans', kriyabans),
                 ('Non-Kriyabans', non_kriyabans),
                 ('Accommodation Yes', acco_yes),
@@ -1434,8 +1424,6 @@ def export_registrations_pdf():
             pdf.ln()
 
     add_section('Overall Summary & All Records', regs)
-    add_section('Locals (Anantapur)', [r for r in regs if r.place and 'anantapur' in r.place.lower()])
-    add_section('Non-Locals', [r for r in regs if not r.place or 'anantapur' not in r.place.lower()])
     add_section('Kriyabans', [r for r in regs if r.is_kriyaban])
     add_section('Non-Kriyabans', [r for r in regs if not r.is_kriyaban])
     add_section('Accommodation Needed', [r for r in regs if r.accommodation])
