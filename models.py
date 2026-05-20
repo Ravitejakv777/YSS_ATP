@@ -136,7 +136,7 @@ class EventSchedule(db.Model):
     __tablename__ = 'event_schedules'
     id = db.Column(db.Integer, primary_key=True)
     day_number = db.Column(db.Integer, nullable=False)  # 1, 2, 3
-    day_label = db.Column(db.String(50), nullable=False)  # Day 1 – 20 June 2026
+    day_label = db.Column(db.String(50), nullable=False)  # Day 1 – 24 July 2026
     start_time = db.Column(db.String(10), nullable=False)  # 05:00 AM
     end_time = db.Column(db.String(10), nullable=False)    # 06:00 AM
     activity = db.Column(db.String(200), nullable=False)

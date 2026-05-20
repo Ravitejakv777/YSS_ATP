@@ -9,7 +9,7 @@
 {% for day in [1,2,3] %}
 <div class="card" style="margin-bottom:1.5rem;">
   <h3 style="font-family:'Cinzel',serif;color:var(--primary);margin-bottom:1rem;">
-    Day {{ day }} – {{ ['24 June','25 June','26 June'][day-1] }} 2026
+    Day {{ day }} – {{ ['24 July','25 July','26 July'][day-1] }} 2026
   </h3>
   <div style="overflow-x:auto;">
     <table>
@@ -49,9 +49,9 @@
         <div class="form-group">
           <label>Day Number</label>
           <select name="day_number" class="form-control" onchange="updateLabel(this)">
-            <option value="1">Day 1 (24 June)</option>
-            <option value="2">Day 2 (25 June)</option>
-            <option value="3">Day 3 (26 June)</option>
+            <option value="1">Day 1 (24 July)</option>
+            <option value="2">Day 2 (25 July)</option>
+            <option value="3">Day 3 (26 July)</option>
           </select>
         </div>
         <div class="form-group">
@@ -67,7 +67,7 @@
           <input type="text" name="end_time" class="form-control" placeholder="e.g. 06:00 AM">
         </div>
       </div>
-      <input type="hidden" name="day_label" id="addDayLabel" value="Day 1 – 24 June 2026">
+      <input type="hidden" name="day_label" id="addDayLabel" value="Day 1 – 24 July 2026">
       <div class="form-group" style="margin-top:1rem;">
         <label>Activity</label>
         <input type="text" name="activity" class="form-control" placeholder="Activity description" required>
@@ -102,9 +102,9 @@
         <div class="form-group">
           <label>Day Number</label>
           <select name="day_number" class="form-control" id="editDay" onchange="updateEditLabel(this)">
-            <option value="1">Day 1 (24 June)</option>
-            <option value="2">Day 2 (25 June)</option>
-            <option value="3">Day 3 (26 June)</option>
+            <option value="1">Day 1 (24 July)</option>
+            <option value="2">Day 2 (25 July)</option>
+            <option value="3">Day 3 (26 July)</option>
           </select>
         </div>
         <div class="form-group">
@@ -146,7 +146,7 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-const dayLabels = {1:'Day 1 – 24 June 2026',2:'Day 2 – 25 June 2026',3:'Day 3 – 26 June 2026'};
+const dayLabels = {1:'Day 1 – 24 July 2026',2:'Day 2 – 25 July 2026',3:'Day 3 – 26 July 2026'};
 function updateLabel(sel){document.getElementById('addDayLabel').value=dayLabels[sel.value];}
 function updateEditLabel(sel){document.getElementById('editDayLabel').value=dayLabels[sel.value];}
 function openEdit(id,day,label,start,end,activity,cat,order){
