@@ -1009,6 +1009,35 @@ def mark_notified(rid):
     db.session.commit()
     return jsonify({'success': True, 'message': 'Member marked as notified'})
 
+@app.route('/api/registrations/notify-all', methods=['POST'])
+@login_required
+def registrations_notify_all():
+    pending = Registration.query.filter_by(reg_status='Approved', notified=False).all()
+    if not pending:
+        return jsonify({'success': False, 'message': 'No pending unnotified registrations found'})
+        
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    if not gateway_url:
+        return jsonify({'success': False, 'message': 'WhatsApp Gateway is not configured. Please set it up first.'})
+        
+    success_count = 0
+    fail_count = 0
+    
+    for reg in pending:
+        try:
+            send_member_whatsapp(reg)
+            reg.notified = True
+            success_count += 1
+        except Exception as e:
+            print(f"Failed to send WhatsApp for registration {reg.id}: {e}")
+            fail_count += 1
+            
+    db.session.commit()
+    return jsonify({
+        'success': True,
+        'message': f"Sent WhatsApp confirmations to {success_count} devotees. {fail_count} failed."
+    })
+
 @app.route('/admin/registrations/export')
 @login_required
 def export_registrations():
@@ -1366,17 +1395,25 @@ def admin_room_notify():
     allotments = RoomAllotment.query.all()
     pending = []
     for a in allotments:
-        # If never notified OR room changed since last notification
-        if not a.notified_room_number or a.notified_room_number != a.room.room_number:
+        # If never notified via WhatsApp OR room changed since last WhatsApp notification
+        if not a.notified_room_whatsapp or a.notified_room_whatsapp != a.room.room_number:
             pending.append(a)
             
     if not pending:
-        flash('All attendees are already notified of their current room assignments.', 'info')
+        flash('All attendees are already notified of their current room assignments via WhatsApp.', 'info')
         return redirect(url_for('admin_room_allotment'))
         
     success_count = 0
     fail_count = 0
     
+    # Try sending via self-hosted gateway
+    import requests
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    
+    if not gateway_url:
+        flash('WhatsApp Gateway URL is not configured. Please set it up first.', 'error')
+        return redirect(url_for('admin_room_allotment'))
+        
     for a in pending:
         reg = a.registration
         room = a.room
@@ -1388,31 +1425,38 @@ def admin_room_notify():
                 f"Name: {reg.full_name}\n"
                 f"Room Number: {room.room_number}\n"
                 f"Number of Members: {room.capacity}-Bed Room\n"
-                f"Check-In Date: {reg.arrival_date if reg.arrival_date else '24-07-2026'}\n"
-                f"Check-Out Date: {reg.departure_date if reg.departure_date else '26-07-2026'}\n\n"
+                f"Check-In Date: {reg.arrival_date if reg.arrival_date else '24-06-2026'}\n"
+                f"Check-Out Date: {reg.departure_date if reg.departure_date else '26-06-2026'}\n\n"
                 f"We kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\n"
                 f"May this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\n"
                 f"We look forward to welcoming you with love and prayers.\n\n"
                 f"Jai Guru"
             )
-            msg = Message(
-                subject=f"Accommodation Allotment Confirmation – YSS Anantapur",
-                recipients=[reg.email],
-                body=body_text
+            r = requests.post(
+                f"{gateway_url}/send",
+                json={
+                    'to': reg.whatsapp,
+                    'message': body_text
+                },
+                timeout=5
             )
-            mail.send(msg)
-            a.notified_room_number = room.room_number
-            success_count += 1
+            if r.status_code == 200:
+                a.notified_room_whatsapp = room.room_number
+                a.notified_room_number = room.room_number # keep notified_room_number updated too
+                success_count += 1
+            else:
+                print(f"Failed to send WhatsApp: {r.status_code} - {r.text}")
+                fail_count += 1
         except Exception as e:
-            print(f"Failed to notify {reg.email}: {e}")
+            print(f"Failed to notify {reg.whatsapp} via WhatsApp: {e}")
             fail_count += 1
             
     db.session.commit()
     
     if fail_count > 0:
-        flash(f"Successfully notified {success_count} attendees via Email. {fail_count} failed due to mail server issues.", 'warning')
+        flash(f"Successfully notified {success_count} attendees via WhatsApp. {fail_count} failed to deliver.", 'warning')
     else:
-        flash(f"Successfully notified {success_count} attendees via Email!", 'success')
+        flash(f"Successfully notified {success_count} attendees via WhatsApp!", 'success')
         
     return redirect(url_for('admin_room_allotment'))
 
@@ -1422,8 +1466,9 @@ def admin_room_reset_notifications():
     allotments = RoomAllotment.query.all()
     for a in allotments:
         a.notified_room_number = None
+        a.notified_room_whatsapp = None
     db.session.commit()
-    flash('Email notification flags reset successfully.', 'success')
+    flash('WhatsApp notification flags reset successfully.', 'success')
     return redirect(url_for('admin_room_allotment'))
 
 @app.route('/admin/room-allotment/mark-notified/<int:reg_id>', methods=['POST'])

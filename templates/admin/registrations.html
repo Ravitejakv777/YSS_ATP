@@ -7,6 +7,7 @@
     <a href="{{ url_for('export_registrations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download Excel</a>
     <a href="{{ url_for('export_registrations_pdf') }}" class="btn btn-primary btn-sm"><i class="fa fa-file-pdf"></i> Download PDF</a>
     <button onclick="window.print()" class="btn btn-outline btn-sm"><i class="fa fa-print"></i> Print</button>
+    <button onclick="notifyAllWhatsApp()" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; display:flex; align-items:center; gap:0.35rem;"><i class="fab fa-whatsapp"></i> Notify All (WhatsApp)</button>
     <a href="{{ url_for('admin_add_registration') }}" class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Add Participant</a>
   </div>
 </div>
@@ -252,6 +253,37 @@ function confirmDelete(id, type) {
       .then(r=>r.json()).then(d=>{if(d.success){modal.style.display='none';location.reload();}});
   };
 }
+
+function notifyAllWhatsApp() {
+  if (!confirm("Are you sure you want to send WhatsApp confirmation messages to all approved devotees who have not yet been notified?")) {
+    return;
+  }
+  
+  showToast("Sending WhatsApp notifications... Please wait.", "info");
+  
+  fetch('/api/registrations/notify-all', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, "success");
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+      showToast(data.message, "error");
+    }
+  })
+  .catch(err => {
+    console.error("Error sending bulk notifications:", err);
+    showToast("An error occurred while sending notifications.", "error");
+  });
+}
+
 function showToast(msg, type) {
   const t = document.createElement('div');
   t.className = 'toast toast-'+type;
