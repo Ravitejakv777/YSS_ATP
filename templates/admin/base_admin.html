@@ -10,6 +10,99 @@
     html {
       overflow-y: scroll !important;
     }
+    
+    /* Custom Scrollbar Styles for Admin Portal */
+    /* Force table containers to always show horizontal scrollbars */
+    [style*="overflow-x:auto"], [style*="overflow-x: auto"] {
+      overflow-x: scroll !important;
+    }
+
+    /* Webkit (Chrome, Safari, Edge) scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 14px !important;
+      height: 14px !important;
+      display: block !important;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0ebe4 !important; /* light cream/grey matching theme */
+      border-radius: 8px !important;
+      border: 1px solid #e0d5c8 !important;
+      display: block !important;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c2ab95 !important; /* muted brown/gold matching theme */
+      border-radius: 8px !important;
+      border: 3px solid #f0ebe4 !important; /* matches track for inset effect */
+      display: block !important;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary) !important; /* Highlight on hover */
+    }
+    
+    /* Scrollbar buttons (arrows) */
+    ::-webkit-scrollbar-button:single-button {
+      background-color: #f0ebe4 !important;
+      display: block !important;
+      background-size: 10px !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      height: 14px !important;
+      width: 14px !important;
+    }
+    /* Left arrow icon */
+    ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='70,25 30,50 70,75'/></svg>") !important;
+    }
+    /* Right arrow icon */
+    ::-webkit-scrollbar-button:single-button:horizontal:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='30,25 70,50 30,75'/></svg>") !important;
+    }
+    /* Up arrow icon */
+    ::-webkit-scrollbar-button:single-button:vertical:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='25,70 50,30 75,70'/></svg>") !important;
+    }
+    /* Down arrow icon */
+    ::-webkit-scrollbar-button:single-button:vertical:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='25,30 50,70 75,30'/></svg>") !important;
+    }
+
+    /* Dark Mode Scrollbar Overrides */
+    body.dark-mode ::-webkit-scrollbar-track {
+      background: #1a1a1a !important;
+      border-color: #2d2d2d !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb {
+      background: #555555 !important;
+      border: 3px solid #1a1a1a !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold) !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button {
+      background-color: #1a1a1a !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='70,25 30,50 70,75'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:horizontal:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='30,25 70,50 30,75'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:vertical:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='25,70 50,30 75,70'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:vertical:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='25,30 50,70 75,30'/></svg>") !important;
+    }
+
+    /* Firefox compatibility styling */
+    * {
+      scrollbar-width: auto !important;
+      scrollbar-color: #c2ab95 #f0ebe4 !important;
+    }
+    body.dark-mode * {
+      scrollbar-color: #555555 #1a1a1a !important;
+    }
+
     /* Dark Mode variables & overrides for Admin Portal */
     body.dark-mode {
       --cream: #121212;
