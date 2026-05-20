@@ -742,11 +742,25 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html', config=app.config)
 
+def normalize_lesson_no(val):
+    val = (val or '').strip()
+    if not val:
+        return ''
+    if val.upper().startswith('NEW MEMBER'):
+        return val
+    # Remove any existing L- or L - prefix (case-insensitive)
+    import re
+    cleaned = re.sub(r'^L\s*-\s*', '', val, flags=re.IGNORECASE)
+    cleaned = re.sub(r'^L-\s*', '', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'^L\s*', '', cleaned, flags=re.IGNORECASE)
+    return f"L - {cleaned}"
+
 # ─── REGISTRATION ─────────────────────────────────────────────────────────────
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     if request.method == 'POST':
         errors = []
+        is_new_member = request.form.get('is_new_member') == 'yes'
         lesson_no = request.form.get('lesson_no', '').strip()
         full_name = request.form.get('full_name', '').strip()
         gender = request.form.get('gender', '').strip()
@@ -777,7 +791,22 @@ def registration():
             file.save(os.path.join(uploads_dir, new_filename))
             screenshot_filename = new_filename
 
-        if not lesson_no: errors.append('Lesson Number is required.')
+        # Set/Normalize Lesson Number
+        if is_new_member:
+            new_members = Registration.query.filter(Registration.lesson_no.like('NEW MEMBER %')).all()
+            import re
+            max_i = 0
+            for r in new_members:
+                match = re.match(r'^NEW MEMBER\s+(\d+)$', r.lesson_no, re.IGNORECASE)
+                if match:
+                    num = int(match.group(1))
+                    if num > max_i:
+                        max_i = num
+            lesson_no = f"NEW MEMBER {max_i + 1}"
+        else:
+            lesson_no = normalize_lesson_no(lesson_no)
+
+        if not is_new_member and not lesson_no: errors.append('Lesson Number is required.')
         if not full_name: errors.append('Full Name is required.')
         if not gender: errors.append('Gender is required.')
         if not age or not age.isdigit(): errors.append('Valid Age is required.')
@@ -802,7 +831,7 @@ def registration():
                 if existing_txn:
                     errors.append('This Transaction ID has already been submitted.')
                     
-            if lesson_no and lesson_no.upper() not in ['0', '00', '000', '0000', '00000', 'NA', 'N/A', '-', 'ADMIN', 'NONE', '']:
+            if not is_new_member and lesson_no and lesson_no.upper() not in ['0', '00', '000', '0000', '00000', 'NA', 'N/A', '-', 'ADMIN', 'NONE', '']:
                 existing_lesson = Registration.query.filter(Registration.lesson_no.ilike(lesson_no)).first()
                 if existing_lesson:
                     errors.append(f'Lesson Number {lesson_no} is already registered.')
@@ -810,7 +839,9 @@ def registration():
         if errors:
             for e in errors:
                 flash(e, 'error')
-            return render_template('registration.html', config=app.config, form=request.form)
+            form_data = dict(request.form)
+            form_data['lesson_no'] = lesson_no
+            return render_template('registration.html', config=app.config, form=form_data)
 
         # Calculate amount
         base_fee = 1800

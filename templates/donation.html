@@ -11,7 +11,7 @@
         <div class="form-grid form-grid-2">
           <div class="form-group">
             <label data-i18n="lesson_no_label">Lesson No *</label>
-            <input type="text" name="lesson_no" class="form-control" data-i18n-placeholder="lesson_no_placeholder" placeholder="Enter lesson number e.g. 12345" value="{{ form.get('lesson_no','') }}" required>
+            <input type="text" name="lesson_no" id="lesson_no" class="form-control" data-i18n-placeholder="lesson_no_placeholder" placeholder="Enter lesson number e.g. 12345" value="{{ form.get('lesson_no','') }}" required>
           </div>
           <div class="form-group">
             <label data-i18n="don_name_label">Name *</label>
@@ -116,6 +116,19 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const lessonInput = document.getElementById('lesson_no');
+  if (lessonInput) {
+    lessonInput.addEventListener('input', function() {
+      if (!this.value.startsWith('L - ')) {
+        const rawText = this.value.replace(/^L\s*-\s*/i, '').replace(/^L-\s*/i, '').replace(/^L\s*/i, '');
+        this.value = 'L - ' + rawText;
+      }
+    });
+    if (!lessonInput.value.trim() || lessonInput.value === '') {
+      lessonInput.value = 'L - ';
+    }
+  }
+
   const amountInput = document.getElementById('donation_amount');
   const upiBtn = document.getElementById('upi-pay-btn');
   
