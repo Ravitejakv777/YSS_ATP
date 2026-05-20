@@ -1268,7 +1268,8 @@ def admin_registrations():
     if payment_mode:
         q = q.filter_by(payment_mode=payment_mode)
 
-    registrations = q.order_by(Registration.id.asc()).all()
+    registrations_paginated = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10, error_out=False)
+    registrations = registrations_paginated.items
     
     total_registered = Registration.query.count()
     approval_pending = Registration.query.filter_by(payment_status='Pending').count()
@@ -1290,7 +1291,7 @@ def admin_registrations():
                            search=search, reg_status=reg_status,
                            is_kriyaban=is_kriyaban, accommodation=accommodation,
                            notified=notified, payment_mode=payment_mode,
-                           stats=stats, config=app.config)
+                           stats=stats, config=app.config, pagination=registrations_paginated)
 
 # ─── ADMIN REQUESTS (Pending payment transactions) ────────────────────────────
 @app.route('/admin/requests')
@@ -1304,9 +1305,10 @@ def admin_requests():
                              Registration.whatsapp.ilike(f'%{search}%'),
                              Registration.reg_id.ilike(f'%{search}%')))
     pending_count = q.count()
-    registrations = q.order_by(Registration.id.asc()).all()
+    registrations_paginated = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10, error_out=False)
+    registrations = registrations_paginated.items
     return render_template('admin/requests.html', registrations=registrations,
-                           search=search, pending_count=pending_count, config=app.config)
+                           search=search, pending_count=pending_count, config=app.config, pagination=registrations_paginated)
 
 @app.route('/api/registrations/<int:rid>/approve', methods=['POST'])
 @login_required
