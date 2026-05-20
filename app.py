@@ -1529,25 +1529,27 @@ def admin_credentials():
 @app.route('/admin/whatsapp-setup')
 @login_required
 def admin_whatsapp_setup():
+    return render_template('admin/whatsapp_setup.html', config=app.config)
+
+@app.route('/admin/whatsapp-status')
+@login_required
+def admin_whatsapp_status():
     import requests
     gateway_url = app.config.get('WHATSAPP_GATEWAY_URL', 'http://localhost:3000')
-    
     status_data = {
         'status': 'Offline',
         'qr': None,
         'gateway_url': gateway_url
     }
-    
     try:
-        r = requests.get(f"{gateway_url}/status", timeout=3)
+        r = requests.get(f"{gateway_url}/status", timeout=0.8)
         if r.status_code == 200:
             res = r.json()
             status_data['status'] = res.get('status', 'Disconnected')
             status_data['qr'] = res.get('qr')
     except Exception as e:
         print(f"Error fetching WhatsApp gateway status: {e}")
-        
-    return render_template('admin/whatsapp_setup.html', status=status_data, config=app.config)
+    return jsonify(status_data)
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 with app.app_context():

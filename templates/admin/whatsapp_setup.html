@@ -10,7 +10,7 @@
   </div>
   <div style="display:flex; gap:0.5rem; align-items:center;">
     <span style="font-size:0.9rem; color:var(--muted);">Service endpoint:</span>
-    <code style="background:#e9ecef; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.85rem; color:var(--primary); font-weight:bold;">{{ status.gateway_url }}</code>
+    <code style="background:#e9ecef; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.85rem; color:var(--primary); font-weight:bold;">{{ config.get('WHATSAPP_GATEWAY_URL', 'http://localhost:3000') }}</code>
   </div>
 </div>
 
@@ -24,64 +24,39 @@
     <div style="text-align:center; padding:1.5rem; background:#fdf6ec; border-radius:8px; border:1px solid #e0d0bb; margin-bottom:1.5rem;">
       <div style="font-size:1.1rem; font-weight:bold; margin-bottom:0.75rem; color:var(--text);">Current Status:</div>
       
-      {% if status.status == 'Connected' %}
-        <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#dcfce7; color:#15803d; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(21,128,61,0.15);">
-          <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation: pulse 1.5s infinite;"></span>
-          CONNECTED
-        </div>
-        <p style="margin-top:1rem; font-size:0.9rem; color:#15803d; font-weight:600;">
-          🎉 Fantastic! WhatsApp messages are now fully automated and will be dispatched in the background!
-        </p>
-      {% elif status.status == 'Waiting for scan' %}
-        <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fef3c7; color:#b45309; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(180,83,9,0.15);">
-          <span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; animation: pulse 1.5s infinite;"></span>
-          PENDING SCAN
-        </div>
-        <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
-          Please scan the QR code below using WhatsApp linked devices on your admin phone.
-        </p>
-      {% elif status.status == 'Offline' %}
-        <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fee2e2; color:#b91c1c; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(185,28,28,0.15);">
-          <span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
-          GATEWAY OFFLINE
-        </div>
-        <p style="margin-top:1rem; font-size:0.9rem; color:#b91c1c; font-weight:600;">
-          The WhatsApp Gateway service could not be reached. Please check the setup instructions to launch it on Railway.
-        </p>
-      {% else %}
+      <div id="status-badge-area">
         <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#f3f4f6; color:#4b5563; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem;">
-          <span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:50%;"></span>
-          {{ status.status|upper }}
+          <span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+          CHECKING...
         </div>
         <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
-          Attempting to initialize connection...
+          Retrieving live status from gateway...
         </p>
-      {% endif %}
+      </div>
     </div>
 
     <!-- QR Code Scanning Section -->
-    {% if status.status == 'Waiting for scan' and status.qr %}
-      <div style="text-align:center; padding:1.5rem; border:2px dashed var(--gold); border-radius:12px; background:#fffdec; margin-top:1.5rem;">
-        <h4 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:0.75rem;">Scan QR Code</h4>
-        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
-          Go to <strong>WhatsApp ➔ Linked Devices ➔ Link a Device</strong> on your phone and scan:
-        </p>
-        <div style="display:inline-block; background:#fff; padding:1rem; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border: 1px solid #e0d0bb;">
-          <img src="{{ status.qr }}" alt="WhatsApp QR Code" style="width:220px; height:220px; display:block;">
-        </div>
-        <div style="margin-top:1rem; font-size:0.8rem; color:var(--gold); font-weight:bold; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-          <i class="fa fa-spinner fa-spin"></i> Checking connection status live...
-        </div>
+    <div id="qr-scan-area" style="display:none; text-align:center; padding:1.5rem; border:2px dashed var(--gold); border-radius:12px; background:#fffdec; margin-top:1.5rem;">
+      <h4 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:0.75rem;">Scan QR Code</h4>
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
+        Go to <strong>WhatsApp ➔ Linked Devices ➔ Link a Device</strong> on your phone and scan:
+      </p>
+      <div style="display:inline-block; background:#fff; padding:1rem; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border: 1px solid #e0d0bb;">
+        <img id="qr-image" src="" alt="WhatsApp QR Code" style="width:220px; height:220px; display:block;">
       </div>
-    {% elif status.status == 'Connected' %}
-      <div style="text-align:center; padding:2rem 1.5rem; border:2px solid #dcfce7; border-radius:12px; background:#f0fdf4; margin-top:1.5rem; color:#166534;">
-        <i class="fa-solid fa-circle-check" style="font-size:3rem; margin-bottom:1rem; color:#22c55e;"></i>
-        <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.2rem;">Automation Active</h4>
-        <p style="font-size:0.85rem; color:#14532d; margin:0;">
-          Devotees will receive instant, beautifully-formatted receipt details via your connected WhatsApp account as soon as registrations are approved.
-        </p>
+      <div style="margin-top:1rem; font-size:0.8rem; color:var(--gold); font-weight:bold; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+        <i class="fa fa-spinner fa-spin"></i> Checking connection status live...
       </div>
-    {% endif %}
+    </div>
+
+    <!-- Connected Status Section -->
+    <div id="connected-area" style="display:none; text-align:center; padding:2rem 1.5rem; border:2px solid #dcfce7; border-radius:12px; background:#f0fdf4; margin-top:1.5rem; color:#166534;">
+      <i class="fa-solid fa-circle-check" style="font-size:3rem; margin-bottom:1rem; color:#22c55e;"></i>
+      <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.2rem;">Automation Active</h4>
+      <p style="font-size:0.85rem; color:#14532d; margin:0;">
+        Devotees will receive instant, beautifully-formatted receipt details via your connected WhatsApp account as soon as registrations are approved.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -97,32 +72,83 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const currentStatus = "{{ status.status }}";
-  
-  // Auto polling to refresh state dynamically when waiting for scan
-  if (currentStatus === 'Waiting for scan' || currentStatus === 'Disconnected') {
-    console.log("Checking WhatsApp status in background...");
-    setInterval(() => {
-      fetch('/admin/whatsapp-setup')
-        .then(response => response.text())
-        .then(html => {
-          // Parse status from retrieved HTML page
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const newStatusElement = doc.querySelector('#whatsapp-setup-container');
-          if (newStatusElement) {
-            const oldGrid = document.querySelector('#whatsapp-setup-container');
-            // If the status text changed, refresh page to present updated status layout!
-            if (html.includes('CONNECTED') && !document.body.innerHTML.includes('CONNECTED')) {
-              window.location.reload();
-            } else {
-              oldGrid.innerHTML = newStatusElement.innerHTML;
-            }
+  let pollInterval = null;
+
+  function fetchWhatsAppStatus() {
+    fetch('/admin/whatsapp-status')
+      .then(response => response.json())
+      .then(data => {
+        const badgeArea = document.getElementById('status-badge-area');
+        const qrArea = document.getElementById('qr-scan-area');
+        const qrImage = document.getElementById('qr-image');
+        const connectedArea = document.getElementById('connected-area');
+
+        if (data.status === 'Connected') {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#dcfce7; color:#15803d; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(21,128,61,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+              CONNECTED
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:#15803d; font-weight:600;">
+              🎉 Fantastic! WhatsApp messages are now fully automated and will be dispatched in the background!
+            </p>
+          `;
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'block';
+        } else if (data.status === 'Waiting for scan') {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fef3c7; color:#b45309; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(180,83,9,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+              PENDING SCAN
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
+              Please scan the QR code below using WhatsApp linked devices on your admin phone.
+            </p>
+          `;
+          connectedArea.style.display = 'none';
+          if (data.qr) {
+            qrImage.src = data.qr;
+            qrArea.style.display = 'block';
+          } else {
+            qrArea.style.display = 'none';
           }
-        })
-        .catch(err => console.error("Polling error:", err));
-    }, 5000);
+        } else if (data.status === 'Offline') {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fee2e2; color:#b91c1c; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(185,28,28,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
+              GATEWAY OFFLINE
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:#b91c1c; font-weight:600;">
+              The WhatsApp Gateway service could not be reached. Please verify the service is running on Railway.
+            </p>
+          `;
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'none';
+        } else {
+          // General disconnected or other status
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#f3f4f6; color:#4b5563; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem;">
+              <span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:50%;"></span>
+              ${data.status.toUpperCase()}
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
+              Initializing connection...
+            </p>
+          `;
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error("Status fetching error:", err);
+      });
   }
+
+  // Initial fetch
+  fetchWhatsAppStatus();
+
+  // Poll every 5 seconds
+  pollInterval = setInterval(fetchWhatsAppStatus, 5000);
 });
 </script>
 {% endblock %}
