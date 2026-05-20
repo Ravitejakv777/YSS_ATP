@@ -916,7 +916,7 @@ def admin_registrations():
                              Registration.reg_id.ilike(f'%{search}%')))
     if reg_status:
         q = q.filter_by(reg_status=reg_status)
-    pagination = q.order_by(Registration.id.asc()).paginate(page=page, per_page=10)
+    registrations = q.order_by(Registration.id.asc()).all()
     
     total_registered = Registration.query.count()
     approval_pending = Registration.query.filter(
@@ -939,7 +939,7 @@ def admin_registrations():
         'total_acco_fee': total_acco_fee
     }
     
-    return render_template('admin/registrations.html', pagination=pagination,
+    return render_template('admin/registrations.html', registrations=registrations,
                            search=search, reg_status=reg_status, stats=stats, config=app.config)
 
 # ─── ADMIN REQUESTS (Pending payment transactions) ────────────────────────────
