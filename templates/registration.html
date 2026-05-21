@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateUpiPayment(amount) {
-    const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU NARASIMHULU&am=${amount}&cu=INR`;
+    const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amount}&cu=INR`;
     const upiBtn = document.getElementById('upi-pay-btn');
     const qrImg = document.getElementById('desktop-qr-img');
     
@@ -253,10 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modalAmount) modalAmount.textContent = `₹${amount}`;
                 
                 const gpayBtn = document.getElementById('modal-gpay');
-                if (gpayBtn) gpayBtn.href = `tez://upi/pay?pa=9441665181@ybl&pn=AKKALURU NARASIMHULU&am=${amount}&cu=INR`;
+                if (gpayBtn) gpayBtn.href = `tez://upi/pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amount}&cu=INR`;
                 
                 const paytmBtn = document.getElementById('modal-paytm');
-                if (paytmBtn) paytmBtn.href = `paytmmp://pay?pa=9441665181@ybl&pn=AKKALURU NARASIMHULU&am=${amount}&cu=INR`;
+                if (paytmBtn) paytmBtn.href = `paytmmp://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amount}&cu=INR`;
                 
                 const genericBtn = document.getElementById('modal-generic');
                 if (genericBtn) genericBtn.href = upiLink;
