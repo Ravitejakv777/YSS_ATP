@@ -133,7 +133,7 @@
     <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
   </div>
   <!-- QR always visible so desktop users can scan directly -->
-  <div id="desktop-qr-container" style="margin-bottom:1rem; display:flex; flex-direction:column; align-items:center;">
+  <div id="desktop-qr-container" style="margin-bottom:1rem; display:none; flex-direction:column; align-items:center;">
     <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay — or use the button below:</p>
     <img id="desktop-qr-img" src="{{ url_for('static', filename='images/qr_1800.png') }}" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
   </div>
@@ -237,17 +237,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const upiBtn = document.getElementById('upi-pay-btn');
     const qrImg = document.getElementById('desktop-qr-img');
     
-    if (upiBtn) {
-        upiBtn.href = upiLink;
-        upiBtn.onclick = null; // Open link directly
-    }
-    const qrImg = document.getElementById('desktop-qr-img');
     if (qrImg) {
         if (amount === 2800) {
             qrImg.src = "{{ url_for('static', filename='images/qr_2800.png') }}";
         } else {
             qrImg.src = "{{ url_for('static', filename='images/qr_1800.png') }}";
         }
+    }
+    if (upiBtn) {
+        upiBtn.href = upiLink;
+        upiBtn.onclick = function(e) {
+            e.preventDefault();
+            // Show the QR code container when Pay Now is clicked
+            const qrContainer = document.getElementById('desktop-qr-container');
+            if (qrContainer) qrContainer.style.display = 'flex';
+            
+            if (/Mobi|Android/i.test(navigator.userAgent)) {
+                // On mobile, show modal or open deep link
+                window.location.href = upiLink;
+            }
+        };
     }
   }
 

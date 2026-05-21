@@ -61,7 +61,7 @@
                  <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined, scan the QR or copy the UPI ID above.</p>
                </div>
                <div style="flex:1; min-width:220px; text-align:center;">
-                 <div id="desktop-qr-container" style="display:flex; flex-direction:column; align-items:center;">
+                 <div id="desktop-qr-container" style="display:none; flex-direction:column; align-items:center;">
                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay:</p>
                    <img id="desktop-qr-img" src="{{ url_for('static', filename='images/qr.png') }}" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;"/>
                  </div>
@@ -148,6 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Pay Now opens UPI directly (works on mobile and desktop)
       upiBtn.onclick = function(e) {
         e.preventDefault();
+        
+        // Show the QR code container when Pay Now is clicked
+        const qrContainer = document.getElementById('desktop-qr-container');
+        if (qrContainer) qrContainer.style.display = 'flex';
+        
         if (/Mobi|Android/i.test(navigator.userAgent)) {
           // Mobile: show UPI chooser modal
           document.getElementById('upi-modal-amount').textContent = `₹${amt}`;
