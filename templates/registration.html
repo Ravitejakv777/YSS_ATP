@@ -125,7 +125,7 @@
           </div>
         </div>
 
-        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;display:none;">
+        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;">
   <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
   <p style="font-size:1.1rem;color:var(--primary);font-weight:bold;margin:0 0 0.5rem 0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
   <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-bottom:1rem;">
@@ -275,6 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
       updateUpiPayment(total);
     });
   });
+
+  // Initialise with default ₹1800 on page load
+  updateUpiPayment(1800);
 
   // Trigger fee section if accommodation already selected (e.g. after validation error)
   const checkedRadio = document.querySelector('input[name="accommodation"]:checked');
