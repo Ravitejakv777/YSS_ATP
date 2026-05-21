@@ -110,6 +110,25 @@ with app.app_context():
             except Exception as e:
                 db.session.rollback()
                 print(f"admins_email_key constraint already removed or not found: {e}")
+
+        # Add registered_by columns to registrations table
+        for col_sql in [
+            "ALTER TABLE registrations ADD COLUMN IF NOT EXISTS registered_by_id INTEGER REFERENCES admins(id)",
+            "ALTER TABLE registrations ADD COLUMN IF NOT EXISTS registered_by_name VARCHAR(100)",
+        ]:
+            try:
+                db.session.execute(db.text(col_sql))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                col_name = col_sql.split("ADD COLUMN IF NOT EXISTS ")[1].split(" ")[0] if "IF NOT EXISTS" in col_sql else col_sql.split("ADD COLUMN ")[1].split(" ")[0]
+                try:
+                    fallback_sql = col_sql.replace(" IF NOT EXISTS", "")
+                    db.session.execute(db.text(fallback_sql))
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"Column {col_name} might already exist: {e}")
                 
         # Seed WhatsApp templates if empty
         templates_to_seed = [
@@ -639,7 +658,7 @@ def log_action(action_desc):
         admin_name = 'System'
         if current_user and current_user.is_authenticated:
             admin_id = current_user.id
-            admin_name = current_user.username
+            admin_name = current_user.name
             
             # Update last_active timestamp
             try:
@@ -664,6 +683,15 @@ def log_action(action_desc):
     except Exception as e:
         print(f"Failed to write ActivityLog: {e}")
 
+@app.before_request
+def update_last_active():
+    """Heartbeat: update last_active on every authenticated page request."""
+    if current_user and current_user.is_authenticated:
+        try:
+            current_user.last_active = datetime.utcnow()
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 def format_whatsapp_template(key, **kwargs):
     """
     Retrieves a template by key, performs variable substitution, and returns the formatted text.
@@ -1046,7 +1074,28 @@ def admin_manage():
                 flash('Cannot delete main admin.', 'error')
                 
     admins = Admin.query.all()
-    return render_template('admin/manage_admins.html', admins=admins, config=app.config)
+    five_mins_ago = datetime.utcnow() - timedelta(minutes=5)
+    
+    # Per-admin stats
+    from sqlalchemy import func
+    reg_counts = dict(
+        db.session.query(Registration.registered_by_id, func.count(Registration.id))
+        .group_by(Registration.registered_by_id).all()
+    )
+    activity_counts = dict(
+        db.session.query(ActivityLog.admin_id, func.count(ActivityLog.id))
+        .group_by(ActivityLog.admin_id).all()
+    )
+    
+    admin_stats = {}
+    for a in admins:
+        admin_stats[a.id] = {
+            'reg_count': reg_counts.get(a.id, 0),
+            'activity_count': activity_counts.get(a.id, 0),
+            'is_online': bool(a.last_active and (datetime.utcnow() - a.last_active).total_seconds() < 300)
+        }
+    
+    return render_template('admin/manage_admins.html', admins=admins, admin_stats=admin_stats, config=app.config)
 
 # ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
 @app.route('/admin')
@@ -1159,11 +1208,14 @@ def admin_add_registration():
             transaction_id=transaction_id, payment_screenshot=screenshot_filename,
             payment_status='Paid' if payment_mode == 'Cash' or transaction_id else 'Pending',
             reg_status='Approved' if payment_mode == 'Cash' or transaction_id else 'Pending',
-            notified=True if email and (payment_mode == 'Cash' or transaction_id) else False
+            notified=True if email and (payment_mode == 'Cash' or transaction_id) else False,
+            registered_by_id=current_user.id,
+            registered_by_name=current_user.name
         )
         db.session.add(reg)
         db.session.commit()
         update_registrations_excel()
+        log_action(f"Admin added registration for {reg.full_name} (Lesson: {reg.lesson_no}, Mobile: {reg.whatsapp}, Mode: {reg.payment_mode}, Amount: {reg.amount})")
         if email and reg.payment_status == 'Paid':
             send_registration_email(reg)
         flash('Participant added successfully.', 'success')
@@ -1523,11 +1575,14 @@ def manual_registration():
         amount=amount_val,
         accommodation=accommodation_val,
         payment_status='Paid',
-        reg_status='Approved'
+        reg_status='Approved',
+        registered_by_id=current_user.id,
+        registered_by_name=current_user.name
     )
     db.session.add(reg)
     db.session.commit()
     update_registrations_excel()
+    log_action(f"Manual quick-entry registration for {reg.full_name} (Mobile: {reg.whatsapp}, Mode: {reg.payment_mode}, Amount: {reg.amount})")
     return jsonify({'success': True})
 
 
@@ -2072,12 +2127,31 @@ def admin_activity_log():
     logs_paginated = ActivityLog.query.order_by(ActivityLog.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
     now = datetime.utcnow()
     
+    # Per-admin stats for the summary panel
+    from sqlalchemy import func
+    reg_counts = dict(
+        db.session.query(Registration.registered_by_id, func.count(Registration.id))
+        .group_by(Registration.registered_by_id).all()
+    )
+    activity_counts = dict(
+        db.session.query(ActivityLog.admin_id, func.count(ActivityLog.id))
+        .group_by(ActivityLog.admin_id).all()
+    )
+    admin_stats = {}
+    for a in all_admins:
+        admin_stats[a.id] = {
+            'reg_count': reg_counts.get(a.id, 0),
+            'activity_count': activity_counts.get(a.id, 0),
+            'is_online': bool(a.last_active and (now - a.last_active).total_seconds() < 300)
+        }
+    
     return render_template(
         'admin/activity_log.html',
         logs=logs_paginated.items,
         pagination=logs_paginated,
         online_admins=online_admins,
         all_admins=all_admins,
+        admin_stats=admin_stats,
         now=now,
         config=app.config
     )

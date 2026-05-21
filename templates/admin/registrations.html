@@ -127,7 +127,7 @@
       <thead>
         <tr>
           <th>S.No</th><th>Reg ID</th><th>Lesson No</th><th>Name</th><th>Mobile No</th><th>Place</th><th>Amount</th><th>Date</th>
-          <th>Payment Mode</th><th>Screenshot</th><th>Payment Status</th><th>Reg Status</th><th>Action</th>
+          <th>Payment Mode</th><th>Screenshot</th><th>Payment Status</th><th>Reg Status</th><th>Registered By</th><th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -205,6 +205,15 @@
           <span style="display:inline-block;padding:.25rem .65rem;border-radius:999px;font-size:.75rem;font-weight:700;background:#FFF8E1;color:#F57F17;border:1px solid #FFE082;">
             <i class="fa fa-clock" style="margin-right:.3rem;"></i>{{ r.reg_status }}
           </span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.registered_by_name %}
+            <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:.78rem;font-weight:600;padding:.2rem .55rem;border-radius:6px;background:#EDE7F6;color:#512DA8;border:1px solid #D1C4E9;">
+              <i class="fa fa-user-shield"></i> {{ r.registered_by_name }}
+            </span>
+          {% else %}
+            <span style="font-size:.78rem;color:var(--muted);">Self</span>
           {% endif %}
         </td>
         <td>

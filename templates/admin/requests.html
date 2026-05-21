@@ -45,6 +45,7 @@
           <th>Payment Mode</th>
           <th>Transaction ID</th>
           <th>Screenshot</th>
+          <th>Registered By</th>
           <th style="min-width:180px;">Actions</th>
         </tr>
       </thead>
@@ -73,6 +74,15 @@
           </button>
           {% else %}
           <span style="color:var(--muted);font-size:.8rem;">No file</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.registered_by_name %}
+            <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:.78rem;font-weight:600;padding:.2rem .55rem;border-radius:6px;background:#EDE7F6;color:#512DA8;border:1px solid #D1C4E9;">
+              <i class="fa fa-user-shield"></i> {{ r.registered_by_name }}
+            </span>
+          {% else %}
+            <span style="font-size:.78rem;color:var(--muted);">Self</span>
           {% endif %}
         </td>
         <td>

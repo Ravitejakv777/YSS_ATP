@@ -62,6 +62,8 @@ class Registration(db.Model):
     reminder_7d_sent = db.Column(db.Boolean, default=False)
     reminder_3d_sent = db.Column(db.Boolean, default=False)
     reminder_1d_sent = db.Column(db.Boolean, default=False)
+    registered_by_id = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=True)   # None = self-registered
+    registered_by_name = db.Column(db.String(100), nullable=True)                          # snapshot of admin name
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -93,6 +95,7 @@ class Registration(db.Model):
             'reminder_7d_sent': self.reminder_7d_sent,
             'reminder_3d_sent': self.reminder_3d_sent,
             'reminder_1d_sent': self.reminder_1d_sent,
+            'registered_by_name': self.registered_by_name or 'Self',
             'created_at': self.created_at.strftime('%d %b %Y') if self.created_at else ''
         }
 

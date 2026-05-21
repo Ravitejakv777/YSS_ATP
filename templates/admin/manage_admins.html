@@ -5,45 +5,79 @@
   <h1><i class="fa fa-user-shield" style="color:var(--gold);margin-right:.5rem;"></i>Manage Admins</h1>
   <div style="display:flex;gap:1rem;">
     <a href="{{ url_for('admin_credentials') }}" class="btn btn-outline btn-sm"><i class="fa fa-key"></i> Update Credentials</a>
+    <a href="{{ url_for('admin_activity_log') }}" class="btn btn-outline btn-sm"><i class="fa fa-history"></i> Activity Log</a>
     <button onclick="document.getElementById('addAdminModal').style.display='flex'" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Admin</button>
   </div>
 </div>
 
-<div class="table-card">
-  <div style="overflow-x:auto;">
-    <table>
-      <thead>
-        <tr><th>Name</th><th>Lesson No</th><th>Email</th><th>Mobile</th><th>Role</th><th>Created At</th><th>Action</th></tr>
-      </thead>
-      <tbody>
-      {% for a in admins %}
-      <tr>
-        <td><strong>{{ a.name }}</strong></td>
-        <td>{{ a.lesson_no }}</td>
-        <td>{{ a.email }}</td>
-        <td>{{ a.mobile }}</td>
-        <td>
-          {% if a.is_main_admin %}
-            <span class="badge" style="background:#E3F2FD;color:#1565C0;">Main Admin</span>
-          {% else %}
-            <span class="badge" style="background:#F5F5F5;color:#616161;">Admin</span>
-          {% endif %}
-        </td>
-        <td>{{ a.created_at.strftime('%d %b %Y') if a.created_at else '-' }}</td>
-        <td>
-          {% if not a.is_main_admin %}
-          <form method="POST" style="display:inline;" onsubmit="return showCustomConfirm('Are you sure you want to delete this admin? This action cannot be undone.', this)">
-            <input type="hidden" name="action" value="delete">
-            <input type="hidden" name="admin_id" value="{{ a.id }}">
-            <button type="submit" class="btn btn-sm" style="background:#FFEBEE;color:#C62828;border:none;" title="Delete"><i class="fa fa-trash"></i></button>
-          </form>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+<!-- ADMIN CARDS WITH ONLINE STATUS -->
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-bottom:2rem;">
+  {% for a in admins %}
+  {% set stats = admin_stats.get(a.id, {}) %}
+  {% set is_online = stats.get('is_online', false) %}
+  <div style="background:#fff; border-radius:14px; padding:1.25rem 1.5rem; border:1.5px solid {% if is_online %}#bbf7d0{% else %}#e5e7eb{% endif %}; box-shadow:0 4px 16px rgba(0,0,0,0.06); position:relative; overflow:hidden;">
+    <!-- Online/Offline indicator -->
+    <div style="position:absolute; top:1rem; right:1rem; display:flex; align-items:center; gap:0.35rem;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:{% if is_online %}#22c55e{% else %}#9ca3af{% endif %}; {% if is_online %}box-shadow:0 0 8px #22c55e; animation:pulse 1.5s infinite;{% endif %}"></span>
+      <span style="font-size:0.7rem; font-weight:700; color:{% if is_online %}#16a34a{% else %}#9ca3af{% endif %};">{% if is_online %}Online{% else %}Offline{% endif %}</span>
+    </div>
+
+    <!-- Name + role -->
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; margin-right:4rem;">
+      <div style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--gold)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.1rem; flex-shrink:0;">
+        {{ a.name[0] | upper }}
+      </div>
+      <div>
+        <div style="font-weight:700; font-size:0.95rem; color:var(--text);">{{ a.name }}</div>
+        <div style="font-size:0.75rem; color:var(--muted);">{{ a.email }}</div>
+      </div>
+    </div>
+
+    <!-- Details row -->
+    <div style="display:flex; gap:0.75rem; font-size:0.78rem; color:var(--muted); margin-bottom:1rem; flex-wrap:wrap;">
+      <span><i class="fa fa-graduation-cap" style="margin-right:0.2rem;"></i>{{ a.lesson_no }}</span>
+      <span><i class="fa fa-phone" style="margin-right:0.2rem;"></i>{{ a.mobile }}</span>
+      {% if a.is_main_admin %}
+      <span style="background:#fef3c7; color:#d97706; border:1px solid #fde68a; padding:.1rem .4rem; border-radius:4px; font-weight:700;">Main Admin</span>
+      {% else %}
+      <span style="background:#e0e7ff; color:#4f46e5; border:1px solid #c7d2fe; padding:.1rem .4rem; border-radius:4px; font-weight:700;">Admin</span>
+      {% endif %}
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:0.6rem 0.75rem; text-align:center;">
+        <div style="font-size:1.3rem; font-weight:800; color:#16a34a;">{{ stats.get('reg_count', 0) }}</div>
+        <div style="font-size:0.68rem; color:#16a34a; font-weight:600;"><i class="fa fa-user-plus"></i> Regs Added</div>
+      </div>
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:0.6rem 0.75rem; text-align:center;">
+        <div style="font-size:1.3rem; font-weight:800; color:#1d4ed8;">{{ stats.get('activity_count', 0) }}</div>
+        <div style="font-size:0.68rem; color:#1d4ed8; font-weight:600;"><i class="fa fa-history"></i> Actions Done</div>
+      </div>
+    </div>
+
+    <!-- Last active -->
+    <div style="font-size:0.72rem; color:var(--muted); margin-bottom:0.75rem;">
+      <i class="fa fa-clock"></i>
+      {% if a.last_active %}
+        Last active: {{ a.last_active.strftime('%d %b %Y, %I:%M %p') }}
+      {% else %}
+        Never active
+      {% endif %}
+    </div>
+
+    <!-- Delete button (non-main admins only) -->
+    {% if not a.is_main_admin %}
+    <form method="POST" style="display:inline;" onsubmit="return showCustomConfirm('Are you sure you want to delete {{ a.name }}? This cannot be undone.', this)">
+      <input type="hidden" name="action" value="delete">
+      <input type="hidden" name="admin_id" value="{{ a.id }}">
+      <button type="submit" class="btn btn-sm" style="background:#FFEBEE;color:#C62828;border:none;font-size:0.78rem;">
+        <i class="fa fa-trash"></i> Remove Admin
+      </button>
+    </form>
+    {% endif %}
   </div>
+  {% endfor %}
 </div>
 
 <!-- ADD ADMIN MODAL -->
@@ -83,4 +117,12 @@
     </form>
   </div>
 </div>
+
+<style>
+@keyframes pulse {
+  0% { transform:scale(0.95); opacity:0.8; }
+  50% { transform:scale(1.1); opacity:1; }
+  100% { transform:scale(0.95); opacity:0.8; }
+}
+</style>
 {% endblock %}
