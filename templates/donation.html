@@ -61,9 +61,9 @@
                  <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined, scan the QR or copy the UPI ID above.</p>
                </div>
                <div style="flex:1; min-width:220px; text-align:center;">
-                 <div id="desktop-qr-container">
+                 <div id="desktop-qr-container" style="display:flex; flex-direction:column; align-items:center;">
                    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay:</p>
-                   <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;"/>
+                   <div id="desktop-qr-img" style="padding:10px; background:#fff; border:2px solid var(--gold); border-radius:8px; display:inline-block;"></div>
                  </div>
                </div>
              </div>
@@ -108,6 +108,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const lessonInput = document.getElementById('lesson_no');
@@ -143,10 +144,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU NARASIMHULU&am=${amt}&cu=INR`;
       upiBtn.href = upiLink;
       
-      // Generate QR code
-      const qrImg = document.getElementById('desktop-qr-img');
-      if (qrImg) {
-        qrImg.src = `https://quickchart.io/qr?size=250&text=${encodeURIComponent(upiLink)}`;
+      // Generate QR code locally to prevent broken images from external API blocks
+      const qrContainer = document.getElementById('desktop-qr-img');
+      if (qrContainer) {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+            text: upiLink,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.M
+        });
       }
       
       // Pay Now opens UPI directly (works on mobile and desktop)
