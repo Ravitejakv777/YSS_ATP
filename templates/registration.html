@@ -301,11 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Trigger if already selected (e.g. after validation error)
-  const checkedRadio = document.querySelector('input[name="accommodation"]:checked');
-  if(checkedRadio) {
-    checkedRadio.dispatchEvent(new Event('change'));
-  }
+
 
 
 });
