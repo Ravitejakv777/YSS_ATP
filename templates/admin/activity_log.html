@@ -88,17 +88,67 @@
         <tbody>
           {% for log in logs %}
             <tr style="border-bottom:1px solid #eaeaea;" class="log-row">
-              <td style="padding:0.75rem; white-space:nowrap; color:var(--text);">
+              <td style="padding:0.75rem; white-space:nowrap; color:var(--text); font-size:0.82rem;">
                 {{ log.timestamp.strftime('%d %b %Y, %I:%M %p') if log.timestamp else 'N/A' }}
               </td>
-              <td style="padding:0.75rem; font-weight:bold; color:var(--text);">
-                {{ log.admin_name or 'System' }}
+              <td style="padding:0.75rem; font-weight:700; color:var(--text);">
+                <span style="display:inline-flex;align-items:center;gap:0.3rem;">
+                  <span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--gold));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;flex-shrink:0;">
+                    {{ (log.admin_name or 'S')[0] | upper }}
+                  </span>
+                  {{ log.admin_name or 'System' }}
+                </span>
               </td>
-              <td style="padding:0.75rem; color:var(--muted); font-family:monospace; font-size:0.82rem;">
+              <td style="padding:0.75rem; color:var(--muted); font-family:monospace; font-size:0.78rem;">
                 {{ log.ip_address or '-' }}
               </td>
-              <td style="padding:0.75rem; color:var(--text); line-height:1.4;">
-                {{ log.action }}
+              <td style="padding:0.75rem; line-height:1.4;">
+                {% set action = log.action | lower %}
+                {% if 'approved' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-check-circle"></i> {{ log.action }}
+                  </span>
+                {% elif 'declined' in action or 'rejected' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-times-circle"></i> {{ log.action }}
+                  </span>
+                {% elif 'added registration' in action or 'manual quick-entry' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#fdf4ff;color:#7c3aed;border:1px solid #e9d5ff;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-user-plus"></i> {{ log.action }}
+                  </span>
+                {% elif 'edited' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-edit"></i> {{ log.action }}
+                  </span>
+                {% elif 'allotted room' in action or 'room' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#f0fdf4;color:#0369a1;border:1px solid #bae6fd;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-hotel"></i> {{ log.action }}
+                  </span>
+                {% elif 'logged in' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#fffbeb;color:#d97706;border:1px solid #fde68a;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-sign-in-alt"></i> {{ log.action }}
+                  </span>
+                {% elif 'logged out' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#f5f5f5;color:#6b7280;border:1px solid #e5e7eb;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-sign-out-alt"></i> {{ log.action }}
+                  </span>
+                {% elif 'whatsapp' in action or 'reminder' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#f0fdf4;color:#15803d;border:1px solid #86efac;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fab fa-whatsapp"></i> {{ log.action }}
+                  </span>
+                {% elif 'gallery' in action or 'photo' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#fdf4ff;color:#a21caf;border:1px solid #f0abfc;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-image"></i> {{ log.action }}
+                  </span>
+                {% elif 'cleared' in action or 'deleted' in action or 'removed' in action %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#fef2f2;color:#b91c1c;border:1px solid #fca5a5;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;font-weight:600;">
+                    <i class="fa fa-trash"></i> {{ log.action }}
+                  </span>
+                {% else %}
+                  <span style="display:inline-flex;align-items:center;gap:0.4rem;background:#f9fafb;color:#374151;border:1px solid #e5e7eb;padding:0.2rem 0.55rem;border-radius:6px;font-size:0.8rem;">
+                    <i class="fa fa-info-circle"></i> {{ log.action }}
+                  </span>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}

@@ -692,6 +692,7 @@ def update_last_active():
             db.session.commit()
         except Exception:
             db.session.rollback()
+
 def format_whatsapp_template(key, **kwargs):
     """
     Retrieves a template by key, performs variable substitution, and returns the formatted text.
@@ -1318,6 +1319,7 @@ def admin_edit_registration(reg_id):
             
         db.session.commit()
         update_registrations_excel()
+        log_action(f"Edited registration {reg.reg_id} for {reg.full_name} (Lesson: {reg.lesson_no}, Mobile: {reg.whatsapp}, Amount: {reg.amount})")
         flash('Participant updated successfully.', 'success')
         return redirect(url_for('admin_registrations'))
         
