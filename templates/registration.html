@@ -143,10 +143,14 @@
 
         <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;">
           <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
-          <p style="font-size:1.2rem;color:var(--primary);font-weight:bold;margin:0 0 1rem 0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+          <p style="font-size:1.1rem;color:var(--primary);font-weight:bold;margin:0 0 0.5rem 0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
+          <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+            <span style="font-weight:bold; color:var(--text);">UPI ID: <span id="copy-upi-id">9441665181@ybl</span></span>
+            <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
+          </div>
           <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
           <div id="desktop-qr-container" style="display:none; margin-top:1.5rem;">
-            <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.5rem;">Scan this QR with any UPI app on your phone:</p>
+            <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.5rem; line-height:1.4;">Scan this QR, or screenshot it to upload in your UPI app (GPay/PhonePe):</p>
             <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
           </div>
         </div>
@@ -257,13 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (upiBtn) {
         const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${total}&cu=INR`;
         upiBtn.href = upiLink;
+        
+        // Show QR code for both desktop & mobile as fallback
+        const qrContainer = document.getElementById('desktop-qr-container');
+        const qrImg = document.getElementById('desktop-qr-img');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+        qrContainer.style.display = 'block';
+
         upiBtn.onclick = function(e) {
           e.preventDefault();
           if (window.innerWidth > 768) {
-            const qrContainer = document.getElementById('desktop-qr-container');
-            const qrImg = document.getElementById('desktop-qr-img');
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-            qrContainer.style.display = 'block';
+            qrContainer.scrollIntoView({ behavior: 'smooth' });
           } else {
             // Mobile: Show UPI Chooser Modal
             document.getElementById('upi-modal-amount').textContent = `₹${total}`;
@@ -280,6 +288,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  const copyBtn = document.getElementById('copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const upiId = document.getElementById('copy-upi-id').innerText;
+      navigator.clipboard.writeText(upiId).then(() => {
+        const origHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+        setTimeout(() => {
+          copyBtn.innerHTML = origHtml;
+        }, 2000);
+      }).catch(err => {
+        alert('Could not copy UPI ID. Please copy it manually: ' + upiId);
+      });
+    });
+  }
 
   // Trigger if already selected (e.g. after validation error)
   const checkedRadio = document.querySelector('input[name="accommodation"]:checked');

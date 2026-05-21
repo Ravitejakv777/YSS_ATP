@@ -427,7 +427,13 @@
       const elements = document.querySelectorAll('[data-i18n]');
       elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
-        let translation = key;
+        
+        // Cache original text for English fallback
+        if (!el.getAttribute('data-orig-text')) {
+          el.setAttribute('data-orig-text', el.innerText || el.textContent);
+        }
+        
+        let translation = el.getAttribute('data-orig-text');
         
         if (lang !== 'en' && translations[lang] && translations[lang][key]) {
           translation = translations[lang][key];
