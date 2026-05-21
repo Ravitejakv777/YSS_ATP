@@ -125,7 +125,7 @@
           </div>
         </div>
 
-        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;">
+        <div id="qr-payment-section" style="background:#fdf6ec;padding:1.5rem;border-radius:8px;margin-top:1.5rem;text-align:center;border:1px solid #e0d0bb;display:none;">
   <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
   <p style="font-size:1.1rem;color:var(--primary);font-weight:bold;margin:0 0 0.5rem 0;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
   <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-bottom:1rem;">
@@ -133,11 +133,11 @@
     <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
   </div>
   <!-- QR always visible so desktop users can scan directly -->
-  <div id="desktop-qr-container" style="margin-bottom:1rem; display:none; flex-direction:column; align-items:center;">
-    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay:</p>
-    <div id="desktop-qr-img" style="padding:10px; background:#fff; border:2px solid var(--gold); border-radius:8px; display:inline-block;"></div>
+  <div id="desktop-qr-container" style="margin-bottom:1rem;">
+    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay — or use the button below:</p>
+    <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
   </div>
-  <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none; margin-bottom:1rem;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
+  <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
   <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined by your app, please copy the UPI ID above or scan the QR code above.</p>
 </div>
 <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
@@ -192,7 +192,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // New Member and Lesson No Prefix Logic
@@ -240,30 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (upiBtn) {
         upiBtn.href = upiLink;
-        upiBtn.onclick = function(e) {
-            e.preventDefault();
-            // Show the QR code container when Pay Now is clicked
-            const qrContainer = document.getElementById('desktop-qr-container');
-            const qrImgDiv = document.getElementById('desktop-qr-img');
-            
-            if (qrContainer && qrImgDiv) {
-                qrContainer.style.display = 'flex';
-                qrImgDiv.innerHTML = '';
-                new QRCode(qrImgDiv, {
-                    text: upiLink,
-                    width: 200,
-                    height: 200,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            }
-            
-            if (/Mobi|Android/i.test(navigator.userAgent)) {
-                // On mobile, show modal or open deep link
-                window.location.href = upiLink;
-            }
-        };
+        upiBtn.onclick = null; // Open link directly
+    }
+    if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
     }
   }
 
@@ -286,9 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
       updateUpiPayment(total);
     });
   });
-
-  // Initialise with default ₹1800 on page load
-  updateUpiPayment(1800);
 
   // Trigger fee section if accommodation already selected (e.g. after validation error)
   const checkedRadio = document.querySelector('input[name="accommodation"]:checked');
