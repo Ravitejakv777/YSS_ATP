@@ -129,6 +129,14 @@ with app.app_context():
                 except Exception as e:
                     db.session.rollback()
                     print(f"Column {col_name} might already exist: {e}")
+                    
+        # Detect legacy registrations added by admin (Cash payment or no screenshot) and mark them
+        try:
+            db.session.execute(db.text("UPDATE registrations SET registered_by_name = 'Done by Admin' WHERE registered_by_name IS NULL AND (payment_mode = 'Cash' OR payment_screenshot IS NULL OR payment_screenshot = '')"))
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Could not update old admin registrations: {e}")
                 
         # Seed WhatsApp templates if empty
         templates_to_seed = [
