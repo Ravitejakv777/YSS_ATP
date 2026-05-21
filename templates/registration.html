@@ -138,7 +138,7 @@
     <img id="desktop-qr-img" src="{{ url_for('static', filename='images/qr_1800.png') }}" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
   </div>
   <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
-  <p id="fee-breakdown" style="font-size:1.2rem; font-weight:bold; color:var(--primary); margin-top:1rem; margin-bottom:0;">Fee : ₹1800</p>
+  <p id="fee-breakdown" style="display:none; font-size:1.2rem; font-weight:bold; color:var(--primary); margin-top:1rem; margin-bottom:0;">Fee : ₹1800</p>
   <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined by your app, please copy the UPI ID above or scan the QR code above.</p>
 </div>
 
@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
       if (qrPaymentSection) qrPaymentSection.style.display = 'block';
+      if (feeBreakdown) feeBreakdown.style.display = 'block';
       let total = 1800;
       if(e.target.value === 'yes') {
         total = 2800;
