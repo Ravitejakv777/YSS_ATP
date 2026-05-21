@@ -132,12 +132,13 @@
     <span style="font-weight:bold; color:var(--text);">UPI ID: <span id="copy-upi-id">9441665181@ybl</span></span>
     <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
   </div>
-  <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;" data-i18n="pay_now_btn"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
-  <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined by your app, please copy the UPI ID above or scan the QR code below.</p>
-  <div id="desktop-qr-container" style="display:none;">
-    <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.5rem; line-height:1.4;">Scan this QR, or screenshot it to upload in your UPI app (GPay/PhonePe):</p>
+  <!-- QR always visible so desktop users can scan directly -->
+  <div id="desktop-qr-container" style="margin-bottom:1rem;">
+    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay — or use the button below:</p>
     <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;">
   </div>
+  <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
+  <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined by your app, please copy the UPI ID above or scan the QR code above.</p>
 </div>
 <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
   <div class="form-group">
@@ -231,52 +232,46 @@ document.addEventListener('DOMContentLoaded', () => {
     handleNewMemberToggle();
   }
 
-  const feeSection = document.getElementById('fee-section');
+  function updateUpiPayment(amount) {
+    const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amount}&cu=INR`;
+    const upiBtn = document.getElementById('upi-pay-btn');
+    const qrImg = document.getElementById('desktop-qr-img');
+    
+    if (upiBtn) {
+        upiBtn.href = upiLink;
+        upiBtn.onclick = null; // Open link directly
+    }
+    if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+    }
+  }
+
   const feeBreakdown = document.getElementById('fee-breakdown');
   const radios = document.querySelectorAll('input[name="accommodation"]');
-
+  const feeSection = document.getElementById('fee-section');
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
-      feeSection.style.display = 'block';
+      if (feeSection) feeSection.style.display = 'block';
       let total = 1800;
       if(e.target.value === 'yes') {
         total = 2800;
-        feeBreakdown.innerHTML = `Registration Fee : ₹1800<br>Accommodation Fee : ₹1000<br><strong>Total Amount : ₹2800</strong>`;
+        if(feeBreakdown) feeBreakdown.innerHTML = `Registration Fee : ₹1800<br>Accommodation Fee : ₹1000<br><strong>Total Amount : ₹2800</strong>`;
       } else {
         total = 1800;
-        feeBreakdown.innerHTML = `Registration Fee : ₹1800<br><strong>Total Amount : ₹1800</strong>`;
+        if(feeBreakdown) feeBreakdown.innerHTML = `Registration Fee : ₹1800<br><strong>Total Amount : ₹1800</strong>`;
       }
-      
-      const upiBtn = document.getElementById('upi-pay-btn');
-      if (upiBtn) {
-        const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${total}&cu=INR`;
-        upiBtn.href = upiLink;
-        
-        // Show QR code for both desktop & mobile as fallback
-        const qrContainer = document.getElementById('desktop-qr-container');
-        const qrImg = document.getElementById('desktop-qr-img');
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-        qrContainer.style.display = 'block';
-
-        upiBtn.onclick = function(e) {
-          e.preventDefault();
-          if (window.innerWidth > 768) {
-            qrContainer.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            // Mobile: Show UPI Chooser Modal
-            document.getElementById('upi-modal-amount').textContent = `₹${total}`;
-            
-            // Set App-specific Deep Links with Correct Payee Name
-            document.getElementById('modal-gpay').href = `tez://upi/pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${total}&cu=INR`;
-            document.getElementById('modal-paytm').href = `paytmmp://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${total}&cu=INR`;
-            document.getElementById('modal-generic').href = upiLink;
-            
-            document.getElementById('upiModal').style.display = 'flex';
-          }
-        };
-      }
+      updateUpiPayment(total);
     });
   });
+
+  // Initialise with default ₹1800 on page load
+  updateUpiPayment(1800);
+
+  // Trigger fee section if accommodation already selected (e.g. after validation error)
+  const checkedRadio = document.querySelector('input[name="accommodation"]:checked');
+  if(checkedRadio) {
+    checkedRadio.dispatchEvent(new Event('change'));
+  }
 
   const copyBtn = document.getElementById('copy-btn');
   if (copyBtn) {

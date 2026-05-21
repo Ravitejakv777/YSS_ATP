@@ -47,10 +47,10 @@
           </div>
         </div>
            <div class="form-note mt-3"><i class="fa fa-info-circle" style="color:var(--accent);"></i> All fields marked with <strong>*</strong> are mandatory.</div>
-           <div id="payment-details" style="background:var(--cream);padding:1.5rem;border-radius:8px;margin-top:2rem;text-align:center;">
+           <div id="payment-details" style="background:var(--cream);padding:1.5rem;border-radius:8px;margin-top:2rem;text-align:center;display:none;">
              <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;" data-i18n="payment_details_title">Payment Details</h3>
-             <div style="margin-top:1.5rem; display:flex; gap:2rem; align-items:flex-start;">
-               <div style="flex:1;">
+             <div style="margin-top:1.5rem; display:flex; gap:2rem; align-items:flex-start; flex-wrap:wrap; justify-content:center;">
+               <div style="flex:1; min-width:220px;">
                  <p style="margin-bottom:0.5rem;font-weight:bold;" data-i18n="upi_payment_details">UPI Payment Details</p>
                  <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;margin-bottom:0.5rem;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
                  <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-bottom:1rem;">
@@ -58,11 +58,11 @@
                    <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
                  </div>
                  <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;" data-i18n="pay_now_btn"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
-                 <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined by your app, please copy the UPI ID above or scan the QR code below.</p>
+                 <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined, scan the QR or copy the UPI ID above.</p>
                </div>
-               <div style="flex:1;">
-                 <div id="desktop-qr-container" style="display:none;">
-                   <p style="font-size:0.9rem; color:var(--muted); margin-bottom:0.5rem; line-height:1.4;">Scan this QR, or screenshot it to upload in your UPI app (GPay/PhonePe):</p>
+               <div style="flex:1; min-width:220px; text-align:center;">
+                 <div id="desktop-qr-container">
+                   <p style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Scan QR to pay:</p>
                    <img id="desktop-qr-img" src="" alt="UPI QR Code" style="width:200px; height:200px; border:2px solid var(--gold); border-radius:8px; display:inline-block; background:#fff; padding:0.5rem;"/>
                  </div>
                </div>
@@ -128,34 +128,45 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (amountInput && upiBtn) {
     const updateLink = () => {
-      const amt = amountInput.value || 0;
+      const amt = parseFloat(amountInput.value);
+      const paymentDetails = document.getElementById('payment-details');
+      
+      if (!amt || amt <= 0) {
+        // Hide payment section until valid amount entered
+        if (paymentDetails) paymentDetails.style.display = 'none';
+        return;
+      }
+      
+      // Show payment section
+      if (paymentDetails) paymentDetails.style.display = 'block';
+      
       const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amt}&cu=INR`;
       upiBtn.href = upiLink;
       
-      // Show QR code for both desktop & mobile as fallback
-      const qrContainer = document.getElementById('desktop-qr-container');
+      // Generate QR code
       const qrImg = document.getElementById('desktop-qr-img');
-      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-      qrContainer.style.display = 'block';
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+      }
       
+      // Pay Now opens UPI directly (works on mobile and desktop)
       upiBtn.onclick = function(e) {
         e.preventDefault();
-        if (window.innerWidth > 768) {
-          qrContainer.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          // Mobile: Show UPI Chooser Modal
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+          // Mobile: show UPI chooser modal
           document.getElementById('upi-modal-amount').textContent = `₹${amt}`;
-          
           document.getElementById('modal-gpay').href = `tez://upi/pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amt}&cu=INR`;
           document.getElementById('modal-paytm').href = `paytmmp://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amt}&cu=INR`;
           document.getElementById('modal-generic').href = upiLink;
-          
           document.getElementById('upiModal').style.display = 'flex';
+        } else {
+          // Desktop: open UPI link directly (browser will handle)
+          window.location.href = upiLink;
         }
       };
     };
     amountInput.addEventListener('input', updateLink);
-    updateLink();
+    // Do NOT call updateLink() on load — wait for user to enter amount
   }
 
   const copyBtn = document.getElementById('copy-btn');
