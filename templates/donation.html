@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Generate QR code
       const qrImg = document.getElementById('desktop-qr-img');
       if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+        qrImg.src = `https://quickchart.io/qr?size=250&text=${encodeURIComponent(upiLink)}`;
       }
       
       // Pay Now opens UPI directly (works on mobile and desktop)

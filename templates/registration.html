@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         upiBtn.onclick = null; // Open link directly
     }
     if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+        qrImg.src = `https://quickchart.io/qr?size=250&text=${encodeURIComponent(upiLink)}`;
     }
   }
 
