@@ -997,14 +997,11 @@ def admin_manage():
             mobile = request.form.get('mobile')
             password = request.form.get('password')
             
-            if Admin.query.filter_by(email=email).first():
-                flash('Admin with this email already exists.', 'error')
-            else:
-                new_admin = Admin(lesson_no=lesson_no, name=name, email=email, mobile=mobile)
-                new_admin.set_password(password)
-                db.session.add(new_admin)
-                db.session.commit()
-                flash('New admin added successfully.', 'success')
+            new_admin = Admin(lesson_no=lesson_no, name=name, email=email, mobile=mobile)
+            new_admin.set_password(password)
+            db.session.add(new_admin)
+            db.session.commit()
+            flash('New admin added successfully.', 'success')
         elif action == 'delete':
             admin_id = request.form.get('admin_id')
             admin_to_del = Admin.query.get(int(admin_id))
