@@ -96,6 +96,20 @@ with app.app_context():
             except Exception as e:
                 db.session.rollback()
                 print(f"Column last_active might already exist: {e}")
+
+        # Drop unique constraint on admins.email if it exists (PostgreSQL)
+        try:
+            db.session.execute(db.text("ALTER TABLE admins DROP CONSTRAINT IF EXISTS admins_email_key"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            try:
+                # Fallback: attempt without IF EXISTS (older Postgres)
+                db.session.execute(db.text("ALTER TABLE admins DROP CONSTRAINT admins_email_key"))
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print(f"admins_email_key constraint already removed or not found: {e}")
                 
         # Seed WhatsApp templates if empty
         templates_to_seed = [
