@@ -50,15 +50,13 @@
            <div id="payment-details" style="background:var(--cream);padding:1.5rem;border-radius:8px;margin-top:2rem;text-align:center;display:none;">
              <h3 style="color:var(--primary);margin-bottom:1rem;font-family:'Cinzel',serif;" data-i18n="payment_details_title">Payment Details</h3>
              <div style="margin-top:1.5rem; display:flex; gap:2rem; align-items:flex-start; flex-wrap:wrap; justify-content:center;">
-               <div style="flex:1; min-width:220px;">
-                 <p style="margin-bottom:0.5rem;font-weight:bold;" data-i18n="upi_payment_details">UPI Payment Details</p>
+               <div style="flex:1; min-width:220px; border-right:2px dashed #e0d0bb; padding-right:1rem;">
+                 <p style="margin-bottom:0.5rem;font-weight:bold;">UPI Payment Details</p>
                  <p style="margin-top:0.5rem;font-size:1.1rem;color:var(--primary);font-weight:bold;margin-bottom:0.5rem;">PhonePe / GPay Mobile Number: {{ config.EVENT_CONTACT_MOBILE }}</p>
-                 <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-                   <span style="font-weight:bold; color:var(--text);">UPI ID: <span id="copy-upi-id">9441665181@ybl</span></span>
-                   <button type="button" id="copy-btn" class="btn btn-sm" style="padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
+                 <div style="display:inline-block; background:#fff; padding:0.5rem 1rem; border-radius:6px; font-weight:bold; color:var(--text); margin-bottom:1rem; border:1px solid #e0d0bb;">
+                   UPI ID: <span id="copy-upi-id">9441665181@ybl</span>
+                   <button type="button" id="copy-btn" class="btn btn-sm" style="margin-left:0.5rem; padding:0.25rem 0.6rem; font-size:0.8rem; background:var(--gold); border:none; border-radius:4px; color:#000; cursor:pointer;"><i class="fa fa-copy"></i> Copy</button>
                  </div>
-                 <a id="upi-pay-btn" href="#" class="btn" style="display:inline-block; padding:0.85rem 2.5rem; background:#4CAF50; color:#fff; font-weight:bold; border-radius:6px; text-decoration:none;" data-i18n="pay_now_btn"><i class="fa fa-mobile-alt" style="margin-right:0.5rem;"></i> Pay Now (UPI)</a>
-                 <p style="font-size:0.85rem; color:#d32f2f; margin-top:0.75rem; font-weight:bold; padding:0 1rem;"><i class="fa fa-exclamation-circle"></i> If "Pay Now" is declined, scan the QR or copy the UPI ID above.</p>
                </div>
                <div style="flex:1; min-width:220px; text-align:center;">
                  <div id="desktop-qr-container">
@@ -140,19 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show payment section
       if (paymentDetails) paymentDetails.style.display = 'block';
       
-      const upiLink = `upi://pay?pa=9441665181@ybl&pn=AKKALURU%20NARASIMHULU&am=${amt}&cu=INR`;
-      upiBtn.href = upiLink;
-      
       // Generate QR code
       const qrImg = document.getElementById('desktop-qr-img');
       if (qrImg) {
         qrImg.src = "{{ url_for('static', filename='images/qr.png') }}";
       }
-      
-      // Pay Now opens native UPI deep link directly
-      upiBtn.onclick = function(e) {
-        // Let native mobile deep linking take over
-      };
     };
     amountInput.addEventListener('input', updateLink);
     // Do NOT call updateLink() on load — wait for user to enter amount
