@@ -157,9 +157,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const text = ret.data.text;
                 await worker.terminate();
 
-                const match = text.match(/\b\d{12}\b/);
-                if (match) {
-                    txnInput.value = match[0];
+                function extractUTR(ocrText) {
+                    const cleanText = ocrText.replace(/\s+/g, ' ');
+                    const strictRegex = /(?:utr|upi\s*ref|transaction\s*id|txn\s*id|ref\s*no|reference\s*number|reference\s*no|id)[\s:.\-#]*(\d{12})\b/i;
+                    let match = cleanText.match(strictRegex);
+                    if (match) return match[1];
+
+                    const looseRegex = /(?:utr|upi|ref|txn|transaction|id)[\s\S]{0,20}?(\d{12})\b/i;
+                    match = cleanText.match(looseRegex);
+                    if (match) return match[1];
+                    
+                    const allMatches = cleanText.match(/\b\d{12}\b/g);
+                    if (allMatches) {
+                        for (let num of allMatches) {
+                            if (num.startsWith('91') && num.length === 12) continue;
+                            return num;
+                        }
+                        return allMatches[0];
+                    }
+                    return null;
+                }
+
+                const utr = extractUTR(text);
+                if (utr) {
+                    txnInput.value = utr;
                     statusText.innerHTML = '<i class="fa fa-check-circle" style="color:green;"></i> Extracted ID automatically!';
                     setTimeout(() => { statusText.style.display = 'none'; }, 3000);
                 } else {
