@@ -166,7 +166,16 @@
         <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
         <td><small style="color:var(--muted);">{{ r.reg_id }}</small></td>
         <td>{{ r.lesson_no }}</td>
-        <td><strong>{{ r.full_name }}</strong></td>
+        <td>
+          <strong>{{ r.full_name }}</strong>
+          {% if r.reg_status == 'Approved' %}
+            {% if not r.notified %}
+              <button onclick="notifySingleWhatsApp({{ r.id }})" class="btn btn-sm" style="background:#25D366;color:#fff;border:none;padding:0.1rem 0.3rem;font-size:0.7rem;margin-left:5px;display:inline-flex;align-items:center;gap:2px;" title="Notify via WhatsApp"><i class="fab fa-whatsapp"></i> Notify</button>
+            {% else %}
+              <span style="font-size:0.7rem;color:#25D366;margin-left:5px;display:inline-flex;align-items:center;gap:2px;" title="Notified via WhatsApp"><i class="fa fa-check-double"></i> Notified</span>
+            {% endif %}
+          {% endif %}
+        </td>
         <td>{{ r.whatsapp }}</td>
         <td>{{ r.place }}</td>
         <td>₹{{ r.amount|int if r.amount else 0 }}</td>
@@ -383,6 +392,31 @@ function notifyAllWhatsApp() {
   .catch(err => {
     console.error("Error sending bulk notifications:", err);
     showToast("An error occurred while sending notifications.", "error");
+  });
+}
+
+function notifySingleWhatsApp(id) {
+  showToast("Sending WhatsApp notification...", "info");
+  fetch('/api/registrations/' + id + '/notify-whatsapp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, "success");
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+    } else {
+      showToast(data.message, "error");
+    }
+  })
+  .catch(err => {
+    console.error("Error sending notification:", err);
+    showToast("An error occurred while sending notification.", "error");
   });
 }
 

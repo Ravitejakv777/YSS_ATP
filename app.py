@@ -1443,6 +1443,23 @@ def mark_notified(rid):
     db.session.commit()
     return jsonify({'success': True, 'message': 'Member marked as notified'})
 
+@app.route('/api/registrations/<int:rid>/notify-whatsapp', methods=['POST'])
+@login_required
+def notify_whatsapp_single(rid):
+    reg = Registration.query.get_or_404(rid)
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    if not gateway_url:
+        return jsonify({'success': False, 'message': 'WhatsApp Gateway is not configured. Please set it up first.'})
+        
+    try:
+        send_member_whatsapp(reg)
+        reg.notified = True
+        db.session.commit()
+        return jsonify({'success': True, 'message': f'WhatsApp message sent to {reg.full_name}'})
+    except Exception as e:
+        print(f"Failed to send WhatsApp for registration {reg.id}: {e}")
+        return jsonify({'success': False, 'message': str(e)})
+
 @app.route('/api/registrations/notify-all', methods=['POST'])
 @login_required
 def registrations_notify_all():
