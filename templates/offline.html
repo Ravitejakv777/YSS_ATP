@@ -124,8 +124,8 @@
         });
 
       function tryProxy() {
-        // Use a public proxy (e.g., jina.ai) to fetch the site via HTTP
-        const proxyUrl = 'https://r.jina.ai/http://' + window.location.host;
+        // Use the newly deployed custom Cloudflare Worker proxy
+        const proxyUrl = 'https://holy-glitter-a694.224g1a3254.workers.dev' + window.location.pathname + window.location.search;
         return fetch(proxyUrl, { cache: 'no-store' })
           .then(proxyResp => {
             if (!proxyResp.ok) throw new Error('Proxy fetch failed');
