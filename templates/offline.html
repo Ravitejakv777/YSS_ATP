@@ -196,6 +196,12 @@
         setTimeout(() => t.remove(), 400);
       }, duration);
     }
+    window.addEventListener('load', () => {
+      if (navigator.onLine) {
+        // Automatically check connection and trigger proxy if online but landed on offline page
+        setTimeout(retryConnection, 1000);
+      }
+    });
   </script>
 </body>
 </html>
