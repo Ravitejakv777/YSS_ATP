@@ -124,9 +124,9 @@
         });
 
       function tryProxy() {
-        // Redirect the user's browser directly to the unblocked Cloudflare Worker URL
-        const proxyUrl = 'https://holy-glitter-a694.224g1a3254.workers.dev' + window.location.pathname + window.location.search;
-        window.location.replace(proxyUrl);
+        // Redirect the user's browser directly to the new unblocked custom domain
+        const targetUrl = 'https://yssatp2026.in' + window.location.pathname + window.location.search;
+        window.location.replace(targetUrl);
       }
     }
 

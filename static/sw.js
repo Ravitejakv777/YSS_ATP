@@ -1,6 +1,6 @@
 const CACHE_NAME = 'yss-anantapur-v1';
 const RAILWAY_HOST = 'yssatp2026.up.railway.app';
-const PROXY_HOST = 'holy-glitter-a694.224g1a3254.workers.dev';
+const PROXY_HOST = 'yssatp2026.in';
 
 const ASSETS_TO_CACHE = [
   '/',
