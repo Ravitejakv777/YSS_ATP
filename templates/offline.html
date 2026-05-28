@@ -92,9 +92,64 @@
       <i class="fa fa-phone"></i> +91 8019682209 (K Suresh)
     </a>
 
-    <button onclick="window.location.reload()" class="btn btn-primary">
-      <i class="fa fa-sync"></i> Retry Connection
+    <button onclick="retryConnection()" class="btn btn-primary">
+      <i class="fa fa-sync" id="retry-icon"></i> <span id="retry-text">Retry Connection</span>
     </button>
   </div>
+
+  <script>
+    function retryConnection() {
+      const btn = document.querySelector('button');
+      const icon = document.getElementById('retry-icon');
+      const text = document.getElementById('retry-text');
+      
+      btn.disabled = true;
+      icon.className = 'fa fa-sync fa-spin';
+      text.textContent = 'Checking Connection...';
+      
+      // Perform a cache-busted fetch to test real network connection
+      fetch('/?cb=' + Date.now(), { cache: 'no-store' })
+        .then(response => {
+          if (response.ok) {
+            // Success! If they are on the offline route specifically, redirect to home page.
+            // Otherwise, reload the original URL.
+            if (window.location.pathname === '/offline') {
+              window.location.href = '/';
+            } else {
+              window.location.reload();
+            }
+          } else {
+            throw new Error('Server unreachable');
+          }
+        })
+        .catch(() => {
+          // Still offline or failed to fetch
+          btn.disabled = false;
+          icon.className = 'fa fa-sync';
+          text.textContent = 'Retry Connection';
+          showToast('Still offline. Please check your connection and try again.', 'error');
+        });
+    }
+
+    function showToast(msg, type) {
+      let c = document.getElementById('toastContainer');
+      if (!c) {
+        c = document.createElement('div');
+        c.id = 'toastContainer';
+        c.className = 'toast-container';
+        document.body.appendChild(c);
+      }
+      const t = document.createElement('div');
+      t.className = 'toast toast-' + type;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(100%)';
+        t.style.transition = 'all 0.4s';
+        setTimeout(() => t.remove(), 400);
+      }, 3500);
+    }
+  </script>
 </body>
 </html>

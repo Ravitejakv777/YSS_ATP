@@ -142,13 +142,13 @@
 
 <div class="form-grid form-grid-2" style="margin-top:1.25rem;">
   <div class="form-group">
-    <label data-i18n="screenshot_label">Upload Payment Screenshot *</label>
-    <input type="file" name="payment_screenshot" id="payment_screenshot" class="form-control" accept="image/*" required>
+    <label data-i18n="screenshot_label">Upload Payment Screenshot (Optional)</label>
+    <input type="file" name="payment_screenshot" id="payment_screenshot" class="form-control" accept="image/*">
     <small id="ocr_status" style="color:var(--primary);display:none;margin-top:5px;"><i class="fa fa-spinner fa-spin"></i> Extracting Transaction ID...</small>
   </div>
   <div class="form-group">
-    <label data-i18n="transaction_id_label">Transaction ID *</label>
-    <input type="text" name="transaction_id" id="transaction_id" class="form-control" data-i18n-placeholder="transaction_id_placeholder" placeholder="Enter Transaction ID" value="{{ form.get('transaction_id','') }}" required>
+    <label data-i18n="transaction_id_label">Transaction ID (Optional)</label>
+    <input type="text" name="transaction_id" id="transaction_id" class="form-control" data-i18n-placeholder="transaction_id_placeholder" placeholder="Enter Transaction ID" value="{{ form.get('transaction_id','') }}">
   </div>
 </div>
 

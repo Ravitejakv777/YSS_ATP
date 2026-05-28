@@ -45,10 +45,36 @@ self.addEventListener('fetch', (e) => {
   // Skip browser extension requests or non-http protocols
   if (!url.protocol.startsWith('http')) return;
 
+  // 1. Navigation requests: Network-First, fallback to Cache, fallback to Offline
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then((networkResponse) => {
+          // Cache the successful home page load for offline use
+          if (networkResponse.status === 200 && url.pathname === '/') {
+            caches.open(CACHE_NAME).then((cache) => cache.put('/', networkResponse.clone()));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // Network failed, try cache
+          return caches.match(e.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Fallback to pre-cached offline page
+            return caches.match('/offline');
+          });
+        })
+    );
+    return;
+  }
+
+  // 2. Non-navigation requests: Stale-While-Revalidate
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch new version in the background (Stale-While-Revalidate)
+        // Fetch new version in the background
         fetch(e.request).then((networkResponse) => {
           if (networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(e.request, networkResponse));
@@ -58,13 +84,8 @@ self.addEventListener('fetch', (e) => {
         return cachedResponse;
       }
 
-      // If not in cache, try network
-      return fetch(e.request).catch(() => {
-        // If network fails, handle fallback
-        if (e.request.mode === 'navigate') {
-          return caches.match('/offline');
-        }
-      });
+      // Not in cache, fetch from network
+      return fetch(e.request);
     })
   );
 });

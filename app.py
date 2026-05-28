@@ -877,8 +877,6 @@ def registration():
         if not departure_date: errors.append('Date of Departure is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
         
-        if not transaction_id: errors.append('Transaction ID is required.')
-        if not screenshot_filename: errors.append('Payment Screenshot is required.')
 
         if not errors:
             existing_reg = Registration.query.filter(Registration.full_name.ilike(full_name), Registration.whatsapp == whatsapp).first()
@@ -914,7 +912,7 @@ def registration():
             volunteer=volunteer, arrival_date=arrival_date,
             departure_date=departure_date, payment_mode=payment_mode,
             amount=total_amount,
-            transaction_id=transaction_id, payment_screenshot=screenshot_filename
+            transaction_id=transaction_id or None, payment_screenshot=screenshot_filename
         )
         db.session.add(reg)
         db.session.commit()
@@ -963,7 +961,6 @@ def donation():
         except:
             errors.append('Valid Amount is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
-        if not transaction_id: errors.append('Transaction ID is required.')
 
         screenshot_filename = None
         if 'payment_screenshot' in request.files:
@@ -972,9 +969,6 @@ def donation():
                 screenshot_filename = secure_filename(f"donation_{int(time.time())}_{file.filename}")
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], screenshot_filename))
-        
-        if not screenshot_filename and payment_mode == 'UPI':
-            errors.append('Payment Screenshot is required for UPI.')
 
         if errors:
             for e in errors:
@@ -984,7 +978,7 @@ def donation():
         don = Donation(
             lesson_no=lesson_no, name=name, age=int(age), place=place,
             whatsapp=whatsapp, amount=float(amount), payment_mode=payment_mode,
-            transaction_id=transaction_id, payment_screenshot=screenshot_filename
+            transaction_id=transaction_id or None, payment_screenshot=screenshot_filename
         )
         db.session.add(don)
         db.session.commit()
