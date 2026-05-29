@@ -5,7 +5,7 @@ Flask-Mail==0.10.0
 Werkzeug==3.0.3
 openpyxl==3.1.2
 SQLAlchemy==2.0.30
-fpdf2==2.8.7
+fpdf2==2.8.4
 psycopg2-binary==2.9.9
 gunicorn==22.0.0
 requests>=2.31.0
