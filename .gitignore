@@ -20,7 +20,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
+instance/database.db
 # Virtual Environment
 venv/
 ENV/
