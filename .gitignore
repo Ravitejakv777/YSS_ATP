@@ -51,3 +51,7 @@ static/uploads/*
 # Scratch
 # scratch/ (Removed from ignore)
 # error.txt (Removed from ignore)
+
+# Local environment secrets
+.env
+scratch/check_neon.py
