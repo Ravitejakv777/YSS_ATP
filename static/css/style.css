@@ -412,5 +412,32 @@ tbody td{padding:.8rem 1rem;font-size:.88rem;color:var(--text);}
   .admin-header h1 {
     font-size: 1.4rem !important;
   }
+
+  /* Support smooth touch momentum swipe scrolling on mobile tables */
+  [style*="overflow-x:auto"], 
+  [style*="overflow-x: auto"],
+  .table-card > div,
+  div[style*="overflow"] {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-x: auto !important;
+  }
+
+  /* Clean up custom scrollbar styling on mobile so it is sleek and thin */
+  ::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent !important;
+    border: none !important;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-radius: 3px !important;
+    border: none !important;
+  }
+  body.dark-mode ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
 }
 
