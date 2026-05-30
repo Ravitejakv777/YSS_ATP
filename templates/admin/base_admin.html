@@ -330,6 +330,24 @@
   <div class="page-loader" id="adminLoader" style="position:fixed; inset:0; background:var(--cream); display:flex; align-items:center; justify-content:center; z-index:999999; transition:opacity 0.25s ease, visibility 0.25s ease;">
     <div class="loader-lotus" style="font-size:3rem; color:var(--primary); animation: spin 1.5s linear infinite;">🪷</div>
   </div>
+  <script>
+    function hideAdminLoader() {
+      const loader = document.getElementById('adminLoader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        setTimeout(() => loader.remove(), 250);
+      }
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      hideAdminLoader();
+    } else {
+      window.addEventListener('DOMContentLoaded', hideAdminLoader);
+      window.addEventListener('load', hideAdminLoader);
+    }
+    // Hard fallback backup to guarantee the loader ALWAYS hides after 2 seconds
+    setTimeout(hideAdminLoader, 2000);
+  </script>
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <div class="toast-container" id="toastContainer">
@@ -530,11 +548,14 @@ function closeCustomConfirm() {
           });
           
           // Also close sidebar on mobile when clicking content area
-          document.querySelector('.admin-content').addEventListener('click', function() {
-            if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
-              sidebar.classList.add('collapsed');
-            }
-          });
+          const adminContent = document.querySelector('.admin-content');
+          if (adminContent) {
+            adminContent.addEventListener('click', function() {
+              if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+              }
+            });
+          }
         }
       }
     });
@@ -571,21 +592,7 @@ function closeCustomConfirm() {
       });
     }
 
-    // Admin Page Loader Hide Logic (Bulletproof)
-    function hideAdminLoader() {
-      const loader = document.getElementById('adminLoader');
-      if (loader) {
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-        setTimeout(() => loader.remove(), 250);
-      }
-    }
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      hideAdminLoader();
-    } else {
-      window.addEventListener('DOMContentLoaded', hideAdminLoader);
-      window.addEventListener('load', hideAdminLoader);
-    }
+
 
     // Smooth exit transitions for admin sidebar links
     document.querySelectorAll('.sidebar-nav a').forEach(link => {
