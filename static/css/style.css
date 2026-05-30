@@ -213,7 +213,7 @@ a{text-decoration:none;color:inherit;}
 .table-card > div {
   max-height: calc(100vh - 280px) !important;
   overflow-y: auto !important;
-  overflow-x: auto !important;
+  overflow-x: scroll !important;
 }
 
 .table-card table thead th {
