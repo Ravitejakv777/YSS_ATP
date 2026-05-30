@@ -1365,12 +1365,22 @@ def admin_registrations():
     registrations_paginated = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10, error_out=False)
     registrations = registrations_paginated.items
     
-    total_registered = Registration.query.count()
-    approval_pending = Registration.query.filter_by(payment_status='Pending').count()
-    approved_devotees = Registration.query.filter_by(reg_status='Approved').count()
-    collected_amount = db.session.query(db.func.sum(Registration.amount)).filter(Registration.payment_status == 'Paid').scalar() or 0
-    total_reg_fee = Registration.query.filter(Registration.payment_status == 'Paid').count() * 1800
-    total_acco_fee = Registration.query.filter(Registration.payment_status == 'Paid', Registration.accommodation == True).count() * 1000
+    # High-performance single database round-trip query to aggregate all stats
+    stats_row = db.session.query(
+        db.func.count(Registration.id).label('total_registered'),
+        db.func.sum(db.case([(Registration.payment_status == 'Pending', 1)], else_=0)).label('approval_pending'),
+        db.func.sum(db.case([(Registration.reg_status == 'Approved', 1)], else_=0)).label('approved_devotees'),
+        db.func.sum(db.case([(Registration.payment_status == 'Paid', Registration.amount)], else_=0)).label('collected_amount'),
+        db.func.sum(db.case([(Registration.payment_status == 'Paid', 1)], else_=0)).label('paid_count'),
+        db.func.sum(db.case([(db.and_(Registration.payment_status == 'Paid', Registration.accommodation == True), 1)], else_=0)).label('paid_acco_count')
+    ).first()
+
+    total_registered = stats_row.total_registered or 0
+    approval_pending = int(stats_row.approval_pending or 0)
+    approved_devotees = int(stats_row.approved_devotees or 0)
+    collected_amount = float(stats_row.collected_amount or 0)
+    total_reg_fee = int(stats_row.paid_count or 0) * 1800
+    total_acco_fee = int(stats_row.paid_acco_count or 0) * 1000
     
     stats = {
         'total_registered': total_registered,
@@ -1655,8 +1665,14 @@ def admin_donations():
                              Donation.donation_id.ilike(f'%{search}%')))
     donations = q.order_by(Donation.id.asc()).all()
     
-    total_donations = Donation.query.filter_by(payment_status='Received').count()
-    donated_amount = db.session.query(db.func.sum(Donation.amount)).filter(Donation.payment_status == 'Received').scalar() or 0
+    # Optimized single database query for donation stats
+    don_stats = db.session.query(
+        db.func.count(Donation.id).label('total_donations'),
+        db.func.sum(Donation.amount).label('donated_amount')
+    ).filter(Donation.payment_status == 'Received').first()
+    
+    total_donations = don_stats.total_donations or 0
+    donated_amount = float(don_stats.donated_amount or 0)
     
     stats = {
         'total_donations': total_donations,
