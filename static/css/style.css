@@ -201,7 +201,27 @@ a{text-decoration:none;color:inherit;}
 .stat-card .stat-label{color:var(--muted);font-size:.9rem;}
 
 /* TABLES */
-.table-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
+.table-card {
+  background: var(--white) !important;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.table-card > div {
+  max-height: calc(100vh - 280px) !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+
+.table-card table thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
 .table-toolbar{padding:1rem 1.5rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;border-bottom:1px solid #eee;}
 .search-box{position:relative;flex:1;min-width:200px;}
 .search-box input{width:100%;padding:.6rem 1rem .6rem 2.5rem;border:1.5px solid #ddd;border-radius:8px;font-size:.9rem;}
