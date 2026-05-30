@@ -617,45 +617,43 @@ function closeCustomConfirm() {
         });
     });
 
-    // Auto-detect horizontal table scroll and show floating controls on mobile
+    // Auto-detect horizontal table scroll and show floating controls on all devices
     document.addEventListener('DOMContentLoaded', () => {
-      if (window.innerWidth <= 768) {
-        const scrollContainer = document.querySelector('[style*="overflow-x:auto"], [style*="overflow-x: auto"], .table-card > div, div[style*="overflow"]');
-        if (scrollContainer) {
-          // Create the floating scroll controls container
-          const controls = document.createElement('div');
-          controls.className = 'mobile-scroll-controls';
-          controls.style.position = 'fixed';
-          controls.style.bottom = '20px';
-          controls.style.right = '20px';
-          controls.style.zIndex = '99998';
-          controls.style.display = 'flex';
-          controls.style.gap = '0.5rem';
+      const scrollContainer = document.querySelector('[style*="overflow-x:auto"], [style*="overflow-x: auto"], .table-card > div, div[style*="overflow"]');
+      if (scrollContainer) {
+        // Create the floating scroll controls container
+        const controls = document.createElement('div');
+        controls.className = 'table-scroll-controls';
+        controls.style.position = 'fixed';
+        controls.style.bottom = '20px';
+        controls.style.right = '20px';
+        controls.style.zIndex = '99998';
+        controls.style.display = 'flex';
+        controls.style.gap = '0.5rem';
+        
+        controls.innerHTML = `
+          <button id="mScrollLeft" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Left">
+            <i class="fa fa-chevron-left" style="font-size: 0.9rem;"></i>
+          </button>
+          <button id="mScrollRight" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Right">
+            <i class="fa fa-chevron-right" style="font-size: 0.9rem;"></i>
+          </button>
+        `;
+        document.body.appendChild(controls);
+        
+        const btnLeft = document.getElementById('mScrollLeft');
+        const btnRight = document.getElementById('mScrollRight');
+        
+        if (btnLeft && btnRight) {
+          btnLeft.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollContainer.scrollBy({ left: -250, behavior: 'smooth' });
+          });
           
-          controls.innerHTML = `
-            <button id="mScrollLeft" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Left">
-              <i class="fa fa-chevron-left" style="font-size: 0.9rem;"></i>
-            </button>
-            <button id="mScrollRight" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Right">
-              <i class="fa fa-chevron-right" style="font-size: 0.9rem;"></i>
-            </button>
-          `;
-          document.body.appendChild(controls);
-          
-          const btnLeft = document.getElementById('mScrollLeft');
-          const btnRight = document.getElementById('mScrollRight');
-          
-          if (btnLeft && btnRight) {
-            btnLeft.addEventListener('click', (e) => {
-              e.preventDefault();
-              scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
-            });
-            
-            btnRight.addEventListener('click', (e) => {
-              e.preventDefault();
-              scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
-            });
-          }
+          btnRight.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollContainer.scrollBy({ left: 250, behavior: 'smooth' });
+          });
         }
       }
     });
