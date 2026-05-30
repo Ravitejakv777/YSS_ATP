@@ -2,11 +2,48 @@
 window.addEventListener('load', () => {
   const loader = document.getElementById('loader');
   if (loader) {
-    setTimeout(() => {
-      loader.style.opacity = '0';
-      setTimeout(() => loader.remove(), 500);
-    }, 600);
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 400);
   }
+});
+
+// Smooth exit transitions for public navigation links
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.navbar-nav a, .mobile-bottom-nav a').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && href !== '#' && !href.startsWith('#') && !link.getAttribute('onclick')) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetUrl = this.href;
+        
+        let loader = document.getElementById('loader');
+        if (!loader) {
+          loader = document.createElement('div');
+          loader.id = 'loader';
+          loader.className = 'page-loader';
+          loader.style.position = 'fixed';
+          loader.style.inset = '0';
+          loader.style.background = 'var(--cream)';
+          loader.style.display = 'flex';
+          loader.style.alignItems = 'center';
+          loader.style.justifyContent = 'center';
+          loader.style.zIndex = '999999';
+          loader.style.opacity = '0';
+          loader.style.transition = 'opacity 0.25s ease';
+          loader.innerHTML = '<div class="loader-lotus">🪷</div>';
+          document.body.appendChild(loader);
+        }
+        
+        setTimeout(() => {
+          loader.style.opacity = '1';
+        }, 10);
+        
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 200);
+      });
+    }
+  });
 });
 
 // ── TOAST AUTO DISMISS ───────────────────────────────────────────────────────

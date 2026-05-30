@@ -326,6 +326,10 @@
   </style>
 </head>
 <body>
+  <!-- Premium Admin Page Loader -->
+  <div class="page-loader" id="adminLoader" style="position:fixed; inset:0; background:var(--cream); display:flex; align-items:center; justify-content:center; z-index:999999; transition:opacity 0.25s ease, visibility 0.25s ease;">
+    <div class="loader-lotus" style="font-size:3rem; color:var(--primary); animation: spin 1.5s linear infinite;">🪷</div>
+  </div>
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <div class="toast-container" id="toastContainer">
@@ -566,6 +570,53 @@ function closeCustomConfirm() {
         applyAdminTheme(activeTheme);
       });
     }
+
+    // Admin Page Loader Hide Logic
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('adminLoader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        setTimeout(() => loader.remove(), 250);
+      }
+    });
+
+    // Smooth exit transitions for admin sidebar links
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href !== '#' && !link.getAttribute('onclick')) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetUrl = this.href;
+          
+          let loader = document.getElementById('adminLoader');
+          if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'adminLoader';
+            loader.className = 'page-loader';
+            loader.style.position = 'fixed';
+            loader.style.inset = '0';
+            loader.style.background = 'var(--cream)';
+            loader.style.display = 'flex';
+            loader.style.alignItems = 'center';
+            loader.style.justifyContent = 'center';
+            loader.style.zIndex = '999999';
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.25s ease';
+            loader.innerHTML = '<div class="loader-lotus" style="font-size:3rem; color:var(--primary); animation: spin 1.5s linear infinite;">🪷</div>';
+            document.body.appendChild(loader);
+          }
+          
+          setTimeout(() => {
+            loader.style.opacity = '1';
+          }, 10);
+          
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 200);
+        });
+      }
+    });
   </script>
 </body>
 </html>
