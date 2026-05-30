@@ -19,8 +19,10 @@
     <a href="{{ url_for('registration') }}" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2.5rem;">Register Now</a>
     <div class="hero-meta" style="flex-wrap: wrap; gap: 1rem 2rem;">
       <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-calendar" style="color:var(--gold);"></i> Dates : {{ config.EVENT_DATES }}</span>
-      <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-map-marker-alt" style="color:var(--gold);"></i> Venue : {{ config.EVENT_VENUE }}</span>
-      <span style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-phone" style="color:var(--gold);"></i> Contacts : 9441665181 (A Narsimhulu) &nbsp;|&nbsp; 8019682209 (K Suresh)</span>
+      <span class="desktop-only" style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-map-marker-alt" style="color:var(--gold);"></i> Venue : {{ config.EVENT_VENUE }}</span>
+      <span class="mobile-only" style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-map-marker-alt" style="color:var(--gold);"></i> Venue : Revenue Kalyana Mandapam, Anantapur</span>
+      <span class="desktop-only" style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-phone" style="color:var(--gold);"></i> Contacts : 9441665181 (A Narsimhulu) &nbsp;|&nbsp; 8019682209 (K Suresh)</span>
+      <span class="mobile-only" style="color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.5rem;"><i class="fa fa-phone" style="color:var(--gold);"></i> Contacts : 9441665181 &nbsp;|&nbsp; 8019682209</span>
     </div>
   </div>
 </section>

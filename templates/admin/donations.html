@@ -5,9 +5,8 @@
   <h1><i class="fa fa-heart" style="color:var(--gold);margin-right:.5rem;"></i>Donations <small
       style="font-size:.6em;color:var(--muted);font-weight:400;">— Processed Records</small></h1>
   <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-    <a href="{{ url_for('export_donations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download
-      Excel</a>
-    <button onclick="window.print()" class="btn btn-outline btn-sm"><i class="fa fa-print"></i> Print</button>
+    <a href="{{ url_for('export_donations') }}" class="btn btn-gold btn-sm desktop-only"><i class="fa fa-file-excel"></i> Download Excel</a>
+    <button onclick="window.print()" class="btn btn-outline btn-sm desktop-only"><i class="fa fa-print"></i> Print</button>
     <a href="{{ url_for('donation') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Donation</a>
   </div>
 </div>

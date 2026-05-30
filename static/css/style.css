@@ -333,3 +333,84 @@ tbody td{padding:.8rem 1rem;font-size:.88rem;color:var(--text);}
     color: #000 !important;
   }
 }
+
+/* MOBILE POLISH & PROFESSIONAL STYLING (<= 768px) */
+@media (max-width: 768px) {
+  /* Hide unnecessary action buttons */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Sidebar fully off-screen when collapsed on mobile */
+  .admin-sidebar {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 260px !important;
+    z-index: 99999 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  .admin-sidebar:not(.collapsed) {
+    transform: translateX(0) !important;
+  }
+  
+  .admin-sidebar.collapsed {
+    transform: translateX(-100%) !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Admin content takes full width on mobile */
+  .admin-content {
+    padding: 1rem !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  
+  /* Hide the clumsy manual entry table rows on mobile */
+  .manual-entry-row {
+    display: none !important;
+  }
+  
+  /* Make table wrappers more user friendly on mobile */
+  .table-card {
+    border-radius: 8px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+  }
+  
+  .table-toolbar {
+    padding: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Clean up stats cards on mobile admin dashboard */
+  .stat-cards {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .stat-card {
+    padding: 1rem !important;
+  }
+  
+  .stat-card .stat-num {
+    font-size: 2rem !important;
+  }
+  
+  /* Adjust headers to be elegant and not wrap clumsily */
+  .admin-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+  
+  .admin-header h1 {
+    font-size: 1.4rem !important;
+  }
+}
+

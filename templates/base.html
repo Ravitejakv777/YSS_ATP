@@ -115,6 +115,20 @@
     body.dark-mode .mobile-nav-item.active {
       color: var(--gold) !important;
     }
+    
+    /* Responsive Helpers */
+    @media(min-width: 769px) {
+      .mobile-only { display: none !important; }
+    }
+    @media(max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .brand-text h1 { font-size: 0.85rem !important; line-height: 1.2 !important; }
+      .brand-text p { display: none !important; }
+      .navbar-brand img { width: 38px !important; height: 38px !important; }
+      .navbar-top { padding: 0.6rem 1rem !important; }
+      #langSelect { height: 30px !important; padding: 0.2rem 0.4rem !important; font-size: 0.8rem !important; }
+      #publicThemeToggle { height: 30px !important; width: 30px !important; padding: 0 !important; font-size: 0.85rem !important; }
+    }
   </style>
 </head>
 
@@ -157,7 +171,7 @@
             <option value="hi" style="background:#fff;color:#000;">हिन्दी (Hindi)</option>
           </select>
         </div>
-        <a href="{{ url_for('admin_login') }}" class="btn-admin"><i class="fa fa-user"></i> Admin Portal</a>
+        <a href="{{ url_for('admin_login') }}" class="btn-admin desktop-only"><i class="fa fa-user"></i> Admin Portal</a>
       </div>
     </div>
     <div class="navbar-nav" id="navMenu">
@@ -191,7 +205,7 @@
           <li><a href="{{ url_for('registration') }}">Registration</a></li>
           <li><a href="{{ url_for('donation') }}">Donation</a></li>
           <li><a href="{{ url_for('schedule') }}">Event Schedule</a></li>
-
+          <li><a href="{{ url_for('admin_login') }}">Admin Portal</a></li>
         </ul>
       </div>
       <div>

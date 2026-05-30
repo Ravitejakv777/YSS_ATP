@@ -268,6 +268,61 @@
       /* Hide screenshot/eye buttons from cells */
       td button { display: none !important; }
     }
+    
+    /* Responsive Helpers */
+    @media(min-width: 769px) {
+      .mobile-only { display: none !important; }
+    }
+    @media(max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .admin-sidebar {
+        position: fixed !important;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 260px !important;
+        z-index: 99999 !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      .admin-sidebar:not(.collapsed) {
+        transform: translateX(0) !important;
+      }
+      .admin-sidebar.collapsed {
+        transform: translateX(-100%) !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+      }
+      .admin-content {
+        padding: 1rem !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      /* Floating Mobile Menu Toggle Button */
+      .mobile-menu-toggle {
+        display: flex !important;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        z-index: 99998;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      .mobile-menu-toggle:active {
+        transform: scale(0.9);
+      }
+    }
   </style>
 </head>
 <body>
@@ -281,6 +336,9 @@
 {% endif %}
 {% endwith %}
 
+<button type="button" class="mobile-menu-toggle mobile-only" id="mobileMenuToggle" title="Open Navigation Menu">
+  <i class="fa fa-bars"></i>
+</button>
 <div class="admin-layout">
   <aside class="admin-sidebar">
     <div class="sidebar-logo">
@@ -459,6 +517,21 @@ function closeCustomConfirm() {
             toggleIcon.className = 'fa fa-chevron-left';
           }
         });
+        
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('collapsed');
+          });
+          
+          // Also close sidebar on mobile when clicking content area
+          document.querySelector('.admin-content').addEventListener('click', function() {
+            if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+              sidebar.classList.add('collapsed');
+            }
+          });
+        }
       }
     });
 

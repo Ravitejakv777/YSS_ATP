@@ -4,10 +4,10 @@
 <div class="admin-header">
   <h1><i class="fa fa-users" style="color:var(--gold);margin-right:.5rem;"></i>Registrations <small style="font-size:.6em;color:var(--muted);font-weight:400;">— Approved &amp; Declined</small></h1>
   <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-    <a href="{{ url_for('export_registrations') }}" class="btn btn-gold btn-sm"><i class="fa fa-file-excel"></i> Download Excel</a>
-    <a href="{{ url_for('export_registrations_pdf') }}" class="btn btn-primary btn-sm"><i class="fa fa-file-pdf"></i> Download PDF</a>
-    <button onclick="window.print()" class="btn btn-outline btn-sm"><i class="fa fa-print"></i> Print</button>
-    <button onclick="resetNotificationStatus()" class="btn btn-outline btn-sm" style="border-color:#25D366; color:#25D366; display:flex; align-items:center; gap:0.35rem;" title="Reset notification status to send to everyone again"><i class="fa fa-sync-alt"></i> Refresh WhatsApp Status</button>
+    <a href="{{ url_for('export_registrations') }}" class="btn btn-gold btn-sm desktop-only"><i class="fa fa-file-excel"></i> Download Excel</a>
+    <a href="{{ url_for('export_registrations_pdf') }}" class="btn btn-primary btn-sm desktop-only"><i class="fa fa-file-pdf"></i> Download PDF</a>
+    <button onclick="window.print()" class="btn btn-outline btn-sm desktop-only"><i class="fa fa-print"></i> Print</button>
+    <button onclick="resetNotificationStatus()" class="btn btn-outline btn-sm desktop-only" style="border-color:#25D366; color:#25D366; display:flex; align-items:center; gap:0.35rem;" title="Reset notification status to send to everyone again"><i class="fa fa-sync-alt"></i> Refresh WhatsApp Status</button>
     <button onclick="notifyAllWhatsApp()" class="btn btn-sm" style="background:#25D366; color:#fff; border:none; display:flex; align-items:center; gap:0.35rem;"><i class="fab fa-whatsapp"></i> Notify All (WhatsApp)</button>
     <a href="{{ url_for('admin_add_registration') }}" class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Add Participant</a>
   </div>
