@@ -669,6 +669,49 @@ def send_admin_email_alert(reg):
     except Exception as e:
         app.logger.warning(f"Failed to send admin email: {e}")
 
+def update_registrations_excel_async():
+    import threading
+    def job():
+        with app.app_context():
+            update_registrations_excel()
+    threading.Thread(target=job, daemon=True).start()
+
+def send_submission_email_async(reg_id):
+    import threading
+    def job():
+        with app.app_context():
+            reg = Registration.query.get(reg_id)
+            if reg:
+                send_submission_email(reg)
+    threading.Thread(target=job, daemon=True).start()
+
+def send_admin_email_alert_async(reg_id):
+    import threading
+    def job():
+        with app.app_context():
+            reg = Registration.query.get(reg_id)
+            if reg:
+                send_admin_email_alert(reg)
+    threading.Thread(target=job, daemon=True).start()
+
+def send_member_whatsapp_async(reg_id):
+    import threading
+    def job():
+        with app.app_context():
+            reg = Registration.query.get(reg_id)
+            if reg:
+                send_member_whatsapp(reg)
+    threading.Thread(target=job, daemon=True).start()
+
+def send_registration_email_async(reg_id):
+    import threading
+    def job():
+        with app.app_context():
+            reg = Registration.query.get(reg_id)
+            if reg:
+                send_registration_email(reg)
+    threading.Thread(target=job, daemon=True).start()
+
 def log_action(action_desc):
     """
     Saves an entry into ActivityLog with details of the current logged-in admin.
@@ -928,9 +971,9 @@ def registration():
         )
         db.session.add(reg)
         db.session.commit()
-        update_registrations_excel()
-        send_submission_email(reg)
-        send_admin_email_alert(reg) # Send Email to Admin
+        update_registrations_excel_async()
+        send_submission_email_async(reg.id)
+        send_admin_email_alert_async(reg.id)
         return redirect(url_for('reg_success', reg_id=reg.reg_id))
 
     return render_template('registration.html', config=app.config, form={})
@@ -1229,10 +1272,10 @@ def admin_add_registration():
         )
         db.session.add(reg)
         db.session.commit()
-        update_registrations_excel()
+        update_registrations_excel_async()
         log_action(f"Admin added registration for {reg.full_name} (Lesson: {reg.lesson_no}, Mobile: {reg.whatsapp}, Mode: {reg.payment_mode}, Amount: {reg.amount})")
         if email and reg.payment_status == 'Paid':
-            send_registration_email(reg)
+            send_registration_email_async(reg.id)
         flash('Participant added successfully.', 'success')
         return redirect(url_for('admin_registrations'))
 
@@ -1332,7 +1375,7 @@ def admin_edit_registration(reg_id):
             reg.transaction_id = transaction_id
             
         db.session.commit()
-        update_registrations_excel()
+        update_registrations_excel_async()
         log_action(f"Edited registration {reg.reg_id} for {reg.full_name} (Lesson: {reg.lesson_no}, Mobile: {reg.whatsapp}, Amount: {reg.amount})")
         flash('Participant updated successfully.', 'success')
         return redirect(url_for('admin_registrations'))
@@ -1378,7 +1421,7 @@ def admin_registrations():
     registrations = registrations_paginated.items
     
     total_registered = Registration.query.count()
-    approval_pending = Registration.query.filter_by(payment_status='Pending').count()
+    approval_pending = Registration.query.filter_by(reg_status='Pending').count()
     approved_devotees = Registration.query.filter_by(reg_status='Approved').count()
     collected_amount = db.session.query(db.func.sum(Registration.amount)).filter(Registration.payment_status == 'Paid').scalar() or 0
     total_reg_fee = Registration.query.filter(Registration.payment_status == 'Paid').count() * 1800
@@ -1424,10 +1467,10 @@ def approve_registration(rid):
     reg.reg_status = 'Approved'
     reg.notified = True
     db.session.commit()
-    update_registrations_excel()
+    update_registrations_excel_async()
     log_action(f"Approved registration {reg.reg_id} for {reg.full_name}")
-    send_member_whatsapp(reg) # Send WhatsApp to Member
-    send_registration_email(reg) # Send Email with printable ID Card
+    send_member_whatsapp_async(reg.id)
+    send_registration_email_async(reg.id)
     return jsonify({'success': True, 'message': 'Registration approved successfully'})
 
 @app.route('/api/registrations/<int:rid>/decline', methods=['POST'])
@@ -1437,7 +1480,7 @@ def decline_registration(rid):
     reg.payment_status = 'Pending'
     reg.reg_status = 'Rejected'
     db.session.commit()
-    update_registrations_excel()
+    update_registrations_excel_async()
     log_action(f"Declined/Rejected registration {reg.reg_id} for {reg.full_name}")
     return jsonify({'success': True, 'message': 'Registration declined'})
 
