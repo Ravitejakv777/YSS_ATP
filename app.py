@@ -839,7 +839,7 @@ def registration():
         state = request.form.get('state', '').strip()
         email = request.form.get('email', '').strip()
         country_code = request.form.get('country_code', '+91')
-        whatsapp = request.form.get('whatsapp')
+        whatsapp = request.form.get('whatsapp', '').strip()
         is_kriyaban = request.form.get('is_kriyaban') == 'yes'
         accommodation = request.form.get('accommodation') == 'yes'
         volunteer = request.form.get('volunteer') == 'yes'
@@ -1403,7 +1403,7 @@ def admin_registrations():
 def admin_requests():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
-    q = Registration.query.filter(Registration.payment_status == 'Pending')
+    q = Registration.query.filter(Registration.payment_status == 'Pending', Registration.reg_status != 'Rejected')
     if search:
         q = q.filter(db.or_(Registration.full_name.ilike(f'%{search}%'),
                              Registration.whatsapp.ilike(f'%{search}%'),
