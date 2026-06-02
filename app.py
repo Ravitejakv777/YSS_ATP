@@ -625,6 +625,8 @@ def send_registration_email(reg):
         app.logger.warning(f'Email send failed: {e}')
 
 def send_submission_email(reg):
+    if not reg.email:
+        return
     try:
         body_text = (
             f"Dear {reg.full_name},\n\n"
@@ -881,7 +883,7 @@ def registration():
         if not age or not age.isdigit(): errors.append('Valid Age is required.')
         if not place: errors.append('City/Village/Town is required.')
         if not state: errors.append('State is required.')
-        if not email or '@' not in email: errors.append('Valid Email Address is required.')
+        if email and '@' not in email: errors.append('Valid Email Address is required.')
         if not whatsapp or not whatsapp.isdigit() or len(whatsapp) != 10: errors.append('WhatsApp Number must be exactly 10 digits.')
         if not arrival_date: errors.append('Date of Arrival is required.')
         if not departure_date: errors.append('Date of Departure is required.')
