@@ -1420,7 +1420,7 @@ def admin_registrations():
     registrations_paginated = q.order_by(Registration.id.desc()).paginate(page=page, per_page=10, error_out=False)
     registrations = registrations_paginated.items
     
-    total_registered = Registration.query.count()
+    total_registered = Registration.query.filter(Registration.reg_status != 'Rejected').count()
     approval_pending = Registration.query.filter_by(reg_status='Pending').count()
     approved_devotees = Registration.query.filter_by(reg_status='Approved').count()
     collected_amount = db.session.query(db.func.sum(Registration.amount)).filter(Registration.payment_status == 'Paid').scalar() or 0
