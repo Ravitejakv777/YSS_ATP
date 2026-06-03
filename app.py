@@ -700,7 +700,12 @@ def send_member_whatsapp_async(reg_id):
         with app.app_context():
             reg = Registration.query.get(reg_id)
             if reg:
-                send_member_whatsapp(reg)
+                try:
+                    send_member_whatsapp(reg)
+                except Exception as e:
+                    print(f"Async WhatsApp send failed for reg {reg_id}: {e}")
+                    reg.notified = False
+                    db.session.commit()
     threading.Thread(target=job, daemon=True).start()
 
 def send_registration_email_async(reg_id):
@@ -786,26 +791,27 @@ def send_member_whatsapp(reg):
     )
     if not message:
         print(f"WHATSAPP ERROR: Template reg_success not found in database.")
-        return
+        raise Exception("WhatsApp template 'reg_success' not found in database.")
         
     print(f"WHATSAPP LOG: {message}")
     
     # Try sending via self-hosted gateway
     import requests
-    try:
-        gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
-        if gateway_url:
-            r = requests.post(
-                f"{gateway_url}/send",
-                json={
-                    'to': reg.whatsapp,
-                    'message': message
-                },
-                timeout=5
-            )
-            print(f"AUTOMATED WHATSAPP STATUS: {r.status_code} - {r.text}")
-    except Exception as e:
-        print(f"Failed to send automated WhatsApp: {e}")
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    if not gateway_url:
+        raise Exception("WhatsApp Gateway is not configured.")
+        
+    r = requests.post(
+        f"{gateway_url}/send",
+        json={
+            'to': reg.whatsapp,
+            'message': message
+        },
+        timeout=10
+    )
+    print(f"AUTOMATED WHATSAPP STATUS: {r.status_code} - {r.text}")
+    if r.status_code != 200:
+        raise Exception(f"WhatsApp gateway returned status {r.status_code}: {r.text}")
 
 
 # ─── PUBLIC ROUTES ────────────────────────────────────────────────────────────
@@ -1523,16 +1529,19 @@ def registrations_notify_all():
     success_count = 0
     fail_count = 0
     
+    import time
     for reg in pending:
         try:
             send_member_whatsapp(reg)
             reg.notified = True
+            db.session.commit()
             success_count += 1
+            time.sleep(1.5)
         except Exception as e:
             print(f"Failed to send WhatsApp for registration {reg.id}: {e}")
+            db.session.rollback()
             fail_count += 1
             
-    db.session.commit()
     return jsonify({
         'success': True,
         'message': f"Sent WhatsApp confirmations to {success_count} devotees. {fail_count} failed."

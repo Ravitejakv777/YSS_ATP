@@ -173,6 +173,7 @@
               <button onclick="notifySingleWhatsApp({{ r.id }})" class="btn btn-sm" style="background:#25D366;color:#fff;border:none;padding:0.1rem 0.3rem;font-size:0.7rem;margin-left:5px;display:inline-flex;align-items:center;gap:2px;" title="Notify via WhatsApp"><i class="fab fa-whatsapp"></i> Notify</button>
             {% else %}
               <span style="font-size:0.7rem;color:#25D366;margin-left:5px;display:inline-flex;align-items:center;gap:2px;" title="Notified via WhatsApp"><i class="fa fa-check-double"></i> Notified</span>
+              <button onclick="notifySingleWhatsApp({{ r.id }})" class="btn btn-sm btn-outline" style="border-color:#25D366;color:#25D366;background:transparent;padding:0.1rem 0.3rem;font-size:0.7rem;margin-left:5px;display:inline-flex;align-items:center;gap:2px;cursor:pointer;" title="Resend WhatsApp Notification"><i class="fa fa-redo"></i> Resend</button>
             {% endif %}
           {% endif %}
         </td>
