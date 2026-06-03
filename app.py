@@ -828,28 +828,6 @@ def serve_manifest():
     response.headers['Content-Type'] = 'application/json'
     return response
 
-@app.route('/api/debug-gateway')
-def debug_gateway():
-    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
-    import requests
-    try:
-        r = requests.get(f"{gateway_url}/recent-messages", timeout=5)
-        gateway_data = r.json()
-    except Exception as e:
-        gateway_data = f"Error: {e}"
-    
-    try:
-        r_status = requests.get(f"{gateway_url}/status", timeout=5)
-        gateway_status = r_status.json()
-    except Exception as e:
-        gateway_status = f"Error: {e}"
-        
-    return jsonify({
-        'gateway_url': gateway_url,
-        'gateway_status': gateway_status,
-        'gateway_data': gateway_data
-    })
-
 @app.route('/offline')
 def offline():
     return render_template('offline.html')
@@ -1294,7 +1272,7 @@ def admin_add_registration():
             transaction_id=transaction_id, payment_screenshot=screenshot_filename,
             payment_status='Paid' if payment_mode == 'Cash' or transaction_id else 'Pending',
             reg_status='Approved' if payment_mode == 'Cash' or transaction_id else 'Pending',
-            notified=True if email and (payment_mode == 'Cash' or transaction_id) else False,
+            notified=False,
             registered_by_id=current_user.id,
             registered_by_name=current_user.name
         )
