@@ -828,6 +828,28 @@ def serve_manifest():
     response.headers['Content-Type'] = 'application/json'
     return response
 
+@app.route('/api/debug-gateway')
+def debug_gateway():
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    import requests
+    try:
+        r = requests.get(f"{gateway_url}/recent-messages", timeout=5)
+        gateway_data = r.json()
+    except Exception as e:
+        gateway_data = f"Error: {e}"
+    
+    try:
+        r_status = requests.get(f"{gateway_url}/status", timeout=5)
+        gateway_status = r_status.json()
+    except Exception as e:
+        gateway_status = f"Error: {e}"
+        
+    return jsonify({
+        'gateway_url': gateway_url,
+        'gateway_status': gateway_status,
+        'gateway_data': gateway_data
+    })
+
 @app.route('/offline')
 def offline():
     return render_template('offline.html')
