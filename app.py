@@ -806,6 +806,77 @@ def serve_manifest():
 def offline():
     return render_template('offline.html')
 
+@app.route('/debug-db')
+def debug_db():
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    res = {}
+    
+    # Run migrations explicitly
+    def ensure_column_explicit(table_name, col_name, col_type_sql, default_sql=None):
+        if not inspector.has_table(table_name):
+            return f"Table {table_name} not found"
+        columns = [c['name'] for c in inspector.get_columns(table_name)]
+        if col_name not in columns:
+            try:
+                sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
+                if default_sql is not None:
+                    sql += f" DEFAULT {default_sql}"
+                db.session.execute(db.text(sql))
+                db.session.commit()
+                return f"Added column {col_name} to {table_name} (Postgres)"
+            except Exception as e_pg:
+                db.session.rollback()
+                try:
+                    sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                    if default_sql is not None:
+                        sql += f" DEFAULT {default_sql}"
+                    db.session.execute(db.text(sql))
+                    db.session.commit()
+                    return f"Added column {col_name} to {table_name} (SQLite/Fallback)"
+                except Exception as e_sql:
+                    db.session.rollback()
+                    return f"Failed to add column {col_name} to {table_name}: PG={e_pg}, SQL={e_sql}"
+        return "Already exists"
+
+    migration_results = []
+    # Ensure registrations columns
+    migration_results.append(ensure_column_explicit('registrations', 'state', 'VARCHAR(100)'))
+    migration_results.append(ensure_column_explicit('registrations', 'email', 'VARCHAR(120)'))
+    migration_results.append(ensure_column_explicit('registrations', 'country_code', 'VARCHAR(10)', "'+91'"))
+    migration_results.append(ensure_column_explicit('registrations', 'amount', 'FLOAT'))
+    migration_results.append(ensure_column_explicit('registrations', 'transaction_id', 'VARCHAR(100)'))
+    migration_results.append(ensure_column_explicit('registrations', 'payment_screenshot', 'VARCHAR(255)'))
+    migration_results.append(ensure_column_explicit('registrations', 'payment_status', 'VARCHAR(20)', "'Pending'"))
+    migration_results.append(ensure_column_explicit('registrations', 'reg_status', 'VARCHAR(20)', "'Pending'"))
+    migration_results.append(ensure_column_explicit('registrations', 'notified', 'BOOLEAN', 'FALSE'))
+    migration_results.append(ensure_column_explicit('registrations', 'district', 'VARCHAR(100)'))
+    migration_results.append(ensure_column_explicit('registrations', 'reminder_7d_sent', 'BOOLEAN', 'FALSE'))
+    migration_results.append(ensure_column_explicit('registrations', 'reminder_3d_sent', 'BOOLEAN', 'FALSE'))
+    migration_results.append(ensure_column_explicit('registrations', 'reminder_1d_sent', 'BOOLEAN', 'FALSE'))
+    migration_results.append(ensure_column_explicit('registrations', 'registered_by_id', 'INTEGER REFERENCES admins(id)'))
+    migration_results.append(ensure_column_explicit('registrations', 'registered_by_name', 'VARCHAR(100)'))
+    
+    # Ensure donations columns
+    migration_results.append(ensure_column_explicit('donations', 'transaction_id', 'VARCHAR(100)'))
+    migration_results.append(ensure_column_explicit('donations', 'payment_screenshot', 'VARCHAR(255)'))
+    migration_results.append(ensure_column_explicit('donations', 'payment_status', 'VARCHAR(20)', "'Pending'"))
+    migration_results.append(ensure_column_explicit('donations', 'notified', 'BOOLEAN', 'FALSE'))
+
+    # Refresh inspector after migrations
+    inspector = inspect(db.engine)
+    
+    for table in ['registrations', 'donations', 'admins', 'room_allotments']:
+        if inspector.has_table(table):
+            res[table] = [c['name'] for c in inspector.get_columns(table)]
+        else:
+            res[table] = "Not found"
+            
+    return jsonify({
+        "migration_results": migration_results,
+        "columns": res
+    })
+
 @app.route('/')
 def index():
     return render_template('index.html', config=app.config)
