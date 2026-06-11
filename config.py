@@ -51,6 +51,6 @@ class Config:
     EVENT_MAPS_URL = 'https://maps.app.goo.gl/WQxUo86SVYtabmMP9'
 
     # Admin defaults
-    ADMIN_EMAIL = 'anantapur@ysscenters.org'
-    ADMIN_PASSWORD = 'yssatp2026'
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'anantapur@ysscenters.org')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'yssatp2026')
     WHATSAPP_GATEWAY_URL = os.environ.get('WHATSAPP_GATEWAY_URL', 'http://localhost:3000')
