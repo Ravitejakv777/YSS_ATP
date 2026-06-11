@@ -1,9 +1,8 @@
 import sys
 import os
 
-# Add project path
-project_path = r'c:/Users/megha/.gemini/antigravity/scratch/yss-anantapur'
-sys.path.append(project_path)
+# Add project path dynamically
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app import app, db, Admin, Room, Registration, Donation, RoomAllotment, update_registrations_excel, update_donations_excel
 
