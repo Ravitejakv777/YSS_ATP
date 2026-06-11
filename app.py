@@ -38,74 +38,66 @@ with app.app_context():
         
         print("Checking database connection...")
         db.create_all()
-        # Safe migration for PostgreSQL / SQLite
-        # Column 1: notified_room_number
-        try:
-            db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN IF NOT EXISTS notified_room_number VARCHAR(100)"))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            try:
-                db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN notified_room_number VARCHAR(100)"))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
-                
-        # Column 2: notified_room_whatsapp
-        try:
-            db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN IF NOT EXISTS notified_room_whatsapp VARCHAR(100)"))
-            db.session.commit()
-            print("RoomAllotment table migrations verified successfully.")
-        except Exception as migration_error:
-            db.session.rollback()
-            try:
-                db.session.execute(db.text("ALTER TABLE room_allotments ADD COLUMN notified_room_whatsapp VARCHAR(100)"))
-                db.session.commit()
-                print("RoomAllotment whatsapp column added successfully.")
-            except Exception as sqlite_err:
-                db.session.rollback()
-                print(f"Skipping migration (column might already exist): {sqlite_err}")
-        # Column 3: district
-        try:
-            db.session.execute(db.text("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS district VARCHAR(100)"))
-            db.session.commit()
-            print("Registration table migrations verified successfully.")
-        except Exception as migration_error:
-            db.session.rollback()
-            try:
-                db.session.execute(db.text("ALTER TABLE registrations ADD COLUMN district VARCHAR(100)"))
-                db.session.commit()
-                print("Registration district column added successfully.")
-            except Exception as sqlite_err:
-                db.session.rollback()
-                print(f"Skipping migration (column might already exist): {sqlite_err}")
-
-        # Check registrations reminder columns
-        for col_name in ['reminder_7d_sent', 'reminder_3d_sent', 'reminder_1d_sent']:
-            try:
-                db.session.execute(db.text(f"ALTER TABLE registrations ADD COLUMN IF NOT EXISTS {col_name} BOOLEAN DEFAULT FALSE"))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
+        # Dynamic database schema verification and migration helper
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        
+        def ensure_column(table_name, col_name, col_type_sql, default_sql=None):
+            if not inspector.has_table(table_name):
+                return
+            columns = [c['name'] for c in inspector.get_columns(table_name)]
+            if col_name not in columns:
+                print(f"Migration: Column '{col_name}' is missing in table '{table_name}'. Adding it...")
                 try:
-                    db.session.execute(db.text(f"ALTER TABLE registrations ADD COLUMN {col_name} BOOLEAN DEFAULT FALSE"))
+                    # Try with IF NOT EXISTS (PostgreSQL 9.6+)
+                    sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
+                    if default_sql is not None:
+                        sql += f" DEFAULT {default_sql}"
+                    db.session.execute(db.text(sql))
                     db.session.commit()
-                except Exception as e:
+                except Exception:
                     db.session.rollback()
-                    print(f"Column {col_name} might already exist: {e}")
+                    try:
+                        # Fallback for SQLite
+                        sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                        if default_sql is not None:
+                            sql += f" DEFAULT {default_sql}"
+                        db.session.execute(db.text(sql))
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"Skipping migration for {table_name}.{col_name}: {e}")
 
-        # Check admins last_active column
-        try:
-            db.session.execute(db.text("ALTER TABLE admins ADD COLUMN IF NOT EXISTS last_active TIMESTAMP"))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            try:
-                db.session.execute(db.text("ALTER TABLE admins ADD COLUMN last_active TIMESTAMP"))
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                print(f"Column last_active might already exist: {e}")
+        # List of columns to ensure exist in registrations table:
+        ensure_column('registrations', 'state', 'VARCHAR(100)')
+        ensure_column('registrations', 'email', 'VARCHAR(120)')
+        ensure_column('registrations', 'country_code', 'VARCHAR(10)', "'+91'")
+        ensure_column('registrations', 'amount', 'FLOAT')
+        ensure_column('registrations', 'transaction_id', 'VARCHAR(100)')
+        ensure_column('registrations', 'payment_screenshot', 'VARCHAR(255)')
+        ensure_column('registrations', 'payment_status', 'VARCHAR(20)', "'Pending'")
+        ensure_column('registrations', 'reg_status', 'VARCHAR(20)', "'Pending'")
+        ensure_column('registrations', 'notified', 'BOOLEAN', 'FALSE')
+        ensure_column('registrations', 'district', 'VARCHAR(100)')
+        
+        ensure_column('registrations', 'reminder_7d_sent', 'BOOLEAN', 'FALSE')
+        ensure_column('registrations', 'reminder_3d_sent', 'BOOLEAN', 'FALSE')
+        ensure_column('registrations', 'reminder_1d_sent', 'BOOLEAN', 'FALSE')
+        ensure_column('registrations', 'registered_by_id', 'INTEGER REFERENCES admins(id)')
+        ensure_column('registrations', 'registered_by_name', 'VARCHAR(100)')
+        
+        # List of columns to ensure exist in donations table:
+        ensure_column('donations', 'transaction_id', 'VARCHAR(100)')
+        ensure_column('donations', 'payment_screenshot', 'VARCHAR(255)')
+        ensure_column('donations', 'payment_status', 'VARCHAR(20)', "'Pending'")
+        ensure_column('donations', 'notified', 'BOOLEAN', 'FALSE')
+
+        # List of columns to ensure exist in admins table:
+        ensure_column('admins', 'last_active', 'TIMESTAMP')
+        
+        # List of columns to ensure exist in room_allotments table:
+        ensure_column('room_allotments', 'notified_room_number', 'VARCHAR(100)')
+        ensure_column('room_allotments', 'notified_room_whatsapp', 'VARCHAR(100)')
 
         # Drop unique constraint on admins.email if it exists (PostgreSQL)
         try:
@@ -121,24 +113,6 @@ with app.app_context():
                 db.session.rollback()
                 print(f"admins_email_key constraint already removed or not found: {e}")
 
-        # Add registered_by columns to registrations table
-        for col_sql in [
-            "ALTER TABLE registrations ADD COLUMN IF NOT EXISTS registered_by_id INTEGER REFERENCES admins(id)",
-            "ALTER TABLE registrations ADD COLUMN IF NOT EXISTS registered_by_name VARCHAR(100)",
-        ]:
-            try:
-                db.session.execute(db.text(col_sql))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
-                col_name = col_sql.split("ADD COLUMN IF NOT EXISTS ")[1].split(" ")[0] if "IF NOT EXISTS" in col_sql else col_sql.split("ADD COLUMN ")[1].split(" ")[0]
-                try:
-                    fallback_sql = col_sql.replace(" IF NOT EXISTS", "")
-                    db.session.execute(db.text(fallback_sql))
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
-                    print(f"Column {col_name} might already exist: {e}")
                     
         # Detect legacy registrations added by admin (Cash payment or no screenshot) and mark them
         try:
@@ -879,6 +853,7 @@ def normalize_lesson_no(val):
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     if request.method == 'POST':
+        print("DEBUG: [registration] POST request received")
         errors = []
         is_new_member = request.form.get('is_new_member') == 'yes'
         lesson_no = request.form.get('lesson_no', '').strip()
@@ -899,9 +874,11 @@ def registration():
         payment_mode = request.form.get('payment_mode', '').strip()
         transaction_id = request.form.get('transaction_id', '').strip()
         
+        print(f"DEBUG: [registration] Form data: full_name={full_name}, whatsapp={whatsapp}, lesson_no={lesson_no}")
         screenshot_filename = None
         file = request.files.get('payment_screenshot')
         if file and file.filename != '':
+            print("DEBUG: [registration] Processing payment screenshot upload")
             import werkzeug.utils, uuid
             filename = werkzeug.utils.secure_filename(file.filename)
             file_ext = os.path.splitext(filename)[1]
@@ -910,6 +887,7 @@ def registration():
             os.makedirs(uploads_dir, exist_ok=True)
             file.save(os.path.join(uploads_dir, new_filename))
             screenshot_filename = new_filename
+            print(f"DEBUG: [registration] Screenshot saved as {screenshot_filename}")
 
         # Set/Normalize Lesson Number
         if is_new_member:
@@ -923,8 +901,10 @@ def registration():
                     if num > max_i:
                         max_i = num
             lesson_no = f"NEW MEMBER {max_i + 1}"
+            print(f"DEBUG: [registration] Generated new member lesson no: {lesson_no}")
         else:
             lesson_no = normalize_lesson_no(lesson_no)
+            print(f"DEBUG: [registration] Normalized lesson no: {lesson_no}")
 
         if not is_new_member and not lesson_no: errors.append('Lesson Number is required.')
         if not full_name: errors.append('Full Name is required.')
@@ -938,6 +918,7 @@ def registration():
         if not departure_date: errors.append('Date of Departure is required.')
         if not payment_mode: errors.append('Payment Mode is required.')
         
+        print(f"DEBUG: [registration] Initial validation errors count: {len(errors)}")
 
         if not errors:
             existing_reg = Registration.query.filter(Registration.full_name.ilike(full_name), Registration.whatsapp == whatsapp).first()
@@ -953,8 +934,10 @@ def registration():
                 existing_lesson = Registration.query.filter(Registration.lesson_no.ilike(lesson_no)).first()
                 if existing_lesson:
                     errors.append(f'Lesson Number {lesson_no} is already registered.')
+            print(f"DEBUG: [registration] DB check validation errors count: {len(errors)}")
 
         if errors:
+            print("DEBUG: [registration] Validation failed, flashing errors")
             for e in errors:
                 flash(e, 'error')
             form_data = dict(request.form)
@@ -966,6 +949,7 @@ def registration():
         acc_fee = 1000 if accommodation else 0
         total_amount = base_fee + acc_fee
 
+        print(f"DEBUG: [registration] Creating Registration object, amount={total_amount}")
         reg = Registration(
             lesson_no=lesson_no, full_name=full_name, gender=gender,
             age=int(age), place=place, district=district, state=state, email=email, country_code=country_code, whatsapp=whatsapp,
@@ -975,11 +959,20 @@ def registration():
             amount=total_amount,
             transaction_id=transaction_id or None, payment_screenshot=screenshot_filename
         )
+        print("DEBUG: [registration] Adding Registration to session")
         db.session.add(reg)
+        print("DEBUG: [registration] Committing transaction")
         db.session.commit()
+        print(f"DEBUG: [registration] Committed successfully! id={reg.id}, reg_id={reg.reg_id}")
+        
+        print("DEBUG: [registration] Triggering async Excel update")
         update_registrations_excel_async()
+        print("DEBUG: [registration] Triggering async submission email")
         send_submission_email_async(reg.id)
+        print("DEBUG: [registration] Triggering async admin alert")
         send_admin_email_alert_async(reg.id)
+        
+        print(f"DEBUG: [registration] Redirecting to success page for {reg.reg_id}")
         return redirect(url_for('reg_success', reg_id=reg.reg_id))
 
     return render_template('registration.html', config=app.config, form={})
