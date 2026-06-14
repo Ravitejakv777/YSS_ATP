@@ -5,7 +5,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 5mm;
+    margin: 8mm 10mm;
   }
   body {
     -webkit-print-color-adjust: exact;
@@ -18,29 +18,49 @@
     display: none !important;
   }
   .id-cards-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 5mm 5mm !important;
+    display: block !important;
     width: 100% !important;
   }
   .id-card-wrapper {
+    display: inline-block !important;
+    width: 47.5% !important;
+    margin-right: 4% !important;
+    margin-bottom: 8mm !important;
+    vertical-align: top !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     border: 2px solid #333 !important;
     border-radius: 4px;
-    height: 100%;
+    height: 62mm !important;
     background-color: #fff !important;
     background: #fff !important;
     color: #000 !important;
+    box-sizing: border-box !important;
+  }
+  .id-card-wrapper:nth-child(2n) {
+    margin-right: 0 !important;
+  }
+  .id-card-wrapper:nth-child(8n) {
+    page-break-after: always !important;
+    break-after: page !important;
   }
   .id-card-wrapper td {
     color: #000 !important;
+    padding: .35rem .5rem !important;
+    font-size: .95rem !important;
   }
   .id-card-wrapper td:last-child {
     display: table-cell !important;
   }
   .id-card-meta-row div {
     color: #000 !important;
+    padding: .35rem .5rem !important;
+  }
+  .id-card-wrapper > div:first-child {
+    padding: .6rem !important;
+  }
+  .id-card-wrapper > div:first-child div {
+    font-size: .95rem !important;
   }
 }
 /* Dark Mode overrides for ID Cards (Screen only) */
