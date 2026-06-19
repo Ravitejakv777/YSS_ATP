@@ -119,7 +119,10 @@ async function connectToWhatsApp() {
             logger: pino({ level: 'error' }), // Output only errors to prevent log spam
             browser: ['Chrome (Windows)', 'Chrome', '110.0.5481.177'],
             defaultQueryTimeoutMs: 60000,
-            connectTimeoutMs: 60000
+            connectTimeoutMs: 60000,
+            keepAliveIntervalMs: 30000,   // Ping server every 30 seconds to keep connection alive
+            syncFullHistory: false,       // Do NOT sync full history, saving memory, bandwidth, and preventing socket timeouts
+            markOnlineOnConnect: false    // Prevents conflicts with active mobile app notifications
         });
     } catch (err) {
         console.error('Fatal error creating WASocket:', err);
