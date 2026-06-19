@@ -28,6 +28,21 @@ async function fetchLatestVersionWithTimeout(timeoutMs = 4000) {
     ]);
 }
 
+// Helper to clear the contents of the authentication folder safely (especially if it is a mounted volume)
+function clearAuthFolder(folderPath) {
+    try {
+        if (fs.existsSync(folderPath)) {
+            const files = fs.readdirSync(folderPath);
+            for (const file of files) {
+                fs.rmSync(path.join(folderPath, file), { recursive: true, force: true });
+            }
+            console.log(`Successfully cleared contents of folder: ${folderPath}`);
+        }
+    } catch (err) {
+        console.error(`Failed to clear folder contents for ${folderPath}:`, err);
+    }
+}
+
 async function connectToWhatsApp() {
     // Dynamically import Baileys since it is packaged as an ES Module
     if (!makeWASocket) {
@@ -76,13 +91,9 @@ async function connectToWhatsApp() {
         saveCreds = authState.saveCreds;
     } catch (err) {
         console.error('Fatal error loading authentication state:', err);
-        // Clear folder if state files are corrupted
-        try {
-            console.log('Clearing potentially corrupted credentials folder...');
-            fs.rmSync(authFolder, { recursive: true, force: true });
-        } catch (rmErr) {
-            console.error('Failed to clear credentials folder:', rmErr);
-        }
+        // Clear folder contents if state files are corrupted
+        console.log('Clearing potentially corrupted credentials folder contents...');
+        clearAuthFolder(authFolder);
         connectionStatus = 'Disconnected';
         qrCodeData = null;
         console.log('Retrying connection in 5 seconds...');
@@ -161,13 +172,8 @@ async function connectToWhatsApp() {
             connectedPhone = null;
 
             if (isLoggedOut || isBadSession) {
-                console.log('Session is logged out or bad. Clearing credentials folder...');
-                try {
-                    fs.rmSync(authFolder, { recursive: true, force: true });
-                    console.log('Credentials folder cleared.');
-                } catch (rmErr) {
-                    console.error('Failed to clear credentials folder:', rmErr);
-                }
+                console.log('Session is logged out or bad. Clearing credentials folder contents...');
+                clearAuthFolder(authFolder);
                 console.log('Attempting a fresh connection in 2 seconds...');
                 reconnectTimeout = setTimeout(connectToWhatsApp, 2000);
             } else if (shouldReconnect) {
@@ -230,12 +236,7 @@ app.post('/reset', async (req, res) => {
 
     // Delete credentials
     const authFolder = path.join(__dirname, 'auth_info_baileys');
-    try {
-        fs.rmSync(authFolder, { recursive: true, force: true });
-        console.log('Auth credentials folder deleted successfully.');
-    } catch (rmErr) {
-        console.error('Failed to delete auth folder during reset:', rmErr);
-    }
+    clearAuthFolder(authFolder);
 
     // Reconnect immediately
     console.log('Initiating fresh WhatsApp connection...');
