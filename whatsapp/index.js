@@ -2,7 +2,7 @@
 if (!global.crypto) {
     global.crypto = require('crypto');
 }
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestWaWebVersion } = require('@whiskeysockets/baileys');
+let makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestWaWebVersion;
 const express = require('express');
 const qrcode = require('qrcode');
 const pino = require('pino');
@@ -29,6 +29,24 @@ async function fetchLatestVersionWithTimeout(timeoutMs = 4000) {
 }
 
 async function connectToWhatsApp() {
+    // Dynamically import Baileys since it is packaged as an ES Module
+    if (!makeWASocket) {
+        try {
+            console.log('Dynamically importing @whiskeysockets/baileys...');
+            const baileys = await import('@whiskeysockets/baileys');
+            makeWASocket = baileys.default || baileys;
+            useMultiFileAuthState = baileys.useMultiFileAuthState;
+            DisconnectReason = baileys.DisconnectReason;
+            fetchLatestWaWebVersion = baileys.fetchLatestWaWebVersion;
+        } catch (importErr) {
+            console.error('Failed to import @whiskeysockets/baileys:', importErr);
+            connectionStatus = 'Disconnected';
+            qrCodeData = null;
+            reconnectTimeout = setTimeout(connectToWhatsApp, 5000);
+            return;
+        }
+    }
+
     // Clear any pending reconnect timeouts to avoid concurrent connection loops
     if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
