@@ -17,57 +17,144 @@ let qrCodeData = null;
 let connectionStatus = 'Disconnected';
 let recentMessages = []; // Stores last 10 sent messages
 
+let reconnectTimeout = null;
+
+// Helper to fetch WhatsApp version with a timeout to prevent hanging on slow networks
+async function fetchLatestVersionWithTimeout(timeoutMs = 4000) {
+    return Promise.race([
+        fetchLatestWaWebVersion(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Version fetch timeout')), timeoutMs))
+    ]);
+}
+
 async function connectToWhatsApp() {
+    // Clear any pending reconnect timeouts to avoid concurrent connection loops
+    if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+    }
+
+    // Clean up previous socket if it exists
+    if (sock) {
+        try {
+            console.log('Closing previous WhatsApp socket connection...');
+            if (sock.ws) {
+                sock.ws.close();
+            }
+        } catch (e) {
+            console.error('Error closing previous socket:', e);
+        }
+        sock = null;
+    }
+
     const authFolder = path.join(__dirname, 'auth_info_baileys');
-    const { state, saveCreds } = await useMultiFileAuthState(authFolder);
-    
-    let version = [2, 3000, 1017531287]; // Fallback stable version
+    let state, saveCreds;
+
     try {
-        const { version: latestVersion, isLatest } = await fetchLatestWaWebVersion();
+        console.log('Loading authentication state from:', authFolder);
+        const authState = await useMultiFileAuthState(authFolder);
+        state = authState.state;
+        saveCreds = authState.saveCreds;
+    } catch (err) {
+        console.error('Fatal error loading authentication state:', err);
+        // Clear folder if state files are corrupted
+        try {
+            console.log('Clearing potentially corrupted credentials folder...');
+            fs.rmSync(authFolder, { recursive: true, force: true });
+        } catch (rmErr) {
+            console.error('Failed to clear credentials folder:', rmErr);
+        }
+        connectionStatus = 'Disconnected';
+        qrCodeData = null;
+        console.log('Retrying connection in 5 seconds...');
+        reconnectTimeout = setTimeout(connectToWhatsApp, 5000);
+        return;
+    }
+
+    let version = undefined; // Fallback to library default stable version
+    try {
+        console.log('Fetching latest WhatsApp Web version...');
+        const { version: latestVersion, isLatest } = await fetchLatestVersionWithTimeout(4000);
         console.log(`Fetched latest WA Web version: ${latestVersion.join('.')}. Is latest: ${isLatest}`);
         version = latestVersion;
     } catch (err) {
-        console.log('Failed to fetch latest WA version, using fallback stable version. Error: ', err.message);
+        console.log('Failed to fetch latest WA version, using library default. Error:', err.message);
     }
-    
-    sock = makeWASocket({
-        version,
-        auth: state,
-        logger: pino({ level: 'silent' }), // Hide noisy debug logs
-        browser: ['Chrome (Windows)', 'Chrome', '110.0.5481.177'],
-        defaultQueryTimeoutMs: 60000,
-        connectTimeoutMs: 60000
-    });
-    
+
+    try {
+        console.log('Creating WhatsApp Socket...');
+        sock = makeWASocket({
+            version,
+            auth: state,
+            logger: pino({ level: 'error' }), // Output only errors to prevent log spam
+            browser: ['Chrome (Windows)', 'Chrome', '110.0.5481.177'],
+            defaultQueryTimeoutMs: 60000,
+            connectTimeoutMs: 60000
+        });
+    } catch (err) {
+        console.error('Fatal error creating WASocket:', err);
+        connectionStatus = 'Disconnected';
+        qrCodeData = null;
+        console.log('Retrying connection in 10 seconds...');
+        reconnectTimeout = setTimeout(connectToWhatsApp, 10000);
+        return;
+    }
+
     sock.ev.on('creds.update', saveCreds);
-    
+
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
-        
+
+        if (connection) {
+            console.log(`Connection status updated: ${connection}`);
+            if (connection === 'connecting') {
+                connectionStatus = 'Connecting';
+            }
+        }
+
         if (qr) {
+            console.log('New QR code received. Ready to be scanned.');
             qrcode.toDataURL(qr, (err, url) => {
                 if (!err) {
                     qrCodeData = url;
+                } else {
+                    console.error('Failed to convert QR code to Data URL:', err);
                 }
             });
             connectionStatus = 'Waiting for scan';
         }
-        
+
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
             const errorReason = lastDisconnect?.error?.message || lastDisconnect?.error;
-            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-            
+
+            const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+            const isBadSession = statusCode === DisconnectReason.badSession;
+            const shouldReconnect = !isLoggedOut && !isBadSession;
+
             console.log(`Connection closed (Status ${statusCode}). Reason:`, errorReason);
             if (lastDisconnect?.error) {
-                console.log('Full disconnect error stack:', lastDisconnect.error);
+                console.error('Full disconnect error stack:', lastDisconnect.error);
             }
-            
+
             connectionStatus = 'Disconnected';
             qrCodeData = null;
-            if (shouldReconnect) {
+
+            if (isLoggedOut || isBadSession) {
+                console.log('Session is logged out or bad. Clearing credentials folder...');
+                try {
+                    fs.rmSync(authFolder, { recursive: true, force: true });
+                    console.log('Credentials folder cleared.');
+                } catch (rmErr) {
+                    console.error('Failed to clear credentials folder:', rmErr);
+                }
+                console.log('Attempting a fresh connection in 2 seconds...');
+                reconnectTimeout = setTimeout(connectToWhatsApp, 2000);
+            } else if (shouldReconnect) {
                 console.log('Attempting reconnection in 10 seconds...');
-                setTimeout(connectToWhatsApp, 10000); // 10s throttle
+                reconnectTimeout = setTimeout(connectToWhatsApp, 10000);
+            } else {
+                console.log('Reconnection aborted.');
             }
         } else if (connection === 'open') {
             console.log('WhatsApp connection opened successfully!');
@@ -76,6 +163,7 @@ async function connectToWhatsApp() {
         }
     });
 }
+
 
 // API to check status and get QR code
 app.get('/status', (req, res) => {
