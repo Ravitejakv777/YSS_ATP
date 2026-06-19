@@ -15,6 +15,7 @@ app.use(express.json());
 let sock = null;
 let qrCodeData = null;
 let connectionStatus = 'Disconnected';
+let connectedPhone = null;
 let recentMessages = []; // Stores last 10 sent messages
 
 let reconnectTimeout = null;
@@ -139,6 +140,7 @@ async function connectToWhatsApp() {
 
             connectionStatus = 'Disconnected';
             qrCodeData = null;
+            connectedPhone = null;
 
             if (isLoggedOut || isBadSession) {
                 console.log('Session is logged out or bad. Clearing credentials folder...');
@@ -160,6 +162,12 @@ async function connectToWhatsApp() {
             console.log('WhatsApp connection opened successfully!');
             connectionStatus = 'Connected';
             qrCodeData = null;
+            if (sock && sock.user && sock.user.id) {
+                connectedPhone = sock.user.id.split(':')[0].split('@')[0];
+                console.log(`Connected phone number: ${connectedPhone}`);
+            } else {
+                connectedPhone = null;
+            }
         }
     });
 }
@@ -169,7 +177,8 @@ async function connectToWhatsApp() {
 app.get('/status', (req, res) => {
     res.json({
         status: connectionStatus,
-        qr: qrCodeData
+        qr: qrCodeData,
+        phone: connectedPhone
     });
 });
 

@@ -2430,14 +2430,17 @@ def admin_whatsapp_status():
     status_data = {
         'status': 'Offline',
         'qr': None,
+        'phone': None,
         'gateway_url': gateway_url
     }
     try:
-        r = requests.get(f"{gateway_url}/status", timeout=0.8)
+        # Increased timeout to 2.0s to prevent transient network timeout false-alarms
+        r = requests.get(f"{gateway_url}/status", timeout=2.0)
         if r.status_code == 200:
             res = r.json()
             status_data['status'] = res.get('status', 'Disconnected')
             status_data['qr'] = res.get('qr')
+            status_data['phone'] = res.get('phone')
     except Exception as e:
         print(f"Error fetching WhatsApp gateway status: {e}")
     return jsonify(status_data)

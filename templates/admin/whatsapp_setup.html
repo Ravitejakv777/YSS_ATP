@@ -293,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const connectedArea = document.getElementById('connected-area');
 
         if (data.status === 'Connected') {
+          let phoneText = data.phone ? `<p style="margin-top:0.5rem; font-size:0.95rem; color:#15803d; font-weight:bold;"><i class="fab fa-whatsapp"></i> Linked Number: +${data.phone}</p>` : '';
           badgeArea.innerHTML = `
             <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#dcfce7; color:#15803d; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(21,128,61,0.15);">
               <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation: pulse 1.5s infinite;"></span>
@@ -301,7 +302,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <p style="margin-top:1rem; font-size:0.9rem; color:#15803d; font-weight:600;">
               🎉 Live and fully active! Ready to dispatch template messages.
             </p>
+            ${phoneText}
           `;
+          
+          if (data.phone) {
+            connectedArea.innerHTML = `
+              <i class="fa-solid fa-circle-check" style="font-size:2.5rem; margin-bottom:0.75rem; color:#22c55e;"></i>
+              <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.1rem;">Automation Active</h4>
+              <p style="font-size:0.85rem; color:#14532d; margin:0;">
+                WhatsApp gateway is connected to <strong>+${data.phone}</strong> and active. Notifications will deliver automatically.
+              </p>
+            `;
+          } else {
+            connectedArea.innerHTML = `
+              <i class="fa-solid fa-circle-check" style="font-size:2.5rem; margin-bottom:0.75rem; color:#22c55e;"></i>
+              <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.1rem;">Automation Active</h4>
+              <p style="font-size:0.85rem; color:#14532d; margin:0;">
+                WhatsApp gateway is connected and active. Notifications will deliver automatically.
+              </p>
+            `;
+          }
+          
           qrArea.style.display = 'none';
           connectedArea.style.display = 'block';
         } else if (data.status === 'Waiting for scan') {
