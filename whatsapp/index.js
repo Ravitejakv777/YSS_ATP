@@ -200,6 +200,50 @@ app.get('/status', (req, res) => {
     });
 });
 
+// API to manually reset connection
+app.post('/reset', async (req, res) => {
+    console.log('Manual reset request received. Resetting connection...');
+    
+    // Clear reconnect timer
+    if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+    }
+
+    // Reset status
+    connectionStatus = 'Disconnected';
+    qrCodeData = null;
+    connectedPhone = null;
+
+    // Terminate old socket
+    if (sock) {
+        try {
+            console.log('Closing socket during reset...');
+            if (sock.ws) {
+                sock.ws.close();
+            }
+        } catch (e) {
+            console.error('Error closing socket during reset:', e);
+        }
+        sock = null;
+    }
+
+    // Delete credentials
+    const authFolder = path.join(__dirname, 'auth_info_baileys');
+    try {
+        fs.rmSync(authFolder, { recursive: true, force: true });
+        console.log('Auth credentials folder deleted successfully.');
+    } catch (rmErr) {
+        console.error('Failed to delete auth folder during reset:', rmErr);
+    }
+
+    // Reconnect immediately
+    console.log('Initiating fresh WhatsApp connection...');
+    connectToWhatsApp();
+
+    res.json({ success: true, message: 'Gateway reset initiated' });
+});
+
 // API to send message
 app.post('/send', async (req, res) => {
     const { to, message } = req.body;

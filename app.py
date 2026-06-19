@@ -2458,6 +2458,21 @@ def admin_whatsapp_messages():
         print(f"Error fetching recent messages: {e}")
     return jsonify({'messages': []})
 
+@app.route('/admin/whatsapp-reset', methods=['POST'])
+@login_required
+def admin_whatsapp_reset():
+    import requests
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL', 'http://localhost:3000')
+    try:
+        r = requests.post(f"{gateway_url}/reset", timeout=5.0)
+        if r.status_code == 200:
+            flash("WhatsApp Gateway connection reset successfully. Generating new QR...", "success")
+        else:
+            flash(f"Failed to reset WhatsApp gateway: {r.text}", "error")
+    except Exception as e:
+        flash(f"Error communicating with WhatsApp gateway: {e}", "error")
+    return redirect(url_for('admin_whatsapp_setup'))
+
 def run_automatic_reminders_scheduler():
     """
     Background worker thread that runs every hour to check if the current date matches the reminder dates,

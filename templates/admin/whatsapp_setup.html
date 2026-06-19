@@ -59,11 +59,17 @@
         </p>
       </div>
 
-      <!-- Recent Messages Button -->
-      <div style="text-align:center; margin-top:1.5rem;">
+      <!-- Connection Control Actions -->
+      <div style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem; flex-wrap:wrap;">
         <button onclick="openMessagesDialog()" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem; border-color:#25D366; color:#25D366;">
           <i class="fab fa-whatsapp"></i> View Recent Despatches (Last 10)
         </button>
+        
+        <form action="/admin/whatsapp-reset" method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to reset the WhatsApp connection? This will delete all saved login details and generate a fresh QR code.')">
+          <button type="submit" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem; border-color:#dc2626; color:#dc2626;">
+            <i class="fa fa-sync"></i> Reset Connection / Clear Cache
+          </button>
+        </form>
       </div>
     </div>
 
