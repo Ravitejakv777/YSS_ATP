@@ -217,9 +217,9 @@ with app.app_context():
                 )
             },
             {
-                'key': 'non_kriyaban_notice',
-                'description': 'Special instructions sent only to non-kriyabans upon registration approval.',
-                'variables': 'name',
+                'key': 'non_kriyaban_info',
+                'description': 'Sent to non-Kriyaban members upon registration approval.',
+                'variables': '',
                 'template_text': (
                     "*సాధనా సంగం 2026 అనంతపురం*\n\n"
                     "*క్రియాయోగ దీక్ష*\n"
@@ -229,18 +229,18 @@ with app.app_context():
                     "2.  దీక్ష తీసుకోదలచిన సభ్యులు వై.ఎస్.ఎస్ రాంచీ ద్వారా లభ్యమయ్యే 18 పాఠాలు పొంది ఉండాలి.\n\n"
                     "3.  ఈ పాఠాల ద్వారా పొందిన ప్రశ్నావళిని(Step-I & Step-II forms) పూర్తిచేసి రాంచీకి పంపి ఉండాలి. ప్రశ్నావళినీ ఇంకా పంపనివారు, పూర్తిచేసి అనంతపురం ధ్యానకేంద్రం ఆఫీసులో కూడా అందచేయవచ్చు.\n\n"
                     "4.  సాధనా సంఘం మొదలయ్యే రోజుకు పాఠాలు అందడం చివరి దశలో ఉన్నవారు, క్రియాదీక్ష తీసుకొనదలచినచో, పూర్తి చేసిన ప్రశ్నావళితో స్వామీజీని కలిసి ప్రత్యేక  అనుమతి తీసుకోవలసి ఉంటుంది.\n\n"
-                    "5.  అనంతపురంలో జరగబోయే సాధనాసంగంలో క్రియాయోగదీక్ష తీసుకోదలచిన సభ్యులు ముందుగానే అనంతపురం ధ్యానకేంద్రం ఆఫీసునందు లేదా శ్రీ A. నరసింహులు (సెల్ నం. 9441665181) గారికి గాని తెలియపరచవలసినదిగా ప్రార్థన. \n\n\n"
+                    "5.  అనంతపురంలో జరగబోయే సాధనాసంగంలో క్రియాయోగదీక్ష తీసుకోదలచిన సభ్యులు ముందుగానే అనంతపురం ధ్యానకేంద్రం ఆఫీసునందు లేదా శ్రీ A. నరసింహులు (సెల్ నం. 9441665181) గారికి గాని తెలియపరచవలసినదిగా ప్రార్థన.\n\n\n"
                     "  దివ్య స్నేహంలో,\n\n"
                     "            మేనేజింగ్ కమిటీ\n"
                     "            యోగదా సత్సంగ\n"
                     "            ధ్యాన కేంద్రం,\n"
                     "            అనంతపురం.\n\n\n"
                     "Sadhana Sangam 2026 – Anantapur\n\n"
-                    "Instructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n\n"
-                    "The Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n\n"
-                    "Members wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n\n"
-                    "The questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n\n"
-                    "Those who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n\n"
+                    "Instructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n"
+                    "The Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n"
+                    "Members wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n"
+                    "The questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n"
+                    "Those who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n"
                     "Members intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\n"
                     "In Divine Friendship,\n\n"
                     "Managing Committee\n"
@@ -421,38 +421,6 @@ def seed_data():
                     "Please plan to arrive by 8:30 AM to complete check-in and room assignment validations smoothly.\n\n"
                     "Let us gather in love and devotion.\n\n"
                     "Jai Guru"
-                )
-            },
-            {
-                "key": "non_kriyaban_notice",
-                "description": "Special instructions sent only to non-kriyabans upon registration approval.",
-                "variables": "name",
-                "template_text": (
-                    "*సాధనా సంగం 2026 అనంతపురం*\n\n"
-                    "*క్రియాయోగ దీక్ష*\n"
-                    "*తీసుకోదలచిన వై.ఎస్.ఎస్*\n"
-                    "*సభ్యులకు సూచనలు*\n\n"
-                    "1.  సాధనాసంగం చివరిరోజు అనగా జూలై 26వ తేదీన క్రియాయోగ దీక్షా కార్యక్రమం నిర్వహించబడుతుంది.\n\n"
-                    "2.  దీక్ష తీసుకోదలచిన సభ్యులు వై.ఎస్.ఎస్ రాంచీ ద్వారా లభ్యమయ్యే 18 పాఠాలు పొంది ఉండాలి.\n\n"
-                    "3.  ఈ పాఠాల ద్వారా పొందిన ప్రశ్నావళిని(Step-I & Step-II forms) పూర్తిచేసి రాంచీకి పంపి ఉండాలి. ప్రశ్నావళినీ ఇంకా పంపనివారు, పూర్తిచేసి అనంతపురం ధ్యానకేంద్రం ఆఫీసులో కూడా అందచేయవచ్చు.\n\n"
-                    "4.  సాధనా సంఘం మొదలయ్యే రోజుకు పాఠాలు అందడం చివరి దశలో ఉన్నవారు, క్రియాదీక్ష తీసుకొనదలచినచో, పూర్తి చేసిన ప్రశ్నావళితో స్వామీజీని కలిసి ప్రత్యేక  అనుమతి తీసుకోవలసి ఉంటుంది.\n\n"
-                    "5.  అనంతపురంలో జరగబోయే సాధనాసంగంలో క్రియాయోగదీక్ష తీసుకోదలచిన సభ్యులు ముందుగానే అనంతపురం ధ్యానకేంద్రం ఆఫీసునందు లేదా శ్రీ A. నరసింహులు (సెల్ నం. 9441665181) గారికి గాని తెలియపరచవలసినదిగా ప్రార్థన. \n\n\n"
-                    "  దివ్య స్నేహంలో,\n\n"
-                    "            మేనేజింగ్ కమిటీ\n"
-                    "            యోగదా సత్సంగ\n"
-                    "            ధ్యాన కేంద్రం,\n"
-                    "            అనంతపురం.\n\n\n"
-                    "Sadhana Sangam 2026 – Anantapur\n\n"
-                    "Instructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n\n"
-                    "The Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n\n"
-                    "Members wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n\n"
-                    "The questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n\n"
-                    "Those who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n\n"
-                    "Members intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\n"
-                    "In Divine Friendship,\n\n"
-                    "Managing Committee\n"
-                    "Yogoda Satsanga Society of India Meditation Centre\n"
-                    "Anantapur"
                 )
             }
         ]
@@ -851,25 +819,24 @@ def send_member_whatsapp(reg):
     if r.status_code != 200:
         raise Exception(f"WhatsApp gateway returned status {r.status_code}: {r.text}")
 
-    # Send non-kriyaban notice if member is not a kriyaban
+    # If the user is a non-Kriyaban, send the initiation instructions message
     if not reg.is_kriyaban:
-        non_kriyaban_message = format_whatsapp_template(
-            'non_kriyaban_notice',
-            name=reg.full_name
-        )
-        if non_kriyaban_message:
-            print(f"WHATSAPP LOG (Non-Kriyaban): {non_kriyaban_message}")
-            r_nk = requests.post(
+        non_kri_message = format_whatsapp_template('non_kriyaban_info')
+        if non_kri_message:
+            import time
+            time.sleep(1.5)  # brief delay to avoid out-of-order delivery
+            print("WHATSAPP LOG (Non-Kriyaban): Sending initiation instructions...")
+            r_non = requests.post(
                 f"{gateway_url}/send",
                 json={
                     'to': reg.whatsapp,
-                    'message': non_kriyaban_message
+                    'message': non_kri_message
                 },
                 timeout=10
             )
-            print(f"AUTOMATED WHATSAPP STATUS (Non-Kriyaban): {r_nk.status_code} - {r_nk.text}")
-            if r_nk.status_code != 200:
-                raise Exception(f"WhatsApp gateway returned status {r_nk.status_code} for non-kriyaban message: {r_nk.text}")
+            print(f"AUTOMATED NON-KRIYABAN WHATSAPP STATUS: {r_non.status_code} - {r_non.text}")
+            if r_non.status_code != 200:
+                raise Exception(f"WhatsApp gateway returned status {r_non.status_code} for non-kriyaban message: {r_non.text}")
 
 
 # ─── PUBLIC ROUTES ────────────────────────────────────────────────────────────
@@ -2409,143 +2376,6 @@ def admin_clear_activity_log():
 @app.route('/admin/whatsapp_setup')
 @login_required
 def admin_whatsapp_setup():
-    # If the templates table is completely empty, seed them dynamically to prevent blank template page
-    if not WhatsAppTemplate.query.first():
-        print("Dynamic template seeding triggered in route...")
-        try:
-            templates_to_seed = [
-                {
-                    'key': 'reg_success',
-                    'description': 'Sent automatically to devotees when their registration is approved by the admin.',
-                    'variables': 'name,reg_id,phone,email,city,accommodation',
-                    'template_text': (
-                        "Dear {name},\n\n"
-                        "With divine blessings and heartfelt joy, we are happy to confirm your successful registration for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n"
-                        "Your Registration Details:\n\n"
-                        "Name: {name}\n"
-                        "Phone Number: {phone}\n"
-                        "Email: {email}\n"
-                        "City: {city}\n"
-                        "Accommodation: {accommodation}\n\n"
-                        "Program Details:\n\n"
-                        "Event: 3-Day Spiritual Program Anantapur\n"
-                        "Venue: Revenue Kalyana Mandapam (Revenue Bhavan), Beside Krishna Kalamandir, Near Clock Tower, Anantapur, Andhra Pradesh\n"
-                        "Dates: July 24-26, 2026\n"
-                        "Venue Location: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\n"
-                        "May this sacred gathering fill your heart with peace, devotion, positivity, and spiritual upliftment. We sincerely thank you for choosing to be part of this divine journey.\n\n"
-                        "Please carry your registration confirmation during your visit. Further updates and instructions will be shared soon.\n\n"
-                        "We look forward to welcoming you with love and prayers.\n\n"
-                        "Jai Guru"
-                    )
-                },
-                {
-                    'key': 'room_allot',
-                    'description': 'Sent to devotees when room numbers are assigned or changed.',
-                    'variables': 'name,reg_id,room_number,arrival_date,departure_date',
-                    'template_text': (
-                        "Dear {name},\n\n"
-                        "With divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\n"
-                        "Accommodation Details:\n\n"
-                        "Name: {name}\n"
-                        "Room Number: {room_number}\n"
-                        "Check-In Date: {arrival_date}\n"
-                        "Check-Out Date: {departure_date}\n\n"
-                        "We kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\n"
-                        "May this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\n"
-                        "We look forward to welcoming you with love and prayers.\n\n"
-                        "Jai Guru"
-                    )
-                },
-                {
-                    'key': 'reminder_7d',
-                    'description': 'Sent 7 days before the event (July 17, 2026).',
-                    'variables': 'name,reg_id',
-                    'template_text': (
-                        "Dear {name},\n\n"
-                        "Jai Guru!\n\n"
-                        "This is a loving reminder that the 3-Day Spiritual Program in Anantapur starts in exactly 7 days, on July 24, 2026! We are eagerly looking forward to meditating and serving together.\n\n"
-                        "Venue Details:\n"
-                        "Revenue Kalyana Mandapam (Revenue Bhavan), Beside Krishna Kalamandir, Near Clock Tower, Anantapur, Andhra Pradesh\n"
-                        "Location: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\n"
-                        "Please complete your travel arrangements. If you need any assistance, feel free to reply to this message.\n\n"
-                        "In divine friendship,\n"
-                        "YSS Anantapur Team"
-                    )
-                },
-                {
-                    'key': 'reminder_3d',
-                    'description': 'Sent 3 days before the event (July 21, 2026).',
-                    'variables': 'name,reg_id',
-                    'template_text': (
-                        "Dear {name},\n\n"
-                        "Jai Guru!\n\n"
-                        "Only 3 days left until our sacred 3-Day Spiritual Program begins on July 24, 2026.\n\n"
-                        "Important Checklist for Your Visit:\n"
-                        "1. Carrying registration ID: {reg_id}\n"
-                        "2. Bring your personal meditation shawl or cushion if preferred.\n"
-                        "3. Keep loose, comfortable clothing (preferably white or light colors).\n"
-                        "4. Accommodation check-in begins on July 23rd afternoon.\n\n"
-                        "For any urgent queries, contact us at 9441665181 or 8019682209.\n\n"
-                        "Warm regards,\n"
-                        "YSS Anantapur Team"
-                    )
-                },
-                {
-                    'key': 'reminder_1d',
-                    'description': 'Sent 1 day before the event (July 23, 2026).',
-                    'variables': 'name,reg_id',
-                    'template_text': (
-                        "Dear {name},\n\n"
-                        "Jai Guru!\n\n"
-                        "The 3-Day Spiritual Program starts TOMORROW at 9:00 AM!\n\n"
-                        "Please ensure you arrive at the venue by 8:00 AM for check-in and seating.\n"
-                        "Venue: Revenue Kalyana Mandapam, Anantapur.\n\n"
-                        "Please show this message or your Registration ID: {reg_id} at the reception desk to collect your entry badge.\n\n"
-                        "Safe travels! We pray for a deeply uplifting spiritual experience for you.\n\n"
-                        "In Master's Service,\n"
-                        "YSS Anantapur Team"
-                    )
-                },
-                {
-                    'key': 'non_kriyaban_notice',
-                    'description': 'Special instructions sent only to non-kriyabans upon registration approval.',
-                    'variables': 'name',
-                    'template_text': (
-                        "*సాధనా సంగం 2026 అనంతపురం*\n\n"
-                        "*క్రియాయోగ దీక్ష*\n"
-                        "*తీసుకోదలచిన వై.ఎస్.ఎస్*\n"
-                        "*సభ్యులకు సూచనలు*\n\n"
-                        "1.  సాధనాసంగం చివరిరోజు అనగా జూలై 26వ తేదీన క్రియాయోగ దీక్షా కార్యక్రమం నిర్వహించబడుతుంది.\n\n"
-                        "2.  దీక్ష తీసుకోదలచిన సభ్యులు వై.ఎస్.ఎస్ రాంచీ ద్వారా లభ్యమయ్యే 18 పాఠాలు పొంది ఉండాలి.\n\n"
-                        "3.  ఈ పాఠాల ద్వారా పొందిన ప్రశ్నావళిని(Step-I & Step-II forms) పూర్తిచేసి రాంచీకి పంపి ఉండాలి. ప్రశ్నావళినీ ఇంకా పంపనివారు, పూర్తిచేసి అనంతపురం ధ్యానకేంద్రం ఆఫీసులో కూడా అందచేయవచ్చు.\n\n"
-                        "4.  సాధనా సంఘం మొదలయ్యే రోజుకు పాఠాలు అందడం చివరి దశలో ఉన్నవారు, క్రియాదీక్ష తీసుకొనదలచినచో, పూర్తి చేసిన ప్రశ్నావళితో స్వామీజీని కలిసి ప్రత్యేక  అనుమతి తీసుకోవలసి ఉంటుంది.\n\n"
-                        "5.  అనంతపురంలో జరగబోయే సాధనాసంగంలో క్రియాయోగదీక్ష తీసుకోదలచిన సభ్యులు ముందుగానే అనంతపురం ధ్యానకేంద్రం ఆఫీసునందు లేదా శ్రీ A. నరసింహులు (సెల్ నం. 9441665181) గారికి గాని తెలియపరచవలసినదిగా ప్రార్థన. \n\n\n"
-                        "  దివ్య స్నేహంలో,\n\n"
-                        "            మేనేజింగ్ కమిటీ\n"
-                        "            యోగదా సత్సంగ\n"
-                        "            ధ్యాన కేంద్రం,\n"
-                        "            అనంతపురం.\n\n\n"
-                        "Sadhana Sangam 2026 – Anantapur\n\n"
-                        "Instructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n\n"
-                        "The Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n\n"
-                        "Members wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n\n"
-                        "The questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n\n"
-                        "Those who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n\n"
-                        "Members intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\n"
-                        "In Divine Friendship,\n\n"
-                        "Managing Committee\n"
-                        "Yogoda Satsanga Society of India Meditation Centre\n"
-                        "Anantapur"
-                    )
-                }
-            ]
-            for t in templates_to_seed:
-                db.session.add(WhatsAppTemplate(**t))
-            db.session.commit()
-        except Exception as ex:
-            db.session.rollback()
-            print(f"Dynamic template seeding failed: {ex}")
-
     templates = WhatsAppTemplate.query.order_by(WhatsAppTemplate.key.asc()).all()
     count_7d_pending = Registration.query.filter_by(reg_status='Approved', reminder_7d_sent=False).count()
     count_3d_pending = Registration.query.filter_by(reg_status='Approved', reminder_3d_sent=False).count()
@@ -2572,151 +2402,6 @@ def admin_whatsapp_template_update():
         flash(f"WhatsApp template '{key}' updated successfully.", "success")
     else:
         flash("Template not found.", "error")
-    return redirect(url_for('admin_whatsapp_setup'))
-
-def format_custom_message(text, reg):
-    import re
-    room_number = "N/A"
-    if reg.allotment and reg.allotment.room:
-        room_number = reg.allotment.room.room_number
-        
-    kwargs = {
-        'name': reg.full_name,
-        'reg_id': reg.reg_id,
-        'phone': reg.whatsapp,
-        'email': reg.email or 'N/A',
-        'city': reg.place,
-        'accommodation': 'Yes' if reg.accommodation else 'No',
-        'room_number': room_number,
-        'arrival_date': reg.arrival_date or '24-07-2026',
-        'departure_date': reg.departure_date or '26-07-2026'
-    }
-    
-    def replace_var(match):
-        var_name = match.group(1)
-        return str(kwargs.get(var_name, match.group(0)))
-        
-    return re.sub(r'\{([a-zA-Z0-9_]+)\}', replace_var, text)
-
-def send_broadcast_async(reg_ids, message_text, mark_notified_flag, admin_name):
-    import threading
-    def job():
-        with app.app_context():
-            success_count = 0
-            fail_count = 0
-            import requests, time
-            gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
-            if not gateway_url:
-                print("Broadcast failed: Gateway URL is not configured.")
-                return
-                
-            for rid in reg_ids:
-                reg = Registration.query.get(rid)
-                if not reg:
-                    continue
-                try:
-                    formatted_msg = format_custom_message(message_text, reg)
-                    r = requests.post(
-                        f"{gateway_url}/send",
-                        json={
-                            'to': reg.whatsapp,
-                            'message': formatted_msg
-                        },
-                        timeout=10
-                    )
-                    if r.status_code == 200:
-                        success_count += 1
-                        if mark_notified_flag:
-                            reg.notified = True
-                        db.session.commit()
-                    else:
-                        fail_count += 1
-                except Exception as e:
-                    print(f"Failed to send broadcast to {reg.whatsapp}: {e}")
-                    fail_count += 1
-                time.sleep(1.5)  # rate limit safety
-            
-            # Log final action
-            log_desc = f"Sent bulk WhatsApp broadcast to {success_count} devotees (failed: {fail_count})"
-            try:
-                log_entry = ActivityLog(
-                    admin_name=admin_name,
-                    action=log_desc
-                )
-                db.session.add(log_entry)
-                db.session.commit()
-            except Exception as e:
-                print(f"Failed to write broadcast ActivityLog: {e}")
-                
-    threading.Thread(target=job, daemon=True).start()
-
-@app.route('/admin/whatsapp-broadcast/preview-count')
-@login_required
-def admin_whatsapp_broadcast_count():
-    reg_status = request.args.get('reg_status', 'all')
-    notified = request.args.get('notified', 'all')
-    is_kriyaban = request.args.get('is_kriyaban', 'all')
-    accommodation = request.args.get('accommodation', 'all')
-    
-    q = Registration.query
-    if reg_status != 'all':
-        q = q.filter_by(reg_status=reg_status)
-    if notified == 'yes':
-        q = q.filter_by(notified=True)
-    elif notified == 'no':
-        q = q.filter_by(notified=False)
-    if is_kriyaban == 'yes':
-        q = q.filter_by(is_kriyaban=True)
-    elif is_kriyaban == 'no':
-        q = q.filter_by(is_kriyaban=False)
-    if accommodation == 'yes':
-        q = q.filter_by(accommodation=True)
-    elif accommodation == 'no':
-        q = q.filter_by(accommodation=False)
-        
-    return jsonify({'count': q.count()})
-
-@app.route('/admin/whatsapp-broadcast/send', methods=['POST'])
-@login_required
-def admin_whatsapp_broadcast_send():
-    reg_status = request.form.get('reg_status', 'all')
-    notified = request.form.get('notified', 'all')
-    is_kriyaban = request.form.get('is_kriyaban', 'all')
-    accommodation = request.form.get('accommodation', 'all')
-    message_text = request.form.get('message_text', '').strip()
-    mark_notified = request.form.get('mark_notified') == 'yes'
-    
-    if not message_text:
-        flash("Message content cannot be empty.", "error")
-        return redirect(url_for('admin_whatsapp_setup'))
-        
-    q = Registration.query
-    if reg_status != 'all':
-        q = q.filter_by(reg_status=reg_status)
-    if notified == 'yes':
-        q = q.filter_by(notified=True)
-    elif notified == 'no':
-        q = q.filter_by(notified=False)
-    if is_kriyaban == 'yes':
-        q = q.filter_by(is_kriyaban=True)
-    elif is_kriyaban == 'no':
-        q = q.filter_by(is_kriyaban=False)
-    if accommodation == 'yes':
-        q = q.filter_by(accommodation=True)
-    elif accommodation == 'no':
-        q = q.filter_by(accommodation=False)
-        
-    registrants = q.all()
-    if not registrants:
-        flash("No matching registrants found for the selected filters.", "error")
-        return redirect(url_for('admin_whatsapp_setup'))
-        
-    reg_ids = [r.id for r in registrants]
-    
-    admin_name = current_user.name
-    send_broadcast_async(reg_ids, message_text, mark_notified, admin_name)
-    
-    flash(f"Broadcast initiated in the background for {len(reg_ids)} devotees. Check Activity Log for status.", "success")
     return redirect(url_for('admin_whatsapp_setup'))
 
 @app.route('/admin/whatsapp-send-reminders/<int:days>', methods=['POST'])

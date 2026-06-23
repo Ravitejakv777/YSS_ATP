@@ -2,7 +2,7 @@
 if (!global.crypto) {
     global.crypto = require('crypto');
 }
-let makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestWaWebVersion;
+let makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestWaWebVersion, Browsers;
 const express = require('express');
 const qrcode = require('qrcode');
 const pino = require('pino');
@@ -53,6 +53,7 @@ async function connectToWhatsApp() {
             useMultiFileAuthState = baileys.useMultiFileAuthState;
             DisconnectReason = baileys.DisconnectReason;
             fetchLatestWaWebVersion = baileys.fetchLatestWaWebVersion;
+            Browsers = baileys.Browsers;
         } catch (importErr) {
             console.error('Failed to import @whiskeysockets/baileys:', importErr);
             connectionStatus = 'Disconnected';
@@ -72,6 +73,8 @@ async function connectToWhatsApp() {
     if (sock) {
         try {
             console.log('Closing previous WhatsApp socket connection...');
+            sock.ev.removeAllListeners('connection.update');
+            sock.ev.removeAllListeners('creds.update');
             if (sock.ws) {
                 sock.ws.close();
             }
@@ -117,7 +120,7 @@ async function connectToWhatsApp() {
             version,
             auth: state,
             logger: pino({ level: 'error' }), // Output only errors to prevent log spam
-            browser: ['Chrome (Windows)', 'Chrome', '110.0.5481.177'],
+            browser: Browsers ? Browsers.macOS('Desktop') : ['Chrome (Windows)', 'Chrome', '110.0.5481.177'],
             defaultQueryTimeoutMs: 60000,
             connectTimeoutMs: 60000,
             keepAliveIntervalMs: 30000,   // Ping server every 30 seconds to keep connection alive
@@ -133,22 +136,9 @@ async function connectToWhatsApp() {
         return;
     }
 
-    const currentSock = sock;
-
-    sock.ev.on('creds.update', () => {
-        if (sock !== currentSock) {
-            console.log('Ignoring creds.update from an older socket instance.');
-            return;
-        }
-        saveCreds();
-    });
+    sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', (update) => {
-        if (sock !== currentSock) {
-            console.log('Ignoring connection.update from an older socket instance.');
-            return;
-        }
-
         const { connection, lastDisconnect, qr } = update;
 
         if (connection) {
@@ -175,6 +165,7 @@ async function connectToWhatsApp() {
             const errorReason = lastDisconnect?.error?.message || lastDisconnect?.error;
 
             const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+            const shouldReconnect = !isLoggedOut;
 
             console.log(`Connection closed (Status ${statusCode}). Reason:`, errorReason);
             if (lastDisconnect?.error) {
@@ -190,9 +181,11 @@ async function connectToWhatsApp() {
                 clearAuthFolder(authFolder);
                 console.log('Attempting a fresh connection in 2 seconds...');
                 reconnectTimeout = setTimeout(connectToWhatsApp, 2000);
+            } else if (shouldReconnect) {
+                console.log('Attempting reconnection in 10 seconds...');
+                reconnectTimeout = setTimeout(connectToWhatsApp, 10000);
             } else {
-                console.log('Attempting reconnection in 5 seconds...');
-                reconnectTimeout = setTimeout(connectToWhatsApp, 5000);
+                console.log('Reconnection aborted.');
             }
         } else if (connection === 'open') {
             console.log('WhatsApp connection opened successfully!');
