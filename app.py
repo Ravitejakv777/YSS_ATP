@@ -422,6 +422,38 @@ def seed_data():
                     "Let us gather in love and devotion.\n\n"
                     "Jai Guru"
                 )
+            },
+            {
+                "key": "non_kriyaban_notice",
+                "description": "Special instructions sent only to non-kriyabans upon registration approval.",
+                "variables": "name",
+                "template_text": (
+                    "*సాధనా సంగం 2026 అనంతపురం*\n\n"
+                    "*క్రియాయోగ దీక్ష*\n"
+                    "*తీసుకోదలచిన వై.ఎస్.ఎస్*\n"
+                    "*సభ్యులకు సూచనలు*\n\n"
+                    "1.  సాధనాసంగం చివరిరోజు అనగా జూలై 26వ తేదీన క్రియాయోగ దీక్షా కార్యక్రమం నిర్వహించబడుతుంది.\n\n"
+                    "2.  దీక్ష తీసుకోదలచిన సభ్యులు వై.ఎస్.ఎస్ రాంచీ ద్వారా లభ్యమయ్యే 18 పాఠాలు పొంది ఉండాలి.\n\n"
+                    "3.  ఈ పాఠాల ద్వారా పొందిన ప్రశ్నావళిని(Step-I & Step-II forms) పూర్తిచేసి రాంచీకి పంపి ఉండాలి. ప్రశ్నావళినీ ఇంకా పంపనివారు, పూర్తిచేసి అనంతపురం ధ్యానకేంద్రం ఆఫీసులో కూడా అందచేయవచ్చు.\n\n"
+                    "4.  సాధనా సంఘం మొదలయ్యే రోజుకు పాఠాలు అందడం చివరి దశలో ఉన్నవారు, క్రియాదీక్ష తీసుకొనదలచినచో, పూర్తి చేసిన ప్రశ్నావళితో స్వామీజీని కలిసి ప్రత్యేక  అనుమతి తీసుకోవలసి ఉంటుంది.\n\n"
+                    "5.  అనంతపురంలో జరగబోయే సాధనాసంగంలో క్రియాయోగదీక్ష తీసుకోదలచిన సభ్యులు ముందుగానే అనంతపురం ధ్యానకేంద్రం ఆఫీసునందు లేదా శ్రీ A. నరసింహులు (సెల్ నం. 9441665181) గారికి గాని తెలియపరచవలసినదిగా ప్రార్థన. \n\n\n"
+                    "  దివ్య స్నేహంలో,\n\n"
+                    "            మేనేజింగ్ కమిటీ\n"
+                    "            యోగదా సత్సంగ\n"
+                    "            ధ్యాన కేంద్రం,\n"
+                    "            అనంతపురం.\n\n\n"
+                    "Sadhana Sangam 2026 – Anantapur\n\n"
+                    "Instructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n\n"
+                    "The Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n\n"
+                    "Members wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n\n"
+                    "The questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n\n"
+                    "Those who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n\n"
+                    "Members intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\n"
+                    "In Divine Friendship,\n\n"
+                    "Managing Committee\n"
+                    "Yogoda Satsanga Society of India Meditation Centre\n"
+                    "Anantapur"
+                )
             }
         ]
         for t in templates:
