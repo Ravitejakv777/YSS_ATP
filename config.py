@@ -17,13 +17,24 @@ if os.path.exists(env_path):
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'yss-anantapur-spiritual-2026-secret-key-ravi')
     
-    # Database Configuration
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url and database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
-    
-    # Fallback to local SQLite if DATABASE_URL is not set
-    SQLALCHEMY_DATABASE_URI = database_url or f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'database.db')}"
+    # Database Configuration (Dual Database Support)
+    neon_url = os.environ.get('NEON_DATABASE_URL')
+    if neon_url and neon_url.startswith("postgres://"):
+        neon_url = neon_url.replace("postgres://", "postgresql://", 1)
+
+    railway_url = os.environ.get('DATABASE_URL') or os.environ.get('RAILWAY_DATABASE_URL')
+    if railway_url and railway_url.startswith("postgres://"):
+        railway_url = railway_url.replace("postgres://", "postgresql://", 1)
+
+    # If Neon URL is provided, it is the primary database, and Railway URL is secondary
+    if neon_url:
+        SQLALCHEMY_DATABASE_URI = neon_url
+        SQLALCHEMY_SECONDARY_URI = railway_url
+    else:
+        # Fallback if Neon is not set
+        SQLALCHEMY_DATABASE_URI = railway_url or f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'database.db')}"
+        SQLALCHEMY_SECONDARY_URI = None
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,

@@ -29,6 +29,81 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'admin_login'
 login_manager.login_message = 'Please login to access admin panel.'
 
+# Initialize Secondary Database Engine (Railway DB) if configured
+from sqlalchemy import create_engine, event, insert, update, delete
+secondary_engine = None
+secondary_url = app.config.get('SQLALCHEMY_SECONDARY_URI')
+if secondary_url:
+    try:
+        secondary_engine = create_engine(
+            secondary_url,
+            pool_pre_ping=True,
+            pool_recycle=300
+        )
+        print("Secondary database engine (Railway DB) initialized.")
+    except Exception as e:
+        print(f"Error initializing secondary database engine: {e}")
+
+# Function to replicate changes to the secondary database
+def replicate_changes(session, target_engine):
+    new_objs = list(session.new)
+    dirty_objs = list(session.dirty)
+    deleted_objs = list(session.deleted)
+    
+    if not (new_objs or dirty_objs or deleted_objs):
+        return
+        
+    try:
+        with target_engine.begin() as conn:
+            # 1. Insert new objects
+            for obj in new_objs:
+                table = obj.__table__
+                values = {}
+                for col in table.columns:
+                    val = getattr(obj, col.key)
+                    if val is not None:
+                        values[col.name] = val
+                conn.execute(insert(table).values(values))
+                
+            # 2. Update dirty objects
+            for obj in dirty_objs:
+                table = obj.__table__
+                pks = [c.name for c in table.primary_key]
+                values = {}
+                filters = {}
+                for col in table.columns:
+                    val = getattr(obj, col.key)
+                    if col.name in pks:
+                        filters[col.name] = val
+                    else:
+                        values[col.name] = val
+                stmt = update(table)
+                for pk_name, pk_val in filters.items():
+                    stmt = stmt.where(table.c[pk_name] == pk_val)
+                conn.execute(stmt.values(values))
+                
+            # 3. Delete objects
+            for obj in deleted_objs:
+                table = obj.__table__
+                pks = [c.name for c in table.primary_key]
+                filters = {}
+                for col in table.columns:
+                    if col.name in pks:
+                        filters[col.name] = getattr(obj, col.key)
+                stmt = delete(table)
+                for pk_name, pk_val in filters.items():
+                    stmt = stmt.where(table.c[pk_name] == pk_val)
+                conn.execute(stmt)
+    except Exception as exc:
+        print(f"!!! DUAL WRITE ERROR: Failed to replicate changes to secondary database: {exc}")
+        raise exc
+
+# Register the session listener if the secondary database is active
+if secondary_engine:
+    @event.listens_for(db.session, 'after_flush')
+    def after_flush_listener(session, flush_context):
+        replicate_changes(session, secondary_engine)
+
 # Initialize Database on Startup (Required for Render)
 with app.app_context():
     try:
@@ -38,35 +113,46 @@ with app.app_context():
         
         print("Checking database connection...")
         db.create_all()
+        
+        # Ensure secondary database tables exist
+        if secondary_engine:
+            print("Checking secondary database connection and tables...")
+            db.metadata.create_all(bind=secondary_engine)
+        
         # Dynamic database schema verification and migration helper
         from sqlalchemy import inspect
         inspector = inspect(db.engine)
+        secondary_inspector = inspect(secondary_engine) if secondary_engine else None
         
-        def ensure_column(table_name, col_name, col_type_sql, default_sql=None):
-            if not inspector.has_table(table_name):
+        def ensure_column_on_engine(engine, insp, table_name, col_name, col_type_sql, default_sql=None):
+            if not insp or not insp.has_table(table_name):
                 return
-            columns = [c['name'] for c in inspector.get_columns(table_name)]
+            columns = [c['name'] for c in insp.get_columns(table_name)]
             if col_name not in columns:
-                print(f"Migration: Column '{col_name}' is missing in table '{table_name}'. Adding it...")
-                try:
-                    # Try with IF NOT EXISTS (PostgreSQL 9.6+)
-                    sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
-                    if default_sql is not None:
-                        sql += f" DEFAULT {default_sql}"
-                    db.session.execute(db.text(sql))
-                    db.session.commit()
-                except Exception:
-                    db.session.rollback()
+                print(f"Migration ({engine.name}): Column '{col_name}' is missing in table '{table_name}'. Adding it...")
+                with engine.begin() as conn:
                     try:
-                        # Fallback for SQLite
-                        sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                        # Try with IF NOT EXISTS (PostgreSQL 9.6+)
+                        sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
                         if default_sql is not None:
                             sql += f" DEFAULT {default_sql}"
-                        db.session.execute(db.text(sql))
-                        db.session.commit()
-                    except Exception as e:
-                        db.session.rollback()
-                        print(f"Skipping migration for {table_name}.{col_name}: {e}")
+                        conn.execute(db.text(sql))
+                    except Exception:
+                        try:
+                            # Fallback for SQLite
+                            sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                            if default_sql is not None:
+                                sql += f" DEFAULT {default_sql}"
+                            conn.execute(db.text(sql))
+                        except Exception as e:
+                            print(f"Skipping migration on {engine.name} for {table_name}.{col_name}: {e}")
+
+        def ensure_column(table_name, col_name, col_type_sql, default_sql=None):
+            # Migrate primary database
+            ensure_column_on_engine(db.engine, inspector, table_name, col_name, col_type_sql, default_sql)
+            # Migrate secondary database
+            if secondary_engine:
+                ensure_column_on_engine(secondary_engine, secondary_inspector, table_name, col_name, col_type_sql, default_sql)
 
         # List of columns to ensure exist in registrations table:
         ensure_column('registrations', 'state', 'VARCHAR(100)')
@@ -99,7 +185,7 @@ with app.app_context():
         ensure_column('room_allotments', 'notified_room_number', 'VARCHAR(100)')
         ensure_column('room_allotments', 'notified_room_whatsapp', 'VARCHAR(100)')
 
-        # Drop unique constraint on admins.email if it exists (PostgreSQL)
+        # Drop unique constraint on admins.email if it exists (PostgreSQL) on both primary and secondary
         try:
             db.session.execute(db.text("ALTER TABLE admins DROP CONSTRAINT IF EXISTS admins_email_key"))
             db.session.commit()
@@ -111,16 +197,32 @@ with app.app_context():
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                print(f"admins_email_key constraint already removed or not found: {e}")
+                print(f"admins_email_key constraint already removed or not found on primary: {e}")
 
+        if secondary_engine:
+            with secondary_engine.begin() as conn:
+                try:
+                    conn.execute(db.text("ALTER TABLE admins DROP CONSTRAINT IF EXISTS admins_email_key"))
+                except Exception:
+                    try:
+                        conn.execute(db.text("ALTER TABLE admins DROP CONSTRAINT admins_email_key"))
+                    except Exception as e:
+                        print(f"admins_email_key constraint drop skipped on secondary: {e}")
                     
-        # Detect legacy registrations added by admin (Cash payment or no screenshot) and mark them
+        # Detect legacy registrations added by admin (Cash payment or no screenshot) and mark them on both primary and secondary
         try:
             db.session.execute(db.text("UPDATE registrations SET registered_by_name = 'Done by Admin' WHERE registered_by_name IS NULL AND (payment_mode = 'Cash' OR payment_screenshot IS NULL OR payment_screenshot = '')"))
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            print(f"Could not update old admin registrations: {e}")
+            print(f"Could not update old admin registrations on primary: {e}")
+
+        if secondary_engine:
+            with secondary_engine.begin() as conn:
+                try:
+                    conn.execute(db.text("UPDATE registrations SET registered_by_name = 'Done by Admin' WHERE registered_by_name IS NULL AND (payment_mode = 'Cash' OR payment_screenshot IS NULL OR payment_screenshot = '')"))
+                except Exception as e:
+                    print(f"Could not update old admin registrations on secondary: {e}")
                 
         # Seed WhatsApp templates if empty
         templates_to_seed = [
@@ -860,72 +962,89 @@ def offline():
 @app.route('/debug-db')
 def debug_db():
     from sqlalchemy import inspect
-    inspector = inspect(db.engine)
     res = {}
     
     # Run migrations explicitly
-    def ensure_column_explicit(table_name, col_name, col_type_sql, default_sql=None):
-        if not inspector.has_table(table_name):
-            return f"Table {table_name} not found"
-        columns = [c['name'] for c in inspector.get_columns(table_name)]
+    def ensure_column_explicit_on_engine(engine, insp, table_name, col_name, col_type_sql, default_sql=None):
+        if not insp or not insp.has_table(table_name):
+            return f"Table {table_name} not found on {engine.name if hasattr(engine, 'name') else 'engine'}"
+        columns = [c['name'] for c in insp.get_columns(table_name)]
         if col_name not in columns:
-            try:
-                sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
-                if default_sql is not None:
-                    sql += f" DEFAULT {default_sql}"
-                db.session.execute(db.text(sql))
-                db.session.commit()
-                return f"Added column {col_name} to {table_name} (Postgres)"
-            except Exception as e_pg:
-                db.session.rollback()
+            with engine.begin() as conn:
                 try:
-                    sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                    sql = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type_sql}"
                     if default_sql is not None:
                         sql += f" DEFAULT {default_sql}"
-                    db.session.execute(db.text(sql))
-                    db.session.commit()
-                    return f"Added column {col_name} to {table_name} (SQLite/Fallback)"
-                except Exception as e_sql:
-                    db.session.rollback()
-                    return f"Failed to add column {col_name} to {table_name}: PG={e_pg}, SQL={e_sql}"
-        return "Already exists"
+                    conn.execute(db.text(sql))
+                    return f"Added column {col_name} to {table_name} on {engine.name if hasattr(engine, 'name') else 'engine'} (Postgres)"
+                except Exception as e_pg:
+                    try:
+                        sql = f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_type_sql}"
+                        if default_sql is not None:
+                            sql += f" DEFAULT {default_sql}"
+                        conn.execute(db.text(sql))
+                        return f"Added column {col_name} to {table_name} on {engine.name if hasattr(engine, 'name') else 'engine'} (SQLite/Fallback)"
+                    except Exception as e_sql:
+                        return f"Failed to add column {col_name} to {table_name} on {engine.name if hasattr(engine, 'name') else 'engine'}: PG={e_pg}, SQL={e_sql}"
+        return f"Column {col_name} already exists on {table_name} on {engine.name if hasattr(engine, 'name') else 'engine'}"
 
-    migration_results = []
-    # Ensure registrations columns
-    migration_results.append(ensure_column_explicit('registrations', 'state', 'VARCHAR(100)'))
-    migration_results.append(ensure_column_explicit('registrations', 'email', 'VARCHAR(120)'))
-    migration_results.append(ensure_column_explicit('registrations', 'country_code', 'VARCHAR(10)', "'+91'"))
-    migration_results.append(ensure_column_explicit('registrations', 'amount', 'FLOAT'))
-    migration_results.append(ensure_column_explicit('registrations', 'transaction_id', 'VARCHAR(100)'))
-    migration_results.append(ensure_column_explicit('registrations', 'payment_screenshot', 'VARCHAR(255)'))
-    migration_results.append(ensure_column_explicit('registrations', 'payment_status', 'VARCHAR(20)', "'Pending'"))
-    migration_results.append(ensure_column_explicit('registrations', 'reg_status', 'VARCHAR(20)', "'Pending'"))
-    migration_results.append(ensure_column_explicit('registrations', 'notified', 'BOOLEAN', 'FALSE'))
-    migration_results.append(ensure_column_explicit('registrations', 'district', 'VARCHAR(100)'))
-    migration_results.append(ensure_column_explicit('registrations', 'reminder_7d_sent', 'BOOLEAN', 'FALSE'))
-    migration_results.append(ensure_column_explicit('registrations', 'reminder_3d_sent', 'BOOLEAN', 'FALSE'))
-    migration_results.append(ensure_column_explicit('registrations', 'reminder_1d_sent', 'BOOLEAN', 'FALSE'))
-    migration_results.append(ensure_column_explicit('registrations', 'registered_by_id', 'INTEGER REFERENCES admins(id)'))
-    migration_results.append(ensure_column_explicit('registrations', 'registered_by_name', 'VARCHAR(100)'))
-    
-    # Ensure donations columns
-    migration_results.append(ensure_column_explicit('donations', 'transaction_id', 'VARCHAR(100)'))
-    migration_results.append(ensure_column_explicit('donations', 'payment_screenshot', 'VARCHAR(255)'))
-    migration_results.append(ensure_column_explicit('donations', 'payment_status', 'VARCHAR(20)', "'Pending'"))
-    migration_results.append(ensure_column_explicit('donations', 'notified', 'BOOLEAN', 'FALSE'))
-
-    # Refresh inspector after migrations
     inspector = inspect(db.engine)
+    migration_results = []
     
+    cols_to_add = [
+        ('registrations', 'state', 'VARCHAR(100)', None),
+        ('registrations', 'email', 'VARCHAR(120)', None),
+        ('registrations', 'country_code', 'VARCHAR(10)', "'+91'"),
+        ('registrations', 'amount', 'FLOAT', None),
+        ('registrations', 'transaction_id', 'VARCHAR(100)', None),
+        ('registrations', 'payment_screenshot', 'VARCHAR(255)', None),
+        ('registrations', 'payment_status', 'VARCHAR(20)', "'Pending'"),
+        ('registrations', 'reg_status', 'VARCHAR(20)', "'Pending'"),
+        ('registrations', 'notified', 'BOOLEAN', 'FALSE'),
+        ('registrations', 'district', 'VARCHAR(100)', None),
+        ('registrations', 'reminder_7d_sent', 'BOOLEAN', 'FALSE'),
+        ('registrations', 'reminder_3d_sent', 'BOOLEAN', 'FALSE'),
+        ('registrations', 'reminder_1d_sent', 'BOOLEAN', 'FALSE'),
+        ('registrations', 'registered_by_id', 'INTEGER REFERENCES admins(id)', None),
+        ('registrations', 'registered_by_name', 'VARCHAR(100)', None),
+        ('donations', 'transaction_id', 'VARCHAR(100)', None),
+        ('donations', 'payment_screenshot', 'VARCHAR(255)', None),
+        ('donations', 'payment_status', 'VARCHAR(20)', "'Pending'"),
+        ('donations', 'notified', 'BOOLEAN', 'FALSE')
+    ]
+    
+    # Run on primary engine
+    for table, col, col_type, default in cols_to_add:
+        migration_results.append(ensure_column_explicit_on_engine(db.engine, inspector, table, col, col_type, default))
+        
+    # Run on secondary engine if configured
+    if secondary_engine:
+        secondary_inspector = inspect(secondary_engine)
+        for table, col, col_type, default in cols_to_add:
+            migration_results.append(ensure_column_explicit_on_engine(secondary_engine, secondary_inspector, table, col, col_type, default))
+            
+    # Refresh inspectors and get columns
+    inspector = inspect(db.engine)
+    primary_columns = {}
     for table in ['registrations', 'donations', 'admins', 'room_allotments']:
         if inspector.has_table(table):
-            res[table] = [c['name'] for c in inspector.get_columns(table)]
+            primary_columns[table] = [c['name'] for c in inspector.get_columns(table)]
         else:
-            res[table] = "Not found"
+            primary_columns[table] = "Not found"
             
+    secondary_columns = {}
+    if secondary_engine:
+        sec_inspector = inspect(secondary_engine)
+        for table in ['registrations', 'donations', 'admins', 'room_allotments']:
+            if sec_inspector.has_table(table):
+                secondary_columns[table] = [c['name'] for c in sec_inspector.get_columns(table)]
+            else:
+                secondary_columns[table] = "Not found"
+                
     return jsonify({
         "migration_results": migration_results,
-        "columns": res
+        "primary_columns": primary_columns,
+        "secondary_columns": secondary_columns if secondary_engine else "No secondary database configured"
     })
 
 @app.route('/')
