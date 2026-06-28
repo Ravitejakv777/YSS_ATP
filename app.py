@@ -816,6 +816,58 @@ def send_member_whatsapp_async(reg_id):
                     db.session.commit()
     threading.Thread(target=job, daemon=True).start()
 
+def send_room_allotment_whatsapp_async(reg_id):
+    import threading
+    def job():
+        with app.app_context():
+            allotment = RoomAllotment.query.filter_by(registration_id=reg_id).first()
+            if allotment and allotment.room:
+                reg = allotment.registration
+                room = allotment.room
+                gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+                if not gateway_url:
+                    print(f"Async room allotment WhatsApp send failed for reg {reg_id}: WhatsApp Gateway is not configured.")
+                    return
+                try:
+                    body_text = format_whatsapp_template(
+                        'room_allot',
+                        name=reg.full_name,
+                        reg_id=reg.reg_id,
+                        room_number=room.room_number,
+                        arrival_date=reg.arrival_date if reg.arrival_date else '24-07-2026',
+                        departure_date=reg.departure_date if reg.departure_date else '26-07-2026'
+                    )
+                    if not body_text:
+                        body_text = (
+                            f"Dear {reg.full_name},\n\n"
+                            f"With divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur.\n\n"
+                            f"Accommodation Details:\n\n"
+                            f"Name: {reg.full_name}\n"
+                            f"Room Number: {room.room_number}\n"
+                            f"Check-In Date: {reg.arrival_date if reg.arrival_date else '24-07-2026'}\n"
+                            f"Check-Out Date: {reg.departure_date if reg.departure_date else '26-07-2026'}\n\n"
+                            f"Jai Guru"
+                        )
+                    import requests
+                    r = requests.post(
+                        f"{gateway_url}/send",
+                        json={
+                            'to': reg.whatsapp,
+                            'message': body_text
+                        },
+                        timeout=10
+                    )
+                    if r.status_code == 200:
+                        allotment.notified_room_whatsapp = room.room_number
+                        allotment.notified_room_number = room.room_number
+                        db.session.commit()
+                        print(f"Async room allotment WhatsApp send succeeded for reg {reg_id}")
+                    else:
+                        print(f"Async room allotment WhatsApp send returned status {r.status_code}: {r.text}")
+                except Exception as e:
+                    print(f"Async room allotment WhatsApp send failed for reg {reg_id}: {e}")
+    threading.Thread(target=job, daemon=True).start()
+
 def send_registration_email_async(reg_id):
     import threading
     def job():
@@ -2164,6 +2216,7 @@ def admin_room_allot():
         log_action(f"Allotted room {room.room_number} to devotee {reg.full_name} ({reg.reg_id})")
         
     db.session.commit()
+    send_room_allotment_whatsapp_async(reg.id)
     flash(f'{reg.full_name} allotted to {room.room_number}.', 'success')
     return redirect(url_for('admin_room_allotment'))
 
@@ -2554,6 +2607,82 @@ def admin_whatsapp_template_add():
     except Exception as e:
         db.session.rollback()
         flash(f"Failed to add template: {e}", "error")
+        
+    return redirect(url_for('admin_whatsapp_setup'))
+
+@app.route('/admin/whatsapp-send-all-due-reminders', methods=['POST'])
+@login_required
+def admin_whatsapp_send_all_due_reminders():
+    from datetime import date
+    today = date.today()
+    event_date = date(2026, 7, 24)
+    days_left = (event_date - today).days
+    
+    due_reminders = []
+    if days_left <= 7:
+        due_reminders.append((7, 'reminder_7d'))
+    if days_left <= 3:
+        due_reminders.append((3, 'reminder_3d'))
+    if days_left <= 1:
+        due_reminders.append((1, 'reminder_1d'))
+        
+    if not due_reminders:
+        flash(f"No reminders are currently due/past due. Days remaining: {days_left}.", "info")
+        return redirect(url_for('admin_whatsapp_setup'))
+        
+    gateway_url = app.config.get('WHATSAPP_GATEWAY_URL')
+    if not gateway_url:
+        flash("WhatsApp Gateway URL is not configured. Please set it up first.", "error")
+        return redirect(url_for('admin_whatsapp_setup'))
+        
+    import requests
+    success_count = 0
+    fail_count = 0
+    
+    for days, key in due_reminders:
+        if days == 7:
+            pending = Registration.query.filter_by(reg_status='Approved', reminder_7d_sent=False).all()
+        elif days == 3:
+            pending = Registration.query.filter_by(reg_status='Approved', reminder_3d_sent=False).all()
+        else:
+            pending = Registration.query.filter_by(reg_status='Approved', reminder_1d_sent=False).all()
+            
+        for reg in pending:
+            try:
+                body = format_whatsapp_template(key, name=reg.full_name, reg_id=reg.reg_id)
+                if not body:
+                    fail_count += 1
+                    continue
+                    
+                r = requests.post(
+                    f"{gateway_url}/send",
+                    json={
+                        'to': reg.whatsapp,
+                        'message': body
+                    },
+                    timeout=5
+                )
+                if r.status_code == 200:
+                    if days == 7:
+                        reg.reminder_7d_sent = True
+                    elif days == 3:
+                        reg.reminder_3d_sent = True
+                    else:
+                        reg.reminder_1d_sent = True
+                    success_count += 1
+                else:
+                    fail_count += 1
+            except Exception as e:
+                print(f"Error sending {days}-day reminder to {reg.whatsapp}: {e}")
+                fail_count += 1
+                
+    db.session.commit()
+    log_action(f"Manually sent all due reminders (Days remaining: {days_left}): {success_count} messages sent, {fail_count} failed.")
+    
+    if fail_count > 0:
+        flash(f"Dispatched {success_count} due reminders. {fail_count} messages failed to send.", "warning")
+    else:
+        flash(f"Successfully sent {success_count} due reminders!", "success")
         
     return redirect(url_for('admin_whatsapp_setup'))
 

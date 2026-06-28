@@ -83,6 +83,19 @@
       </p>
 
       <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <!-- One-Click Dispatch All Due Reminders -->
+        <div style="background: #eef2f6; border: 1px solid #d0d7de; border-radius: 8px; padding: 1.25rem; margin-bottom: 0.5rem;">
+          <h5 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; font-weight: bold; color: var(--primary);">One-Click Reminder Dispatch</h5>
+          <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.4;">
+            Check the current date and automatically dispatch all due/past due reminders (7-Day, 3-Day, and/or 1-Day) that haven't been sent yet to approved devotees in a single run.
+          </p>
+          <form action="/admin/whatsapp-send-all-due-reminders" method="POST" style="margin:0;" onsubmit="return showCustomConfirm('Trigger all currently due/past due reminders to approved devotees?', this)">
+            <button type="submit" class="btn btn-sm" style="background:#10b981; color:#fff; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-weight: 600; padding: 0.6rem;">
+              <i class="fa fa-paper-plane"></i> Dispatch All Due Reminders
+            </button>
+          </form>
+        </div>
+
         <!-- 7 Days Reminder -->
         <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; gap:1rem;" class="reminder-row">
           <div>
