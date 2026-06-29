@@ -18,7 +18,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'yss-anantapur-spiritual-2026-secret-key-ravi')
     
     # Database Configuration (Dual Database Support)
-    neon_url = os.environ.get('NEON_DATABASE_URL') or 'postgresql://neondb_owner:npg_p8NMRz0KxkEU@ep-broad-cloud-aoefntjz-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+    neon_url = os.environ.get('NEON_DATABASE_URL')
     if neon_url and neon_url.startswith("postgres://"):
         neon_url = neon_url.replace("postgres://", "postgresql://", 1)
 
