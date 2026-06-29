@@ -38,7 +38,15 @@
         {% if unallocated %}
           {% for u in unallocated %}
           <div class="attendee-item-unallocated" style="background:#f9f9f9; border:1px solid #ddd; border-radius:6px; padding:1rem; margin-bottom:.75rem;">
-            <div style="font-weight:700; color:var(--text); margin-bottom:.25rem;">{{ u.full_name }} <span style="font-size:0.8rem; color:var(--muted); font-weight:normal;">({{ u.gender }}, {{ u.age }})</span></div>
+            <div style="font-weight:700; color:var(--text); margin-bottom:.25rem; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+              <div>
+                {{ u.full_name }} <span style="font-size:0.8rem; color:var(--muted); font-weight:normal;">({{ u.gender }}, {{ u.age }})</span>
+              </div>
+              <div style="display:flex; gap:0.25rem;">
+                <span style="font-size:0.75rem; color:#1565C0; font-weight:normal; background:#E3F2FD; padding:0.1rem 0.4rem; border-radius:4px;" title="Check-in Date">In: {{ u.arrival_date if u.arrival_date else '24-07-2026' }}</span>
+                <span style="font-size:0.75rem; color:#C62828; font-weight:normal; background:#FFEBEE; padding:0.1rem 0.4rem; border-radius:4px;" title="Check-out Date">Out: {{ u.departure_date if u.departure_date else '26-07-2026' }}</span>
+              </div>
+            </div>
             <div style="font-size:0.85rem; color:var(--muted); margin-bottom:.5rem;">{{ u.place }} • {{ u.whatsapp }}</div>
             
             <form action="{{ url_for('admin_room_allot') }}" method="POST" style="display:flex; gap:.5rem;">

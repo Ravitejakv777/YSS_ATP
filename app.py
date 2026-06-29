@@ -2137,6 +2137,16 @@ def admin_room_allotment():
         ~Registration.id.in_(allotted_reg_ids) if allotted_reg_ids else True
     ).all()
     
+    def sort_by_arrival(reg):
+        d = reg.arrival_date
+        if not d: return '9999-99-99'
+        parts = d.split('-')
+        if len(parts) == 3 and len(parts[0]) == 2:
+            return f"{parts[2]}-{parts[1]}-{parts[0]}"
+        return d
+        
+    unallocated.sort(key=sort_by_arrival)
+    
     allocated = Registration.query.filter(
         Registration.reg_status == 'Approved',
         Registration.id.in_(allotted_reg_ids) if allotted_reg_ids else False
