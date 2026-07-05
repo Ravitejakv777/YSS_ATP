@@ -156,6 +156,10 @@
               <input type="number" name="new_capacity" value="{{ r.capacity }}" min="{{ room_occupancy[r.id]|length }}" style="width:30px; border:none; background:transparent; font-weight:700; font-size:.8rem; color:inherit; text-align:center; outline:none;" onfocus="this.style.background='#eee';" onblur="this.form.submit()" title="Edit Room Capacity">
             </div>
           </form>
+          <form action="{{ url_for('admin_room_delete') }}" method="POST" onsubmit="return showCustomConfirm('Are you sure you want to delete {{ r.room_number }}?', this)" style="margin:0 0 0 .5rem; display:flex; align-items:center;">
+            <input type="hidden" name="room_id" value="{{ r.id }}">
+            <button type="submit" style="background:none; border:none; color:#C62828; cursor:pointer;" title="Delete Room"><i class="fa fa-trash"></i></button>
+          </form>
         </div>
         <div style="padding:.75rem; min-height:80px;">
           {% if room_occupancy[r.id] %}

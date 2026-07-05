@@ -2196,6 +2196,21 @@ def admin_room_rename():
         flash('Room updated successfully.', 'success')
     return redirect(url_for('admin_room_allotment'))
 
+@app.route('/admin/room-allotment/delete', methods=['POST'])
+@login_required
+def admin_room_delete():
+    room_id = request.form.get('room_id')
+    room = Room.query.get(room_id)
+    if room:
+        current_occupants = RoomAllotment.query.filter_by(room_id=room_id).count()
+        if current_occupants > 0:
+            flash(f'Cannot delete {room.room_number}. It currently has {current_occupants} occupants.', 'error')
+        else:
+            db.session.delete(room)
+            db.session.commit()
+            flash(f'{room.room_number} deleted successfully.', 'success')
+    return redirect(url_for('admin_room_allotment'))
+
 @app.route('/admin/room-allotment/allot', methods=['POST'])
 @login_required
 def admin_room_allot():
