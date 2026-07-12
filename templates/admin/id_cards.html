@@ -59,12 +59,7 @@
   .id-card-meta-row div {
     color: #000 !important;
     padding: .2rem .25rem !important;
-  }
-  .id-card-meta-row div:first-child {
     font-size: .95rem !important;
-  }
-  .id-card-meta-row div:last-child {
-    font-size: .75rem !important;
   }
   .id-card-wrapper > div:first-child {
     padding: .3rem !important;
@@ -127,9 +122,8 @@
       <div style="font-weight:700;font-size:.9rem;letter-spacing:1px;">Y.S.D.K., ANANTAPUR</div>
       <div style="font-weight:700;font-size:.9rem;">3-DAY SADHANA SANGAM</div>
     </div>
-    <div class="id-card-meta-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ccc;">
-      <div style="padding:.3rem .5rem;font-weight:700;font-size:1.1rem;text-align:center;border-right:1px solid #ccc;">{{ loop.index }}</div>
-      <div style="padding:.3rem .5rem;text-align:center;font-size:.85rem;">({{ r.created_at|to_ist('%d-%m-%Y') }})</div>
+    <div class="id-card-meta-row" style="border-bottom:1px solid #ccc;text-align:center;">
+      <div style="padding:.3rem .5rem;font-weight:700;font-size:1.1rem;">{{ loop.index }}</div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
       <tr style="border-bottom:1px solid #ddd;"><td style="padding:.2rem .4rem;font-weight:700;width:40%;">Name :</td><td style="padding:.2rem .4rem;">{{ r.full_name }}</td></tr>
