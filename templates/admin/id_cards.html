@@ -56,6 +56,10 @@
   .id-card-wrapper td:last-child {
     display: table-cell !important;
   }
+  .id-card-wrapper td.person-name-cell {
+    font-size: .85rem !important;
+    font-weight: 800 !important;
+  }
   .id-card-meta-row div {
     color: #000 !important;
     padding: .2rem .25rem !important;
@@ -126,7 +130,7 @@
       <div style="padding:.3rem .5rem;font-weight:700;font-size:1.1rem;">{{ loop.index }}</div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
-      <tr style="border-bottom:1px solid #ddd;"><td style="padding:.2rem .4rem;font-weight:700;width:40%;">Name :</td><td style="padding:.2rem .4rem;">{{ r.full_name }}</td></tr>
+      <tr style="border-bottom:1px solid #ddd;"><td style="padding:.2rem .4rem;font-weight:700;width:40%;">Name :</td><td class="person-name-cell" style="padding:.2rem .4rem;">{{ r.full_name }}</td></tr>
       <tr style="border-bottom:1px solid #ddd;"><td style="padding:.2rem .4rem;font-weight:700;">Lesson No :</td><td style="padding:.2rem .4rem;">{{ r.lesson_no }}</td></tr>
       <tr style="border-bottom:1px solid #ddd;"><td style="padding:.2rem .4rem;font-weight:700;">Mobile No :</td><td style="padding:.2rem .4rem;">{{ r.whatsapp }}</td></tr>
       <tr><td style="padding:.2rem .4rem;font-weight:700;">Place :</td><td style="padding:.2rem .4rem;">{{ r.place }}</td></tr>
