@@ -2098,6 +2098,8 @@ def admin_id_cards():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
     is_kriyaban = request.args.get('is_kriyaban', '')
+    accommodation = request.args.get('accommodation', '')
+    volunteer = request.args.get('volunteer', '')
     
     # Only show approved participants in ID cards section
     q = Registration.query.filter_by(reg_status='Approved')
@@ -2110,10 +2112,22 @@ def admin_id_cards():
         q = q.filter_by(is_kriyaban=True)
     elif is_kriyaban == 'false':
         q = q.filter_by(is_kriyaban=False)
+        
+    if accommodation == 'true':
+        q = q.filter_by(accommodation=True)
+    elif accommodation == 'false':
+        q = q.filter_by(accommodation=False)
+        
+    if volunteer == 'true':
+        q = q.filter_by(volunteer=True)
+    elif volunteer == 'false':
+        q = q.filter_by(volunteer=False)
                              
     registrations = q.order_by(Registration.id).all()
     return render_template('admin/id_cards.html', registrations=registrations,
-                           search=search, is_kriyaban=is_kriyaban, config=app.config)
+                           search=search, is_kriyaban=is_kriyaban,
+                           accommodation=accommodation, volunteer=volunteer,
+                           config=app.config)
 
 # ─── ADMIN ROOM ALLOTMENT ────────────────────────────────────────────────────
 @app.route('/admin/room-allotment')

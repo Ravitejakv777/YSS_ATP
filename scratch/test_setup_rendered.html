@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatsApp Automation Setup – YSS Anantapur</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=1.0.3">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    html {
+      overflow-y: scroll !important;
+    }
+    
+    /* Custom Scrollbar Styles for Admin Portal */
+    /* Force table containers to always show horizontal scrollbars */
+    [style*="overflow-x:auto"], [style*="overflow-x: auto"] {
+      overflow-x: scroll !important;
+    }
+
+    /* Webkit (Chrome, Safari, Edge) scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 14px !important;
+      height: 14px !important;
+      display: block !important;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0ebe4 !important; /* light cream/grey matching theme */
+      border-radius: 8px !important;
+      border: 1px solid #e0d5c8 !important;
+      display: block !important;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D4AF37 !important; /* solid gold hex for premium look & constant visibility */
+      border-radius: 8px !important;
+      border: 2px solid #f0ebe4 !important; /* matches track for inset effect */
+      display: block !important;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #CC4414 !important; /* solid primary red hex Highlight on hover */
+    }
+    
+    /* Scrollbar buttons (arrows) */
+    ::-webkit-scrollbar-button:single-button {
+      background-color: #f0ebe4 !important;
+      display: block !important;
+      background-size: 10px !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      height: 14px !important;
+      width: 14px !important;
+    }
+    /* Left arrow icon */
+    ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='70,25 30,50 70,75'/></svg>") !important;
+    }
+    /* Right arrow icon */
+    ::-webkit-scrollbar-button:single-button:horizontal:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='30,25 70,50 30,75'/></svg>") !important;
+    }
+    /* Up arrow icon */
+    ::-webkit-scrollbar-button:single-button:vertical:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='25,70 50,30 75,70'/></svg>") !important;
+    }
+    /* Down arrow icon */
+    ::-webkit-scrollbar-button:single-button:vertical:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232C1A0E'><polygon points='25,30 50,70 75,30'/></svg>") !important;
+    }
+
+    /* Dark Mode Scrollbar Overrides */
+    body.dark-mode ::-webkit-scrollbar-track {
+      background: #1a1a1a !important;
+      border-color: #2d2d2d !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb {
+      background: #888888 !important; /* high visibility slider in dark mode */
+      border-radius: 8px !important;
+      border: 2px solid #1a1a1a !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-thumb:hover {
+      background: #D4AF37 !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button {
+      background-color: #1a1a1a !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='70,25 30,50 70,75'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:horizontal:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='30,25 70,50 30,75'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:vertical:decrement {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='25,70 50,30 75,70'/></svg>") !important;
+    }
+    body.dark-mode ::-webkit-scrollbar-button:single-button:vertical:increment {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23cbd5e1'><polygon points='25,30 50,70 75,30'/></svg>") !important;
+    }
+
+    /* Firefox compatibility styling */
+    * {
+      scrollbar-width: auto !important;
+      scrollbar-color: #c2ab95 #f0ebe4 !important;
+    }
+    body.dark-mode * {
+      scrollbar-color: #555555 #1a1a1a !important;
+    }
+
+    /* Dark Mode variables & overrides for Admin Portal */
+    body.dark-mode {
+      --cream: #121212;
+      --light: #1e1e1e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --white: #1e1e1e;
+      background-color: #121212;
+      color: #e2e8f0;
+    }
+    body.dark-mode .admin-sidebar {
+      background-color: #1a1a1a !important;
+      border-right: 1px solid #2d2d2d;
+    }
+    body.dark-mode .sidebar-logo {
+      border-bottom: 1px solid #2d2d2d;
+    }
+    body.dark-mode .sidebar-nav a {
+      color: #cbd5e1;
+    }
+    body.dark-mode .sidebar-nav a:hover,
+    body.dark-mode .sidebar-nav a.active {
+      background-color: #262626 !important;
+      color: var(--gold);
+    }
+    body.dark-mode .admin-content {
+      background-color: #121212 !important;
+    }
+    body.dark-mode .card,
+    body.dark-mode .reg-card,
+    body.dark-mode .form-card,
+    body.dark-mode .stat-card,
+    body.dark-mode .table-card {
+      background-color: #1e1e1e !important;
+      border-color: #2d2d2d !important;
+      color: #e2e8f0 !important;
+    }
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background-color: #2d2d2d !important;
+      border-color: #404040 !important;
+      color: #fff !important;
+    }
+    body.dark-mode .table,
+    body.dark-mode table {
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode th {
+      background-color: #262626 !important;
+      color: #fff !important;
+      border-bottom-color: #333 !important;
+    }
+    body.dark-mode td {
+      border-bottom-color: #2d2d2d !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode tr:hover {
+      background-color: #262626 !important;
+    }
+    body.dark-mode .table-toolbar {
+      border-bottom-color: #2d2d2d !important;
+    }
+    body.dark-mode .page-btn {
+      background-color: #2d2d2d !important;
+      color: #cbd5e1 !important;
+      border-color: #404040 !important;
+    }
+    body.dark-mode .page-btn.active {
+      background-color: var(--primary) !important;
+      color: #fff !important;
+      border-color: var(--primary) !important;
+    }
+    body.dark-mode .badge {
+      background-color: #2d2d2d;
+      color: #cbd5e1;
+    }
+    /* Modals & Dialogs in Admin Dark Mode */
+    body.dark-mode #deleteModal > div,
+    body.dark-mode #customConfirmModal > div,
+    body.dark-mode #whatsappDialog > div {
+      background-color: #1e1e1e !important;
+      border-color: #404040 !important;
+      color: #e2e8f0 !important;
+    }
+    body.dark-mode #confirmCancelBtn {
+      background-color: #2d2d2d !important;
+      border-color: #404040 !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode .modal-content,
+    body.dark-mode .dialog-content {
+      background-color: #1e1e1e !important;
+      color: #e2e8f0 !important;
+      border: 1px solid #404040 !important;
+    }
+    .manual-entry-row {
+      background-color: #fff8e1 !important;
+    }
+    body.dark-mode .manual-entry-row {
+      background-color: #2d230d !important;
+      border-bottom-color: var(--gold) !important;
+    }
+    body.dark-mode .manual-entry-row td {
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode #filterPanel {
+      background-color: #1e1e1e !important;
+      border-color: #404040 !important;
+      color: #cbd5e1 !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+    body.dark-mode input::placeholder,
+    body.dark-mode textarea::placeholder {
+      color: #64748b !important;
+    }
+    
+    /* Print Styles to ensure A4 Landscape Fit */
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+      body {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+      .admin-sidebar, 
+      .admin-header, 
+      .table-toolbar, 
+      .manual-entry-row,
+      .action-btns,
+      .btn,
+      .toast-container,
+      .stat-cards {
+        display: none !important;
+      }
+      .admin-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .table-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 10pt !important;
+      }
+      th, td {
+        border: 1px solid #ccc !important;
+        padding: 4px !important;
+        color: #000 !important;
+      }
+      /* Hide the Action column */
+      th:last-child, td:last-child {
+        display: none !important;
+      }
+      /* Hide screenshot/eye buttons from cells */
+      td button { display: none !important; }
+    }
+    
+    /* Responsive Helpers */
+    @media(min-width: 769px) {
+      .mobile-only { display: none !important; }
+    }
+    @media(max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .admin-sidebar {
+        position: fixed !important;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 260px !important;
+        z-index: 99999 !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      .admin-sidebar:not(.collapsed) {
+        transform: translateX(0) !important;
+      }
+      .admin-sidebar.collapsed {
+        transform: translateX(-100%) !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+      }
+      .admin-content {
+        padding: 1rem !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      /* Floating Mobile Menu Toggle Button */
+      .mobile-menu-toggle {
+        display: flex !important;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        z-index: 99998;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      .mobile-menu-toggle:active {
+        transform: scale(0.9);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Premium Admin Page Loader -->
+  <div class="page-loader" id="adminLoader" style="position:fixed; inset:0; background:var(--cream); display:flex; align-items:center; justify-content:center; z-index:999999; transition:opacity 0.25s ease, visibility 0.25s ease;">
+    <div class="loader-lotus" style="font-size:3rem; color:var(--primary); animation: spin 1.5s linear infinite;">🪷</div>
+  </div>
+  <script>
+    function hideAdminLoader() {
+      const loader = document.getElementById('adminLoader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        setTimeout(() => loader.remove(), 250);
+      }
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      hideAdminLoader();
+    } else {
+      window.addEventListener('DOMContentLoaded', hideAdminLoader);
+      window.addEventListener('load', hideAdminLoader);
+    }
+    // Hard fallback backup to guarantee the loader ALWAYS hides after 2 seconds
+    setTimeout(hideAdminLoader, 2000);
+  </script>
+
+
+
+
+<button type="button" class="mobile-menu-toggle mobile-only" id="mobileMenuToggle" title="Open Navigation Menu">
+  <i class="fa fa-bars"></i>
+</button>
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <img src="/static/images/logo.png" alt="YSS Logo">
+      <div class="sidebar-text">
+        <h2>YSS Admin Portal</h2>
+      </div>
+      <button type="button" id="sidebarToggle" class="sidebar-toggle-btn" title="Toggle Sidebar">
+        <i class="fa fa-chevron-left" id="toggleIcon"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+
+      <a href="/admin/registrations" class="">
+        <i class="fa fa-users"></i><span>Registrations</span>
+      </a>
+      <a href="/admin/requests" class="" style="position:relative;">
+        <i class="fa fa-bell"></i><span>Reg Requests</span>
+      </a>
+      <a href="/admin/donation-requests" class="" style="position:relative;">
+        <i class="fa fa-hand-holding-heart"></i><span>Donation Requests</span>
+      </a>
+      <a href="/admin/donations" class="">
+        <i class="fa fa-heart"></i><span>Donations</span>
+      </a>
+      <a href="/admin/id-cards" class="">
+        <i class="fa fa-id-card"></i><span>ID Cards</span>
+      </a>
+      <a href="/admin/schedule" class="">
+        <i class="fa fa-calendar-alt"></i><span>Schedule</span>
+      </a>
+      <a href="/admin/room-allotment" class="">
+        <i class="fa fa-bed"></i><span>Room Allotment</span>
+      </a>
+      <a href="/admin/whatsapp_setup" class="active">
+        <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i><span>WhatsApp Setup</span>
+      </a>
+      <a href="/admin/gallery" class="">
+        <i class="fa fa-images"></i><span>Gallery Mgmt</span>
+      </a>
+      <a href="/admin/activity_log" class="">
+        <i class="fa fa-history"></i><span>Activity Log</span>
+      </a>
+      
+      <a href="/admin/manage" class="">
+        <i class="fa fa-user-shield"></i><span>Admins</span>
+      </a>
+      
+      <a href="#" id="adminThemeToggle" style="margin-top:auto; color: var(--gold); border-top: 1px solid #444; padding-top: 1rem;">
+        <i class="fa fa-moon" id="adminThemeIcon"></i><span>Dark Mode</span>
+      </a>
+      <a href="/admin/logout" onclick="return showCustomConfirm('Logout from admin panel?', this)" style="color:#ff9999;">
+        <i class="fa fa-sign-out-alt"></i><span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+  <main class="admin-content">
+    
+<div class="admin-header" style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1 style="font-family:'Cinzel',serif; color:var(--primary); margin:0;">WhatsApp Automation Setup</h1>
+    <p style="color:var(--muted); margin:0.25rem 0 0 0;">Manage your automated attendee and donation WhatsApp dispatch gateway.</p>
+  </div>
+  <div style="display:flex; gap:0.5rem; align-items:center;">
+    <span style="font-size:0.9rem; color:var(--muted);">Service endpoint:</span>
+    <code style="background:#e9ecef; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.85rem; color:var(--primary); font-weight:bold;">http://localhost:3000</code>
+  </div>
+</div>
+
+<div class="admin-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start;">
+  <!-- COLUMN 1: Status & Reminders -->
+  <div style="display:flex; flex-direction:column; gap:2rem;">
+    <!-- Connection Status Card -->
+    <div id="whatsapp-setup-container" class="card" style="padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-radius:12px; border:1px solid #e0e0e0; background:#fff;">
+      <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+        <i class="fa fa-plug" style="color:var(--gold);"></i> Connection Status
+      </h3>
+      
+      <div style="text-align:center; padding:1.25rem; background:#fdf6ec; border-radius:8px; border:1px solid #e0d0bb; margin-bottom:1.5rem;">
+        <div style="font-size:1rem; font-weight:bold; margin-bottom:0.75rem; color:var(--text);">Current Status:</div>
+        <div id="status-badge-area">
+          <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#f3f4f6; color:#4b5563; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem;">
+            <span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+            CHECKING...
+          </div>
+          <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
+            Retrieving live status from gateway...
+          </p>
+        </div>
+      </div>
+
+      <!-- QR Code Scanning Section -->
+      <div id="qr-scan-area" style="display:none; text-align:center; padding:1.5rem; border:2px dashed var(--gold); border-radius:12px; background:#fffdec; margin-top:1rem;">
+        <h4 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:0.75rem;">Scan QR Code</h4>
+        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
+          Go to <strong>WhatsApp ➔ Linked Devices ➔ Link a Device</strong> on your phone and scan:
+        </p>
+        <div style="display:inline-block; background:#fff; padding:1rem; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border: 1px solid #e0d0bb;">
+          <img id="qr-image" src="" alt="WhatsApp QR Code" style="width:200px; height:200px; display:block;">
+        </div>
+        <div style="margin-top:1rem; font-size:0.8rem; color:var(--gold); font-weight:bold; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <i class="fa fa-spinner fa-spin"></i> Checking connection status live...
+        </div>
+      </div>
+
+      <!-- Connected Status Section -->
+      <div id="connected-area" style="display:none; text-align:center; padding:1.5rem; border:2px solid #dcfce7; border-radius:12px; background:#f0fdf4; margin-top:1rem; color:#166534;">
+        <i class="fa-solid fa-circle-check" style="font-size:2.5rem; margin-bottom:0.75rem; color:#22c55e;"></i>
+        <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.1rem;">Automation Active</h4>
+        <p style="font-size:0.85rem; color:#14532d; margin:0;">
+          WhatsApp gateway is connected and active. Notifications will deliver automatically.
+        </p>
+      </div>
+
+      <!-- Connection Control Actions -->
+      <div style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem; flex-wrap:wrap;">
+        <button onclick="openMessagesDialog()" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem; border-color:#25D366; color:#25D366;">
+          <i class="fab fa-whatsapp"></i> View Recent Despatches (Last 10)
+        </button>
+        
+        <form action="/admin/whatsapp-reset" method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to reset the WhatsApp connection? This will delete all saved login details and generate a fresh QR code.')">
+          <button type="submit" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem; border-color:#dc2626; color:#dc2626;">
+            <i class="fa fa-sync"></i> Reset Connection / Clear Cache
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Trigger Event Reminders Card -->
+    <div class="card" style="padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-radius:12px; border:1px solid #e0e0e0; background:#fff;">
+      <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+        <i class="fa fa-hourglass-half" style="color:var(--gold);"></i> Event Reminders
+      </h3>
+      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:1.5rem;">
+        Manually trigger scheduled broadcast notifications to approved devotees based on days remaining to the program start date (24 July 2026).
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <!-- 7 Days Reminder -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; gap:1rem;" class="reminder-row">
+          <div>
+            <h5 style="margin:0; font-size:0.95rem; font-weight:bold; color:var(--text);">7-Day Reminder</h5>
+            <span style="font-size:0.8rem; color:var(--muted);">Pending: <strong>0</strong> devotees</span>
+          </div>
+          <form action="/admin/whatsapp-send-reminders/7" method="POST" style="margin:0;" onsubmit="return showCustomConfirm('Trigger 7-Day reminder to all pending approved devotees?', this)">
+            <button type="submit" class="btn btn-sm" style="background:#CC4414; color:#fff;" disabled style="opacity:0.6; cursor:not-allowed;">
+              <i class="fa fa-paper-plane"></i> Dispatch
+            </button>
+          </form>
+        </div>
+
+        <!-- 3 Days Reminder -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; gap:1rem;" class="reminder-row">
+          <div>
+            <h5 style="margin:0; font-size:0.95rem; font-weight:bold; color:var(--text);">3-Day Reminder</h5>
+            <span style="font-size:0.8rem; color:var(--muted);">Pending: <strong>0</strong> devotees</span>
+          </div>
+          <form action="/admin/whatsapp-send-reminders/3" method="POST" style="margin:0;" onsubmit="return showCustomConfirm('Trigger 3-Day reminder to all pending approved devotees?', this)">
+            <button type="submit" class="btn btn-sm" style="background:#CC4414; color:#fff;" disabled style="opacity:0.6; cursor:not-allowed;">
+              <i class="fa fa-paper-plane"></i> Dispatch
+            </button>
+          </form>
+        </div>
+
+        <!-- 1 Day Reminder -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; gap:1rem;" class="reminder-row">
+          <div>
+            <h5 style="margin:0; font-size:0.95rem; font-weight:bold; color:var(--text);">1-Day Reminder</h5>
+            <span style="font-size:0.8rem; color:var(--muted);">Pending: <strong>0</strong> devotees</span>
+          </div>
+          <form action="/admin/whatsapp-send-reminders/1" method="POST" style="margin:0;" onsubmit="return showCustomConfirm('Trigger 1-Day reminder to all pending approved devotees?', this)">
+            <button type="submit" class="btn btn-sm" style="background:#CC4414; color:#fff;" disabled style="opacity:0.6; cursor:not-allowed;">
+              <i class="fa fa-paper-plane"></i> Dispatch
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUMN 2: Templates Customization -->
+  <div class="card" style="padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-radius:12px; border:1px solid #e0e0e0; background:#fff;">
+    <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+      <i class="fa fa-edit" style="color:var(--gold);"></i> Edit Message Templates
+    </h3>
+    <p style="font-size:0.88rem; color:var(--muted); margin-bottom:1.5rem;">
+      Modify the messages sent during registration, room allotments, and reminders. Use the dynamic placeholders in curly braces.
+    </p>
+
+    <!-- Template Selector Tabs -->
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+      <div class="form-group">
+        <label style="font-weight:bold; color:var(--text); margin-bottom:0.5rem; display:block;">Select Template Stage:</label>
+        <select id="templateKeySelector" class="form-control" style="width:100%;">
+          
+            <option value="non_kriyaban_info">NON KRIYABAN INFO</option>
+          
+            <option value="non_kriyaban_notice">NON KRIYABAN NOTICE</option>
+          
+            <option value="reg_success">REG SUCCESS</option>
+          
+            <option value="reminder_1d">REMINDER 1D</option>
+          
+            <option value="reminder_3d">REMINDER 3D</option>
+          
+            <option value="reminder_7d">REMINDER 7D</option>
+          
+            <option value="room_allot">ROOM ALLOT</option>
+          
+          <option value="custom">CUSTOM MESSAGE (BLANK)</option>
+        </select>
+      </div>
+
+      <!-- Edit Form -->
+      <form action="/admin/whatsapp-templates/update" method="POST" id="templateEditForm">
+        <input type="hidden" name="key" id="templateKeyInput" value="">
+        
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label style="font-weight:bold; color:var(--text); margin-bottom:0.3rem; display:block;">Template Description:</label>
+          <div id="templateDescription" style="font-size:0.85rem; color:var(--muted); background:#f9fafb; padding:0.6rem 0.8rem; border-radius:6px; border:1px solid #e5e7eb; line-height:1.4;">
+            Loading description...
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label style="font-weight:bold; color:var(--text); margin-bottom:0.3rem; display:block;">Available Placeholders:</label>
+          <div id="templateVariables" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            <!-- dynamic badges -->
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label style="font-weight:bold; color:var(--text); margin-bottom:0.5rem; display:block;">Message Text:</label>
+          <textarea name="template_text" id="templateTextArea" class="form-control" rows="12" style="width:100%; font-family:monospace; font-size:0.9rem; line-height:1.5; padding:0.8rem; border-radius:6px; border:1px solid #ccc; outline:none; resize:vertical;" required></textarea>
+        </div>
+
+        <button type="submit" id="saveTemplateBtn" class="btn btn-primary" style="width:100%;">
+          <i class="fa fa-save"></i> Save Template Changes
+        </button>
+      </form>
+
+      <hr style="margin:2rem 0; border:0; border-top:1px solid #e0e0e0;">
+
+      <!-- Broadcast Form -->
+      <form action="/admin/whatsapp-broadcast/send" method="POST" id="broadcastForm" onsubmit="return confirmBroadcast(this)">
+        <h4 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+          <i class="fa fa-bullhorn" style="color:var(--gold);"></i> Broadcast Message
+        </h4>
+        <p style="font-size:0.82rem; color:var(--muted); margin-bottom:1.5rem;">
+          Send the edited text above to matching registered devotees. Dynamic placeholders like <code>{name}</code>, <code>{reg_id}</code>, etc. will be replaced for each recipient.
+        </p>
+
+        <input type="hidden" name="message_text" id="broadcastMessageTextInput" value="">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+          <div class="form-group">
+            <label style="font-weight:bold; font-size:0.85rem; color:var(--text); margin-bottom:0.3rem; display:block;">Reg Status:</label>
+            <select name="reg_status" id="broadcastFilterRegStatus" class="form-control" style="width:100%;">
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+              <option value="all">All Statuses</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-weight:bold; font-size:0.85rem; color:var(--text); margin-bottom:0.3rem; display:block;">Notified Status:</label>
+            <select name="notified" id="broadcastFilterNotified" class="form-control" style="width:100%;">
+              <option value="all">All</option>
+              <option value="no" selected>Unnotified only</option>
+              <option value="yes">Notified only</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-weight:bold; font-size:0.85rem; color:var(--text); margin-bottom:0.3rem; display:block;">Kriyaban:</label>
+            <select name="is_kriyaban" id="broadcastFilterKriyaban" class="form-control" style="width:100%;">
+              <option value="all" selected>All</option>
+              <option value="yes">Kriyabans only</option>
+              <option value="no">Non-Kriyabans only</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-weight:bold; font-size:0.85rem; color:var(--text); margin-bottom:0.3rem; display:block;">Accommodation:</label>
+            <select name="accommodation" id="broadcastFilterAccommodation" class="form-control" style="width:100%;">
+              <option value="all" selected>All</option>
+              <option value="yes">Needs Accommodation</option>
+              <option value="no">No Accommodation</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem;">
+          <input type="checkbox" name="mark_notified" id="broadcastMarkNotified" value="yes" checked style="width:auto; cursor:pointer;">
+          <label for="broadcastMarkNotified" style="font-size:0.85rem; color:var(--text); margin:0; cursor:pointer;">Mark recipients as notified after sending</label>
+        </div>
+
+        <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:0.75rem; font-size:0.9rem; color:#4f46e5; text-align:center; font-weight:bold; margin-bottom:1.25rem;">
+          Recipient count matching filters: <span id="broadcastRecipientCount">0</span> devotees
+        </div>
+
+        <button type="submit" class="btn" style="background:#CC4414; color:#fff; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; border:none; cursor:pointer; font-weight:bold; padding:0.75rem; border-radius:6px;">
+          <i class="fa fa-paper-plane"></i> Broadcast Message
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Messages Dialog Modal -->
+<div id="messagesModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
+  <div class="modal-content" style="background:var(--white); border-radius:16px; box-shadow:0 16px 60px rgba(0,0,0,0.2); width:95%; max-width:560px; padding:2rem; position:relative; max-height:85vh; overflow-y:auto;">
+    <button onclick="document.getElementById('messagesModal').style.display='none'" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted);">&times;</button>
+    <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+      <i class="fab fa-whatsapp" style="color:#25D366;"></i> Recent WhatsApp Messages
+    </h3>
+    <div id="messagesList" style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div style="text-align:center; padding:2rem; color:var(--muted);">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+/* Style adjustments for dark mode compatibility */
+body.dark-mode .reminder-row {
+  background-color: #262626 !important;
+  border-color: #333 !important;
+}
+body.dark-mode #templateDescription {
+  background-color: #262626 !important;
+  border-color: #333 !important;
+}
+.recent-message-item {
+  background-color: #f8faf8;
+  border: 1px solid #e8ede8;
+}
+body.dark-mode .recent-message-item {
+  background-color: #262626 !important;
+  border-color: #333 !important;
+}
+</style>
+
+  </main>
+</div>
+
+<script src="/static/js/main.js"></script>
+
+<script>
+// Load template database entries
+const templatesData = {
+  
+    "non_kriyaban_info": {
+      "description": "Sent to non-Kriyaban members upon registration approval.",
+      "variables": "",
+      "template_text": "*\u0c38\u0c3e\u0c27\u0c28\u0c3e \u0c38\u0c02\u0c17\u0c02 2026 \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02*\n\n*\u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17 \u0c26\u0c40\u0c15\u0c4d\u0c37*\n*\u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c35\u0c48.\u0c0e\u0c38\u0c4d.\u0c0e\u0c38\u0c4d*\n*\u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c15\u0c41 \u0c38\u0c42\u0c1a\u0c28\u0c32\u0c41*\n\n1.  \u0c38\u0c3e\u0c27\u0c28\u0c3e\u0c38\u0c02\u0c17\u0c02 \u0c1a\u0c3f\u0c35\u0c30\u0c3f\u0c30\u0c4b\u0c1c\u0c41 \u0c05\u0c28\u0c17\u0c3e \u0c1c\u0c42\u0c32\u0c48 26\u0c35 \u0c24\u0c47\u0c26\u0c40\u0c28 \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17 \u0c26\u0c40\u0c15\u0c4d\u0c37\u0c3e \u0c15\u0c3e\u0c30\u0c4d\u0c2f\u0c15\u0c4d\u0c30\u0c2e\u0c02 \u0c28\u0c3f\u0c30\u0c4d\u0c35\u0c39\u0c3f\u0c02\u0c1a\u0c2c\u0c21\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.\n\n2.  \u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c41 \u0c35\u0c48.\u0c0e\u0c38\u0c4d.\u0c0e\u0c38\u0c4d \u0c30\u0c3e\u0c02\u0c1a\u0c40 \u0c26\u0c4d\u0c35\u0c3e\u0c30\u0c3e \u0c32\u0c2d\u0c4d\u0c2f\u0c2e\u0c2f\u0c4d\u0c2f\u0c47 18 \u0c2a\u0c3e\u0c20\u0c3e\u0c32\u0c41 \u0c2a\u0c4a\u0c02\u0c26\u0c3f \u0c09\u0c02\u0c21\u0c3e\u0c32\u0c3f.\n\n3.  \u0c08 \u0c2a\u0c3e\u0c20\u0c3e\u0c32 \u0c26\u0c4d\u0c35\u0c3e\u0c30\u0c3e \u0c2a\u0c4a\u0c02\u0c26\u0c3f\u0c28 \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c28\u0c3f(Step-I \u0026 Step-II forms) \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c1a\u0c47\u0c38\u0c3f \u0c30\u0c3e\u0c02\u0c1a\u0c40\u0c15\u0c3f \u0c2a\u0c02\u0c2a\u0c3f \u0c09\u0c02\u0c21\u0c3e\u0c32\u0c3f. \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c28\u0c40 \u0c07\u0c02\u0c15\u0c3e \u0c2a\u0c02\u0c2a\u0c28\u0c3f\u0c35\u0c3e\u0c30\u0c41, \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c1a\u0c47\u0c38\u0c3f \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02 \u0c27\u0c4d\u0c2f\u0c3e\u0c28\u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02 \u0c06\u0c2b\u0c40\u0c38\u0c41\u0c32\u0c4b \u0c15\u0c42\u0c21\u0c3e \u0c05\u0c02\u0c26\u0c1a\u0c47\u0c2f\u0c35\u0c1a\u0c4d\u0c1a\u0c41.\n\n4.  \u0c38\u0c3e\u0c27\u0c28\u0c3e \u0c38\u0c02\u0c18\u0c02 \u0c2e\u0c4a\u0c26\u0c32\u0c2f\u0c4d\u0c2f\u0c47 \u0c30\u0c4b\u0c1c\u0c41\u0c15\u0c41 \u0c2a\u0c3e\u0c20\u0c3e\u0c32\u0c41 \u0c05\u0c02\u0c26\u0c21\u0c02 \u0c1a\u0c3f\u0c35\u0c30\u0c3f \u0c26\u0c36\u0c32\u0c4b \u0c09\u0c28\u0c4d\u0c28\u0c35\u0c3e\u0c30\u0c41, \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4a\u0c28\u0c26\u0c32\u0c1a\u0c3f\u0c28\u0c1a\u0c4b, \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f \u0c1a\u0c47\u0c38\u0c3f\u0c28 \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c24\u0c4b \u0c38\u0c4d\u0c35\u0c3e\u0c2e\u0c40\u0c1c\u0c40\u0c28\u0c3f \u0c15\u0c32\u0c3f\u0c38\u0c3f \u0c2a\u0c4d\u0c30\u0c24\u0c4d\u0c2f\u0c47\u0c15  \u0c05\u0c28\u0c41\u0c2e\u0c24\u0c3f \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c35\u0c32\u0c38\u0c3f \u0c09\u0c02\u0c1f\u0c41\u0c02\u0c26\u0c3f.\n\n5.  \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02\u0c32\u0c4b \u0c1c\u0c30\u0c17\u0c2c\u0c4b\u0c2f\u0c47 \u0c38\u0c3e\u0c27\u0c28\u0c3e\u0c38\u0c02\u0c17\u0c02\u0c32\u0c4b \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17\u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c41 \u0c2e\u0c41\u0c02\u0c26\u0c41\u0c17\u0c3e\u0c28\u0c47 \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02 \u0c27\u0c4d\u0c2f\u0c3e\u0c28\u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02 \u0c06\u0c2b\u0c40\u0c38\u0c41\u0c28\u0c02\u0c26\u0c41 \u0c32\u0c47\u0c26\u0c3e \u0c36\u0c4d\u0c30\u0c40 A. \u0c28\u0c30\u0c38\u0c3f\u0c02\u0c39\u0c41\u0c32\u0c41 (\u0c38\u0c46\u0c32\u0c4d \u0c28\u0c02. 9441665181) \u0c17\u0c3e\u0c30\u0c3f\u0c15\u0c3f \u0c17\u0c3e\u0c28\u0c3f \u0c24\u0c46\u0c32\u0c3f\u0c2f\u0c2a\u0c30\u0c1a\u0c35\u0c32\u0c38\u0c3f\u0c28\u0c26\u0c3f\u0c17\u0c3e \u0c2a\u0c4d\u0c30\u0c3e\u0c30\u0c4d\u0c25\u0c28.\n\n\n  \u0c26\u0c3f\u0c35\u0c4d\u0c2f \u0c38\u0c4d\u0c28\u0c47\u0c39\u0c02\u0c32\u0c4b,\n\n            \u0c2e\u0c47\u0c28\u0c47\u0c1c\u0c3f\u0c02\u0c17\u0c4d \u0c15\u0c2e\u0c3f\u0c1f\u0c40\n            \u0c2f\u0c4b\u0c17\u0c26\u0c3e \u0c38\u0c24\u0c4d\u0c38\u0c02\u0c17\n            \u0c27\u0c4d\u0c2f\u0c3e\u0c28 \u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02,\n            \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02.\n\n\nSadhana Sangam 2026 \u2013 Anantapur\n\nInstructions for YSS Members Wishing to Receive Kriya Yoga Initiation\nThe Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\nMembers wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\nThe questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\nThose who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\nMembers intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\nIn Divine Friendship,\n\nManaging Committee\nYogoda Satsanga Society of India Meditation Centre\nAnantapur"
+    },
+  
+    "non_kriyaban_notice": {
+      "description": "Special instructions sent only to non-kriyabans upon registration approval.",
+      "variables": "name",
+      "template_text": "*\u0c38\u0c3e\u0c27\u0c28\u0c3e \u0c38\u0c02\u0c17\u0c02 2026 \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02*\n\n*\u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17 \u0c26\u0c40\u0c15\u0c4d\u0c37*\n*\u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c35\u0c48.\u0c0e\u0c38\u0c4d.\u0c0e\u0c38\u0c4d*\n*\u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c15\u0c41 \u0c38\u0c42\u0c1a\u0c28\u0c32\u0c41*\n\n1.  \u0c38\u0c3e\u0c27\u0c28\u0c3e\u0c38\u0c02\u0c17\u0c02 \u0c1a\u0c3f\u0c35\u0c30\u0c3f\u0c30\u0c4b\u0c1c\u0c41 \u0c05\u0c28\u0c17\u0c3e \u0c1c\u0c42\u0c32\u0c48 26\u0c35 \u0c24\u0c47\u0c26\u0c40\u0c28 \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17 \u0c26\u0c40\u0c15\u0c4d\u0c37\u0c3e \u0c15\u0c3e\u0c30\u0c4d\u0c2f\u0c15\u0c4d\u0c30\u0c2e\u0c02 \u0c28\u0c3f\u0c30\u0c4d\u0c35\u0c39\u0c3f\u0c02\u0c1a\u0c2c\u0c21\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.\n\n2.  \u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c41 \u0c35\u0c48.\u0c0e\u0c38\u0c4d.\u0c0e\u0c38\u0c4d \u0c30\u0c3e\u0c02\u0c1a\u0c40 \u0c26\u0c4d\u0c35\u0c3e\u0c30\u0c3e \u0c32\u0c2d\u0c4d\u0c2f\u0c2e\u0c2f\u0c4d\u0c2f\u0c47 18 \u0c2a\u0c3e\u0c20\u0c3e\u0c32\u0c41 \u0c2a\u0c4a\u0c02\u0c26\u0c3f \u0c09\u0c02\u0c21\u0c3e\u0c32\u0c3f.\n\n3.  \u0c08 \u0c2a\u0c3e\u0c20\u0c3e\u0c32 \u0c26\u0c4d\u0c35\u0c3e\u0c30\u0c3e \u0c2a\u0c4a\u0c02\u0c26\u0c3f\u0c28 \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c28\u0c3f(Step-I \u0026 Step-II forms) \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c1a\u0c47\u0c38\u0c3f \u0c30\u0c3e\u0c02\u0c1a\u0c40\u0c15\u0c3f \u0c2a\u0c02\u0c2a\u0c3f \u0c09\u0c02\u0c21\u0c3e\u0c32\u0c3f. \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c28\u0c40 \u0c07\u0c02\u0c15\u0c3e \u0c2a\u0c02\u0c2a\u0c28\u0c3f\u0c35\u0c3e\u0c30\u0c41, \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c1a\u0c47\u0c38\u0c3f \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02 \u0c27\u0c4d\u0c2f\u0c3e\u0c28\u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02 \u0c06\u0c2b\u0c40\u0c38\u0c41\u0c32\u0c4b \u0c15\u0c42\u0c21\u0c3e \u0c05\u0c02\u0c26\u0c1a\u0c47\u0c2f\u0c35\u0c1a\u0c4d\u0c1a\u0c41.\n\n4.  \u0c38\u0c3e\u0c27\u0c28\u0c3e \u0c38\u0c02\u0c18\u0c02 \u0c2e\u0c4a\u0c26\u0c32\u0c2f\u0c4d\u0c2f\u0c47 \u0c30\u0c4b\u0c1c\u0c41\u0c15\u0c41 \u0c2a\u0c3e\u0c20\u0c3e\u0c32\u0c41 \u0c05\u0c02\u0c26\u0c21\u0c02 \u0c1a\u0c3f\u0c35\u0c30\u0c3f \u0c26\u0c36\u0c32\u0c4b \u0c09\u0c28\u0c4d\u0c28\u0c35\u0c3e\u0c30\u0c41, \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4a\u0c28\u0c26\u0c32\u0c1a\u0c3f\u0c28\u0c1a\u0c4b, \u0c2a\u0c42\u0c30\u0c4d\u0c24\u0c3f \u0c1a\u0c47\u0c38\u0c3f\u0c28 \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c3e\u0c35\u0c33\u0c3f\u0c24\u0c4b \u0c38\u0c4d\u0c35\u0c3e\u0c2e\u0c40\u0c1c\u0c40\u0c28\u0c3f \u0c15\u0c32\u0c3f\u0c38\u0c3f \u0c2a\u0c4d\u0c30\u0c24\u0c4d\u0c2f\u0c47\u0c15  \u0c05\u0c28\u0c41\u0c2e\u0c24\u0c3f \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c35\u0c32\u0c38\u0c3f \u0c09\u0c02\u0c1f\u0c41\u0c02\u0c26\u0c3f.\n\n5.  \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02\u0c32\u0c4b \u0c1c\u0c30\u0c17\u0c2c\u0c4b\u0c2f\u0c47 \u0c38\u0c3e\u0c27\u0c28\u0c3e\u0c38\u0c02\u0c17\u0c02\u0c32\u0c4b \u0c15\u0c4d\u0c30\u0c3f\u0c2f\u0c3e\u0c2f\u0c4b\u0c17\u0c26\u0c40\u0c15\u0c4d\u0c37 \u0c24\u0c40\u0c38\u0c41\u0c15\u0c4b\u0c26\u0c32\u0c1a\u0c3f\u0c28 \u0c38\u0c2d\u0c4d\u0c2f\u0c41\u0c32\u0c41 \u0c2e\u0c41\u0c02\u0c26\u0c41\u0c17\u0c3e\u0c28\u0c47 \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02 \u0c27\u0c4d\u0c2f\u0c3e\u0c28\u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02 \u0c06\u0c2b\u0c40\u0c38\u0c41\u0c28\u0c02\u0c26\u0c41 \u0c32\u0c47\u0c26\u0c3e \u0c36\u0c4d\u0c30\u0c40 A. \u0c28\u0c30\u0c38\u0c3f\u0c02\u0c39\u0c41\u0c32\u0c41 (\u0c38\u0c46\u0c32\u0c4d \u0c28\u0c02. 9441665181) \u0c17\u0c3e\u0c30\u0c3f\u0c15\u0c3f \u0c17\u0c3e\u0c28\u0c3f \u0c24\u0c46\u0c32\u0c3f\u0c2f\u0c2a\u0c30\u0c1a\u0c35\u0c32\u0c38\u0c3f\u0c28\u0c26\u0c3f\u0c17\u0c3e \u0c2a\u0c4d\u0c30\u0c3e\u0c30\u0c4d\u0c25\u0c28. \n\n\n  \u0c26\u0c3f\u0c35\u0c4d\u0c2f \u0c38\u0c4d\u0c28\u0c47\u0c39\u0c02\u0c32\u0c4b,\n\n            \u0c2e\u0c47\u0c28\u0c47\u0c1c\u0c3f\u0c02\u0c17\u0c4d \u0c15\u0c2e\u0c3f\u0c1f\u0c40\n            \u0c2f\u0c4b\u0c17\u0c26\u0c3e \u0c38\u0c24\u0c4d\u0c38\u0c02\u0c17\n            \u0c27\u0c4d\u0c2f\u0c3e\u0c28 \u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02,\n            \u0c05\u0c28\u0c02\u0c24\u0c2a\u0c41\u0c30\u0c02.\n\n\nSadhana Sangam 2026 \u2013 Anantapur\n\nInstructions for YSS Members Wishing to Receive Kriya Yoga Initiation\n\nThe Kriya Yoga Initiation Ceremony will be conducted on the last day of Sadhana Sangam, July 26, 2026.\n\nMembers wishing to receive initiation should have obtained and studied the 18 Lessons provided by Yogoda Satsanga Society of India (YSS) Ranchi.\n\nThe questionnaires received through these lessons (Step-I and Step-II Forms) should be completed and submitted to Ranchi. Those who have not yet submitted the questionnaires may complete them and submit them at the Anantapur Meditation Centre Office.\n\nThose who are in the final stages of receiving or completing the lessons by the commencement of Sadhana Sangam and wish to receive Kriya Initiation should meet Swamiji personally and obtain special permission, along with their completed questionnaires.\n\nMembers intending to receive Kriya Yoga Initiation during the Sadhana Sangam at Anantapur are kindly requested to inform the Anantapur Meditation Centre Office in advance or contact A. Narasimhulu (Mobile: +91 9441665181).\n\nIn Divine Friendship,\n\nManaging Committee\nYogoda Satsanga Society of India Meditation Centre\nAnantapur"
+    },
+  
+    "reg_success": {
+      "description": "Sent automatically to devotees when their registration is approved by the admin.",
+      "variables": "name,reg_id,phone,email,city,accommodation",
+      "template_text": "Dear {name},\n\nWith divine blessings and heartfelt joy, we are happy to confirm your successful registration for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nYour Registration Details:\n\nName: {name}\nPhone Number: {phone}\nEmail: {email}\nCity: {city}\nAccommodation: {accommodation}\n\nProgram Details:\n\nEvent: 3-Day Spiritual Program Anantapur\nVenue: Revenue Kalyana Mandapam (Revenue Bhavan), Beside Krishna Kalamandir, Near Clock Tower, Anantapur, Andhra Pradesh\nDates: July 24-26, 2026\nVenue Location: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\nMay this sacred gathering fill your heart with peace, devotion, positivity, and spiritual upliftment. We sincerely thank you for choosing to be part of this divine journey.\n\nPlease carry your registration confirmation during your visit. Further updates and instructions will be shared soon.\n\nWe look forward to welcoming you with love and prayers.\n\nJai Guru"
+    },
+  
+    "reminder_1d": {
+      "description": "Sent 1 day before the event (July 23, 2026).",
+      "variables": "name,reg_id",
+      "template_text": "Dear {name},\n\nJai Guru!\n\nThe 3-Day Spiritual Program starts TOMORROW at 9:00 AM!\n\nPlease ensure you arrive at the venue by 8:00 AM for check-in and seating.\nVenue: Revenue Kalyana Mandapam, Anantapur.\n\nPlease show this message or your Registration ID: {reg_id} at the reception desk to collect your entry badge.\n\nSafe travels! We pray for a deeply uplifting spiritual experience for you.\n\nIn Master\u0027s Service,\nYSS Anantapur Team"
+    },
+  
+    "reminder_3d": {
+      "description": "Sent 3 days before the event (July 21, 2026).",
+      "variables": "name,reg_id",
+      "template_text": "Dear {name},\n\nJai Guru!\n\nOnly 3 days left until our sacred 3-Day Spiritual Program begins on July 24, 2026.\n\nImportant Checklist for Your Visit:\n1. Carrying registration ID: {reg_id}\n2. Bring your personal meditation shawl or cushion if preferred.\n3. Keep loose, comfortable clothing (preferably white or light colors).\n4. Accommodation check-in begins on July 23rd afternoon.\n\nFor any urgent queries, contact us at 9441665181 or 8019682209.\n\nWarm regards,\nYSS Anantapur Team"
+    },
+  
+    "reminder_7d": {
+      "description": "Sent 7 days before the event (July 17, 2026).",
+      "variables": "name,reg_id",
+      "template_text": "Dear {name},\n\nJai Guru!\n\nThis is a loving reminder that the 3-Day Spiritual Program in Anantapur starts in exactly 7 days, on July 24, 2026! We are eagerly looking forward to meditating and serving together.\n\nVenue Details:\nRevenue Kalyana Mandapam (Revenue Bhavan), Beside Krishna Kalamandir, Near Clock Tower, Anantapur, Andhra Pradesh\nLocation: https://www.google.com/maps/place/MHJW%2BQGV+Krishna+Kala+Mandir,+near+Clock+Tower,+Kamalanagar,+Anantapur,+Andhra+Pradesh+515001/\n\nPlease complete your travel arrangements. If you need any assistance, feel free to reply to this message.\n\nIn divine friendship,\nYSS Anantapur Team"
+    },
+  
+    "room_allot": {
+      "description": "Sent to devotees when room numbers are assigned or changed.",
+      "variables": "name,reg_id,room_number,arrival_date,departure_date",
+      "template_text": "Dear {name},\n\nWith divine blessings, we are happy to inform you that your accommodation has been successfully allotted for the 3-Day Spiritual Program at Anantapur inspired by the teachings of Paramahansa Yogananda.\n\nAccommodation Details:\n\nName: {name}\nRoom Number: {room_number}\nCheck-In Date: {arrival_date}\nCheck-Out Date: {departure_date}\n\nWe kindly request you to carry your registration confirmation during your visit and maintain the peaceful and spiritual atmosphere throughout the program.\n\nMay this sacred gathering bring peace, devotion, joy, and spiritual upliftment into your life.\n\nWe look forward to welcoming you with love and prayers.\n\nJai Guru"
+    }
+  
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const selector = document.getElementById('templateKeySelector');
+  const keyInput = document.getElementById('templateKeyInput');
+  const descContainer = document.getElementById('templateDescription');
+  const varsContainer = document.getElementById('templateVariables');
+  const textInput = document.getElementById('templateTextArea');
+  const saveBtn = document.getElementById('saveTemplateBtn');
+
+  function updateTemplateForm(key) {
+    if (key === 'custom') {
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.style.opacity = '0.5';
+        saveBtn.style.cursor = 'not-allowed';
+      }
+      keyInput.value = 'custom';
+      descContainer.textContent = "Write a custom WhatsApp message to send. You can use standard placeholders.";
+      textInput.value = "";
+      
+      // Render variables badges
+      varsContainer.innerHTML = "";
+      ['name', 'reg_id', 'phone', 'email', 'city', 'accommodation', 'room_number', 'arrival_date', 'departure_date'].forEach(variable => {
+        const badge = document.createElement('span');
+        badge.style.display = "inline-block";
+        badge.style.padding = "0.2rem 0.5rem";
+        badge.style.background = "#eef2ff";
+        badge.style.color = "#4f46e5";
+        badge.style.borderRadius = "4px";
+        badge.style.fontSize = "0.75rem";
+        badge.style.fontWeight = "bold";
+        badge.style.border = "1px solid #c7d2fe";
+        badge.style.cursor = "pointer";
+        badge.textContent = `{${variable}}`;
+        badge.addEventListener('click', () => {
+          const start = textInput.selectionStart;
+          const end = textInput.selectionEnd;
+          const text = textInput.value;
+          textInput.value = text.substring(0, start) + badge.textContent + text.substring(end);
+          textInput.focus();
+          textInput.selectionStart = textInput.selectionEnd = start + badge.textContent.length;
+        });
+        varsContainer.appendChild(badge);
+      });
+      return;
+    }
+
+    const data = templatesData[key];
+    if (!data) return;
+
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = '1';
+      saveBtn.style.cursor = 'pointer';
+    }
+
+    keyInput.value = key;
+    descContainer.textContent = data.description || "No description provided.";
+    textInput.value = data.template_text;
+
+    // Render variables badges
+    varsContainer.innerHTML = "";
+    if (data.variables) {
+      data.variables.split(',').forEach(variable => {
+        const badge = document.createElement('span');
+        badge.style.display = "inline-block";
+        badge.style.padding = "0.2rem 0.5rem";
+        badge.style.background = "#eef2ff";
+        badge.style.color = "#4f46e5";
+        badge.style.borderRadius = "4px";
+        badge.style.fontSize = "0.75rem";
+        badge.style.fontWeight = "bold";
+        badge.style.border = "1px solid #c7d2fe";
+        badge.style.cursor = "pointer";
+        badge.textContent = `{${variable.trim()}}`;
+        
+        // Clicking badge inserts it at the cursor position
+        badge.addEventListener('click', () => {
+          const start = textInput.selectionStart;
+          const end = textInput.selectionEnd;
+          const text = textInput.value;
+          textInput.value = text.substring(0, start) + badge.textContent + text.substring(end);
+          textInput.focus();
+          textInput.selectionStart = textInput.selectionEnd = start + badge.textContent.length;
+        });
+
+        varsContainer.appendChild(badge);
+      });
+    } else {
+      varsContainer.innerHTML = `<span style="font-size:0.8rem; color:#888;">No variables required.</span>`;
+    }
+  }
+
+  // Recipient Count Live Preview
+  function updateRecipientCount() {
+    const regStatus = document.getElementById('broadcastFilterRegStatus').value;
+    const notified = document.getElementById('broadcastFilterNotified').value;
+    const isKriyaban = document.getElementById('broadcastFilterKriyaban').value;
+    const accommodation = document.getElementById('broadcastFilterAccommodation').value;
+
+    const countContainer = document.getElementById('broadcastRecipientCount');
+    countContainer.textContent = "...";
+
+    fetch(`/admin/whatsapp-broadcast/preview-count?reg_status=${regStatus}&notified=${notified}&is_kriyaban=${isKriyaban}&accommodation=${accommodation}`)
+      .then(response => response.json())
+      .then(data => {
+        countContainer.textContent = data.count;
+      })
+      .catch(err => {
+        console.error("Error fetching preview count:", err);
+        countContainer.textContent = "Error";
+      });
+  }
+
+  // Attach change listeners to filters
+  ['broadcastFilterRegStatus', 'broadcastFilterNotified', 'broadcastFilterKriyaban', 'broadcastFilterAccommodation'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', updateRecipientCount);
+  });
+
+  if (selector) {
+    selector.addEventListener('change', (e) => {
+      updateTemplateForm(e.target.value);
+    });
+    // Trigger initial select
+    updateTemplateForm(selector.value);
+  }
+
+  // Initial count load
+  updateRecipientCount();
+});
+
+// Confirm broadcast submit handler
+function confirmBroadcast(form) {
+  const textArea = document.getElementById('templateTextArea');
+  const hiddenInput = document.getElementById('broadcastMessageTextInput');
+  hiddenInput.value = textArea.value;
+
+  const count = document.getElementById('broadcastRecipientCount').textContent;
+  if (count === "0" || count === "..." || count === "Error") {
+    alert("No devotees match the selected filters or count has not loaded. Broadcast aborted.");
+    return false;
+  }
+
+  return confirm(`Are you sure you want to broadcast this message to ${count} devotees?`);
+}
+
+  // Connection Poll Status
+  let pollInterval = null;
+
+  function fetchWhatsAppStatus() {
+    fetch('/admin/whatsapp-status')
+      .then(response => response.json())
+      .then(data => {
+        const badgeArea = document.getElementById('status-badge-area');
+        const qrArea = document.getElementById('qr-scan-area');
+        const qrImage = document.getElementById('qr-image');
+        const connectedArea = document.getElementById('connected-area');
+
+        if (data.status === 'Connected') {
+          let phoneText = data.phone ? `<p style="margin-top:0.5rem; font-size:0.95rem; color:#15803d; font-weight:bold;"><i class="fab fa-whatsapp"></i> Linked Number: +${data.phone}</p>` : '';
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#dcfce7; color:#15803d; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(21,128,61,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+              CONNECTED
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:#15803d; font-weight:600;">
+              🎉 Live and fully active! Ready to dispatch template messages.
+            </p>
+            ${phoneText}
+          `;
+          
+          if (data.phone) {
+            connectedArea.innerHTML = `
+              <i class="fa-solid fa-circle-check" style="font-size:2.5rem; margin-bottom:0.75rem; color:#22c55e;"></i>
+              <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.1rem;">Automation Active</h4>
+              <p style="font-size:0.85rem; color:#14532d; margin:0;">
+                WhatsApp gateway is connected to <strong>+${data.phone}</strong> and active. Notifications will deliver automatically.
+              </p>
+            `;
+          } else {
+            connectedArea.innerHTML = `
+              <i class="fa-solid fa-circle-check" style="font-size:2.5rem; margin-bottom:0.75rem; color:#22c55e;"></i>
+              <h4 style="font-family:'Cinzel',serif; margin:0 0 0.5rem 0; font-size:1.1rem;">Automation Active</h4>
+              <p style="font-size:0.85rem; color:#14532d; margin:0;">
+                WhatsApp gateway is connected and active. Notifications will deliver automatically.
+              </p>
+            `;
+          }
+          
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'block';
+        } else if (data.status === 'Waiting for scan') {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fef3c7; color:#b45309; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(180,83,9,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+              PENDING SCAN
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
+              Scan the QR below with your phone to log in.
+            </p>
+          `;
+          connectedArea.style.display = 'none';
+          if (data.qr) {
+            qrImage.src = data.qr;
+            qrArea.style.display = 'block';
+          } else {
+            qrArea.style.display = 'none';
+          }
+        } else if (data.status === 'Offline') {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#fee2e2; color:#b91c1c; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem; box-shadow:0 4px 10px rgba(185,28,28,0.15);">
+              <span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
+              GATEWAY OFFLINE
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:#b91c1c; font-weight:600;">
+              The WhatsApp Gateway service could not be reached. Verify the service is running.
+            </p>
+          `;
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'none';
+        } else {
+          badgeArea.innerHTML = `
+            <div style="display:inline-flex; align-items:center; gap:0.5rem; background:#f3f4f6; color:#4b5563; padding:0.5rem 1.5rem; border-radius:30px; font-weight:bold; font-size:1.1rem;">
+              <span style="display:inline-block; width:10px; height:10px; background:#9ca3af; border-radius:50%;"></span>
+              ${data.status.toUpperCase()}
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--muted);">
+              Initializing connection...
+            </p>
+          `;
+          qrArea.style.display = 'none';
+          connectedArea.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error("Status fetching error:", err);
+      });
+  }
+
+  fetchWhatsAppStatus();
+  pollInterval = setInterval(fetchWhatsAppStatus, 5000);
+});
+
+function openMessagesDialog() {
+  const modal = document.getElementById('messagesModal');
+  modal.style.display = 'flex';
+  const list = document.getElementById('messagesList');
+  list.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--muted);"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+
+  fetch('/admin/whatsapp-messages')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.messages || data.messages.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--muted);"><i class="fa fa-inbox" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>No messages sent yet in this session.</div>';
+        return;
+      }
+      list.innerHTML = data.messages.map((msg, i) => {
+        const time = new Date(msg.timestamp).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'});
+        const phone = msg.to.length === 10 ? '+91 ' + msg.to : '+' + msg.to;
+        return `
+          <div class="recent-message-item" style="border-radius:10px; padding:0.85rem 1rem; display:flex; align-items:flex-start; gap:0.75rem;">
+            <div style="width:32px; height:32px; min-width:32px; background:#25D366; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; margin-top:2px;">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                <span style="font-weight:700; font-size:0.85rem; color:var(--primary);">${phone}</span>
+                <span style="font-size:0.72rem; color:var(--muted);">${time}</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${msg.preview}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(err => {
+      list.innerHTML = '<div style="text-align:center; padding:2rem; color:#b91c1c;"><i class="fa fa-exclamation-triangle"></i> Failed to load messages.</div>';
+    });
+}
+
+document.getElementById('messagesModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+</script>
+
+
+<!-- CONFIRM DELETE MODAL -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:2rem;max-width:400px;width:90%;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <h3 style="font-family:'Cinzel',serif;color:#C62828;margin-bottom:.5rem;">Confirm Delete</h3>
+    <p style="color:#666;margin-bottom:1.5rem;">Are you sure you want to delete this record? This action cannot be undone.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;">
+      <button onclick="document.getElementById('deleteModal').style.display='none'" class="btn btn-outline">Cancel</button>
+      <button id="confirmDeleteBtn" class="btn btn-primary" style="background:#C62828;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL CUSTOM CONFIRMATION MODAL -->
+<div id="customConfirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease;">
+  <div style="background:#fff; border-radius:12px; padding:2rem; width:90%; max-width:400px; box-shadow:0 15px 40px rgba(0,0,0,0.25); text-align:center; transform:scale(0.85); transition:transform 0.2s ease; border: 2px solid var(--gold);">
+    <div style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;">🪷</div>
+    <h3 style="font-family:'Cinzel',serif; color:var(--primary); margin-bottom:1rem; font-size:1.2rem; font-weight:700;">Confirm Action</h3>
+    <p id="confirmMessage" style="color:var(--text); font-size:0.95rem; line-height:1.5; margin-bottom:1.5rem; padding: 0 .5rem;">Are you sure?</p>
+    <div style="display:flex; gap:1rem; justify-content:center;">
+      <button id="confirmCancelBtn" type="button" class="btn btn-outline btn-sm" style="padding:.5rem 1.5rem; border-color:#ccc; color:#666;">Cancel</button>
+      <button id="confirmOkBtn" type="button" class="btn btn-primary btn-sm" style="padding:.5rem 1.5rem; background:var(--primary); color:#fff; border:none;">Yes, Proceed</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let pendingFormToSubmit = null;
+let pendingLinkToNavigate = null;
+let pendingCallback = null;
+
+function showCustomConfirm(message, targetElement, callback = null) {
+  pendingFormToSubmit = null;
+  pendingLinkToNavigate = null;
+  pendingCallback = null;
+  
+  if (typeof targetElement === 'function') {
+    pendingCallback = targetElement;
+  } else if (callback && typeof callback === 'function') {
+    pendingCallback = callback;
+  } else if (targetElement && targetElement.tagName === 'FORM') {
+    pendingFormToSubmit = targetElement;
+  } else if (targetElement && targetElement.tagName === 'A') {
+    pendingLinkToNavigate = targetElement.href;
+  }
+  
+  document.getElementById('confirmMessage').innerText = message;
+  const modal = document.getElementById('customConfirmModal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+    modal.children[0].style.transform = 'scale(1)';
+  }, 20);
+  return false; // Prevent immediate execution
+}
+
+document.getElementById('confirmCancelBtn').addEventListener('click', closeCustomConfirm);
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  if (pendingCallback) {
+    pendingCallback();
+  } else if (pendingFormToSubmit) {
+    pendingFormToSubmit.submit();
+  } else if (pendingLinkToNavigate) {
+    window.location.href = pendingLinkToNavigate;
+  }
+  closeCustomConfirm();
+});
+
+function closeCustomConfirm() {
+  const modal = document.getElementById('customConfirmModal');
+  modal.style.opacity = '0';
+  modal.children[0].style.transform = 'scale(0.85)';
+  setTimeout(() => {
+    modal.style.display = 'none';
+    pendingFormToSubmit = null;
+    pendingLinkToNavigate = null;
+    pendingCallback = null;
+  }, 200);
+}
+
+    // Sidebar toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.querySelector('.admin-sidebar');
+      const toggleBtn = document.getElementById('sidebarToggle');
+      const toggleIcon = document.getElementById('toggleIcon');
+      
+      if (sidebar && toggleBtn && toggleIcon) {
+        let isCollapsed = localStorage.getItem('sidebar-collapsed');
+        if (isCollapsed === null) {
+          isCollapsed = window.innerWidth <= 768;
+        } else {
+          isCollapsed = isCollapsed === 'true';
+        }
+        
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+          toggleIcon.className = 'fa fa-chevron-right';
+        } else {
+          sidebar.classList.remove('collapsed');
+          toggleIcon.className = 'fa fa-chevron-left';
+        }
+        
+        toggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          sidebar.classList.toggle('collapsed');
+          const nowCollapsed = sidebar.classList.contains('collapsed');
+          localStorage.setItem('sidebar-collapsed', nowCollapsed);
+          
+          if (nowCollapsed) {
+            toggleIcon.className = 'fa fa-chevron-right';
+          } else {
+            toggleIcon.className = 'fa fa-chevron-left';
+          }
+        });
+        
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        if (mobileToggle) {
+          mobileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('collapsed');
+          });
+          
+          // Also close sidebar on mobile when clicking content area
+          const adminContent = document.querySelector('.admin-content');
+          if (adminContent) {
+            adminContent.addEventListener('click', function() {
+              if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+              }
+            });
+          }
+        }
+      }
+    });
+
+    // Admin Theme Toggle Logic
+    const adminThemeToggle = document.getElementById('adminThemeToggle');
+    const adminThemeIcon = document.getElementById('adminThemeIcon');
+
+    function applyAdminTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (adminThemeIcon) {
+          adminThemeIcon.className = 'fa fa-sun';
+          adminThemeToggle.querySelector('span').textContent = 'Light Mode';
+        }
+      } else {
+        document.body.classList.remove('dark-mode');
+        if (adminThemeIcon) {
+          adminThemeIcon.className = 'fa fa-moon';
+          adminThemeToggle.querySelector('span').textContent = 'Dark Mode';
+        }
+      }
+    }
+
+    let savedTheme = localStorage.getItem('admin-theme') || 'light';
+    applyAdminTheme(savedTheme);
+
+    if (adminThemeToggle) {
+      adminThemeToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const activeTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+        localStorage.setItem('admin-theme', activeTheme);
+        applyAdminTheme(activeTheme);
+      });
+    }
+
+
+
+    // Smooth exit transitions for admin sidebar links
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href !== '#' && !link.getAttribute('onclick')) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetUrl = this.href;
+          
+          let loader = document.getElementById('adminLoader');
+          if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'adminLoader';
+            loader.className = 'page-loader';
+            loader.style.position = 'fixed';
+            loader.style.inset = '0';
+            loader.style.background = 'var(--cream)';
+            loader.style.display = 'flex';
+            loader.style.alignItems = 'center';
+            loader.style.justifyContent = 'center';
+            loader.style.zIndex = '999999';
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.25s ease';
+            loader.innerHTML = '<div class="loader-lotus" style="font-size:3rem; color:var(--primary); animation: spin 1.5s linear infinite;">🪷</div>';
+            document.body.appendChild(loader);
+          }
+          
+          setTimeout(() => {
+            loader.style.opacity = '1';
+          }, 10);
+          
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 200);
+        });
+      }
+    });
+
+    // Auto-detect horizontal table scroll and show floating controls on all devices
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollContainer = document.querySelector('[style*="overflow-x:auto"], [style*="overflow-x: auto"], .table-card > div, div[style*="overflow"]');
+      if (scrollContainer) {
+        // Create the floating scroll controls container
+        const controls = document.createElement('div');
+        controls.className = 'table-scroll-controls';
+        controls.style.position = 'fixed';
+        controls.style.bottom = '80px';
+        controls.style.right = '20px';
+        controls.style.zIndex = '99998';
+        controls.style.display = 'flex';
+        controls.style.gap = '0.5rem';
+        
+        controls.innerHTML = `
+          <button id="mScrollLeft" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Left">
+            <i class="fa fa-chevron-left" style="font-size: 0.9rem;"></i>
+          </button>
+          <button id="mScrollRight" class="btn" style="width:40px; height:40px; border-radius:50%; padding:0; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.25); background:var(--primary); color:#fff; border:none; cursor:pointer;" title="Scroll Right">
+            <i class="fa fa-chevron-right" style="font-size: 0.9rem;"></i>
+          </button>
+        `;
+        document.body.appendChild(controls);
+        
+        const btnLeft = document.getElementById('mScrollLeft');
+        const btnRight = document.getElementById('mScrollRight');
+        
+        if (btnLeft && btnRight) {
+          btnLeft.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollContainer.scrollBy({ left: -250, behavior: 'smooth' });
+          });
+          
+          btnRight.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollContainer.scrollBy({ left: 250, behavior: 'smooth' });
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

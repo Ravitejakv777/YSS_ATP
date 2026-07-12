@@ -55,3 +55,5 @@ static/uploads/*
 # Local environment secrets
 .env
 scratch/check_neon.py
+node_modules/
+node-bin/
