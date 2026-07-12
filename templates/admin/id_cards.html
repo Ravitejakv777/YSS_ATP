@@ -24,7 +24,8 @@
     text-align: center !important; /* Center the cards */
   }
   .id-card-wrapper {
-    display: inline-block !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
     width: 8cm !important;
     margin: 4mm !important;
     vertical-align: top !important;
@@ -42,6 +43,10 @@
   .id-card-wrapper:nth-child(8n) {
     page-break-after: always !important;
     break-after: page !important;
+  }
+  .id-card-wrapper table {
+    flex-grow: 1 !important;
+    height: 100% !important;
   }
   .id-card-wrapper td {
     color: #000 !important;
